@@ -1,0 +1,83 @@
+/* Small visual responses, without changing layout or the original palette. */
+@layer utilities {
+    .storefront :where(a, button),
+    .interactive-button {
+        transition: color 180ms ease, background-color 180ms ease,
+            border-color 180ms ease, box-shadow 220ms ease,
+            opacity 180ms ease, translate 220ms ease;
+    }
+
+    .interactive-card,
+    .interactive-panel {
+        transition: box-shadow 220ms ease, border-color 220ms ease,
+            background-color 220ms ease, translate 220ms ease;
+    }
+
+    .interactive-card img {
+        transition: scale 320ms ease;
+        transform-origin: center;
+    }
+
+    .storefront :where(a, button):focus-visible {
+        outline: 2px solid #0088cc;
+        outline-offset: 4px;
+    }
+
+    .interactive-card:focus-within,
+    .interactive-panel:focus-within {
+        box-shadow: 0 4px 16px rgb(25 28 31 / 10%);
+    }
+
+    .storefront :where(button:disabled, [aria-disabled='true']) {
+        cursor: default;
+        opacity: 0.5;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .storefront a[href]:not(.interactive-card):not(.interactive-button):hover {
+            opacity: 0.88;
+            text-decoration-color: currentColor;
+        }
+
+        .interactive-button:not(:disabled):not([aria-disabled='true']):hover {
+            box-shadow: 0 4px 12px rgb(25 28 31 / 14%);
+            translate: 0 -1px;
+        }
+
+        .interactive-button:not(:disabled):not([aria-disabled='true']):active {
+            translate: 0 0;
+            box-shadow: 0 1px 4px rgb(25 28 31 / 12%);
+        }
+
+        .interactive-card:hover {
+            translate: 0 -2px;
+            box-shadow: 0 6px 18px rgb(25 28 31 / 12%);
+        }
+
+        .interactive-card:hover img {
+            scale: 1.025;
+        }
+
+        .interactive-panel:hover {
+            box-shadow: 0 4px 14px rgb(25 28 31 / 8%);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .storefront :where(a, button),
+        .interactive-button,
+        .interactive-card,
+        .interactive-card img,
+        .interactive-panel {
+            transition: none !important;
+            translate: none !important;
+            scale: none !important;
+        }
+
+        .storefront [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+    }
+}
