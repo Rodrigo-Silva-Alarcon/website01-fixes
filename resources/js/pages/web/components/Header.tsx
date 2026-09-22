@@ -238,6 +238,15 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                   Ofertas
                 </p>
               </Link>
+              <Link
+                href={ route('contact') }
+                className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+                data-name="Botón"
+              >
+                <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  Contacto
+                </p>
+              </Link>
               <button onClick={() => setCartOpen(true)} className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
                 <div className="relative shrink-0 size-[20px]" data-name="shopping_cart">
                   <div className="absolute inset-[9.38%_15.53%_10.18%_6.25%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-1.5px_-2.25px] mask-size-[24px_24px]" data-name="shopping_cart" style={{ maskImage: `url('${img}')` }}>

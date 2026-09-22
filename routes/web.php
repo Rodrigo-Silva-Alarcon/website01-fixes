@@ -29,6 +29,8 @@ Route::get('/Productos/{category}/{subcategory}', [WebController::class, 'produc
 Route::get('/Productos/{category}/{subcategory}/{product}', [WebController::class, 'product'])->name('product');
 Route::get('/Servicios', [WebController::class, 'services'])->name('services');
 Route::get('/Contactanos', [WebController::class, 'contact'])->name('contact');
+Route::redirect('/Contacto', '/Contactanos');
+Route::redirect('/contacto', '/Contactanos');
 Route::post('/Enviar', [WebController::class, 'store'])->name('store');
 Route::get('/Find', [WebController::class, 'storefind'])->name('storefind');
 
