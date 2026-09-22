@@ -89,10 +89,10 @@ class BrandController extends Controller
         
         $validated = $request->validate([
             'brands' => ['required', 'array'],
-            'brands.*' => ['required', 'integer', 'exists:products,id'],
+            'brands.*' => ['required', 'integer', 'exists:brands,id'],
         ]);
 
-        foreach ($validated['products'] as $index => $brandId) {
+        foreach ($validated['brands'] as $index => $brandId) {
             Brand::where('id', $brandId)->update(['order' => $index + 1]);
         }        
 

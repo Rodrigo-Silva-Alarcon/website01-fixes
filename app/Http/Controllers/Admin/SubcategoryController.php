@@ -88,7 +88,7 @@ class SubcategoryController extends Controller
         ]);
 
         foreach ($validated['subcategories'] as $index => $Id) {
-            Category::where('id', $Id)->update(['order' => $index + 1]);
+            Subcategory::where('id', $Id)->update(['order' => $index + 1]);
         }        
 
         return redirect()->route('subcategories.index')->with('success', 'Se ordeno de manera correcta.');
