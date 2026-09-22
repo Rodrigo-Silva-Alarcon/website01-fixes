@@ -103,7 +103,7 @@ class WebController extends Controller{
         ],
         //['g-recaptcha-response.required' => 'Verifique que no es un robot con ReCaptcha',]
         ); 
-        Mail::to('mjuchani@megalink.com')->send(new MessageReceived($message));     
+        Mail::to(config('contact.email'))->send(new MessageReceived($message));     
  
         return redirect()->route('contact')->with('status', 'El mensaje fue enviado exitosamente.');
         

@@ -44,7 +44,7 @@ class ShopController extends Controller{
             if($car_id == NULL){
                 session()->put('shop', md5(date('YmdHisU')));
                 $card = Cart::create([
-                    'user_id' => 0,
+                    'user_id' => auth()->id(),
                     'cart_session' => session('shop')
                 ]);
                 $car_id = $card->id;                
