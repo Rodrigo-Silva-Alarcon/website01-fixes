@@ -10,7 +10,7 @@ import {
 } from "@/pages/web/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { Category, Inventory, Product } from "@/types/models";
-import { Link, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import Price from "@/pages/web/imports/Price";
 import { route } from 'ziggy-js';
 
@@ -88,13 +88,14 @@ function AddShop({product}:{product:Product}) {
           </svg>
         </div>
       </div>
-      <Link
-        href={route('addshop', {product:product.id})}
-        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] hover:text-orange-600 text-[14px] text-nowrap whitespace-pre"
+      <button
+        type="button"
+        onClick={() => router.post(route('addshop', {product:product.id}), {}, { preserveScroll: true })}
+        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] hover:text-orange-600 text-[14px] text-nowrap whitespace-pre cursor-pointer"
         style={{ fontVariationSettings: "'opsz' 14" }}
       >
         Añadir al carrito
-      </Link>
+      </button>
     </div>
   );
 }

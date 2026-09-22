@@ -2,7 +2,7 @@ import svgPaths from "../imports/svg-ebgpxejlry";
 import imgImage from "@/pages/web/assets/e6ff3417e24ae221ecb7179d94af93cf33ba079b.png";
 import { img, img1 } from "../imports/svg-adrl1";
 import { Product } from "@/types/models";
-import { Link, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 function Banner({product}:{product:Product}) {
@@ -58,8 +58,9 @@ function Banner({product}:{product:Product}) {
 }
 function Button_pay({product}:{product:Product}){
   return (
-    <Link 
-      href={route('addshop', {product:product.id})}
+    <button
+      type="button"
+      onClick={() => router.post(route('addshop', {product:product.id}), {}, { preserveScroll: true })}
       className="interactive-button bg-[#fa8232] hover:bg-[#f9751d] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" 
       data-name="Botón">
       <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
@@ -72,7 +73,7 @@ function Button_pay({product}:{product:Product}){
           </svg>
         </div>
       </div>
-    </Link>
+    </button>
   );
 }
 function Banner1({product}:{product:Product}) {

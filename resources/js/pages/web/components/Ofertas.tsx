@@ -8,15 +8,16 @@ import {
   CarouselItem,
 } from "@/pages/web/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Link, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 
 function LinkCarrito({product}:{product:Product}) {
   return (
-    <Link 
-      href={route('addshop', {product:product.id})}
-      className="content-stretch flex gap-[4px] items-center relative shrink-0 ">
+    <button 
+      type="button"
+      onClick={() => router.post(route('addshop', {product:product.id}), {}, { preserveScroll: true })}
+      className="content-stretch flex gap-[4px] items-center relative shrink-0 cursor-pointer">
       <div
         className="relative shrink-0 size-[20px] hover:text-orange-600"
         data-name="shopping_cart"
@@ -46,7 +47,7 @@ function LinkCarrito({product}:{product:Product}) {
       >
         Añadir al carrito
       </div>
-    </Link>
+    </button>
   );
 }
 function Precio({inventory}:{inventory:Inventory}){

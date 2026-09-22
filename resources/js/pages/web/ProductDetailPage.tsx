@@ -6,7 +6,7 @@ import { img as imgArrow } from "@/pages/web/imports/svg-fpqd7";
 import { Product, MenuItem, Category, Brand, Cart } from "@/types/models";
 import { productEnquiryUrl, productPrice } from "@/lib/product-enquiry";
 import Price from "@/pages/web/imports/Price";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import Modal from "@/components/modal-web";
 import Layout from "@/pages/web/layouts/Layout";
@@ -226,9 +226,10 @@ function ProductInfo({
               {/* Action Buttons */}
       <div className="content-center flex flex-wrap gap-[16px] items-center relative shrink-0 w-full">
         {hasPrice && (
-        <Link
-          href={route('addshop', { product: product.id })}
-          className="bg-white box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+        <button
+          type="button"
+          onClick={() => router.post(route('addshop', { product: product.id }), {}, { preserveScroll: true })}
+          className="bg-white box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0 cursor-pointer"
           data-name="Botón1"
         >
           <div
@@ -260,7 +261,7 @@ function ProductInfo({
           >
             Añadir al carrito
           </p>
-        </Link>
+        </button>
         )}
 
         <a

@@ -32,9 +32,9 @@ Route::get('/Contactanos', [WebController::class, 'contact'])->name('contact');
 Route::post('/Enviar', [WebController::class, 'store'])->name('store');
 Route::get('/Find', [WebController::class, 'storefind'])->name('storefind');
 
-Route::get('/AddShop/{product}', [ShopController::class, 'add'])->name('addshop');
+Route::post('/AddShop/{product}', [ShopController::class, 'add'])->name('addshop');
 Route::patch('/Shop/{product}', [ShopController::class, 'update'])->name('updateshop');
-Route::get('/RemoveShop/{product}', [ShopController::class, 'remove'])->name('removeshop');
+Route::post('/RemoveShop/{product}', [ShopController::class, 'remove'])->name('removeshop');
 
 // Rutas del panel de administración con prefijo admin/
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {

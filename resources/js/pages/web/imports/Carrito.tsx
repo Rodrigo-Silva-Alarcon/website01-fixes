@@ -46,12 +46,13 @@ function ItemDelete({item}:{item:CartItem}) {
           </svg>
         </div>
       </div>
-      <Link 
-        href={route('removeshop', {product:item.product_id})}
-        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre" 
+      <button
+        type="button"
+        onClick={() => router.post(route('removeshop', {product:item.product_id}), {}, { preserveScroll: true, preserveState: true })}
+        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre cursor-pointer" 
         style={{ fontVariationSettings: "'opsz' 14" }}>
         Eliminar del carrito
-      </Link>
+      </button>
     </div>
   );
 }
@@ -229,9 +230,10 @@ function Frame10124106({items, pending}:{items:CartItem[]; pending:boolean}) {
 function Itemproduct({producto}:{producto:Product; }){
 
   return (
-    <Link 
-        href={route('addshop', { product: producto.id })}
-        className="interactive-card bg-[#f2f4f5] box-border content-stretch flex flex-col gap-[20px] items-start overflow-clip p-[20px] relative rounded-[16px] shrink-0 w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+    <button
+        type="button"
+        onClick={() => router.post(route('addshop', { product: producto.id }), {}, { preserveScroll: true })}
+        className="interactive-card bg-[#f2f4f5] box-border content-stretch flex flex-col gap-[20px] items-start overflow-clip p-[20px] relative rounded-[16px] shrink-0 w-full h-full cursor-pointer hover:opacity-90 transition-opacity text-left"
       >
         <div
           className="aspect-square relative shrink-0 w-full"
@@ -275,7 +277,7 @@ function Itemproduct({producto}:{producto:Product; }){
               </>
           )}
         </div>
-      </Link>
+      </button>
   );
 }
 function SuggestedProducts({populares}:{populares:Product[]}){
