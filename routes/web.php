@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [WebController::class, 'homepage'])->name('home');
+Route::get('/sitemap.xml', \App\Http\Controllers\SitemapController::class)->name('sitemap');
 Route::get('/Nosotros', [WebController::class, 'about'])->name('about');
 Route::get('/Productos', [WebController::class, 'products'])->name('products');
 Route::post('/Productos/Filtrar', [WebController::class, 'products'])->name('products_post');

@@ -1,2 +1,6 @@
 User-agent: *
 Disallow:
+
+# En produccion, sustituir por la URL real del dominio:
+# Sitemap: https://TU-DOMINIO.com/sitemap.xml
+Sitemap: /sitemap.xml
