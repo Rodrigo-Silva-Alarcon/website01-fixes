@@ -22,14 +22,14 @@ export default function Create() {
     // Verificar permisos al cargar el componente
     useEffect(() => {
         
-        if (!hasPermission('create_texts')) {
+        if (!hasPermission('create_categories')) {
             toast.error('No tienes permisos para crear categorías');
-            router.visit('/admin/texts');
+            router.visit(route('categories.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('create_texts')) {
+    if (!hasPermission('create_categories')) {
         return null;
     }
 

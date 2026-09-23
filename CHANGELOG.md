@@ -43,6 +43,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Títulos de sección legibles en dark mode (`text-foreground`) (F4-29)
 - Texto vertical en cards destacados (F4-31)
 - Alturas/posición de imagen asimétricas en destacados (F4-32)
+- Gates RBAC de catálogo en Create/Edit/Show (`create_*`/`edit_*`/`show_*` de sector) (F4-33)
+- Gate de inventarios Create activado + Edit con `edit_inventories` (F4-33)
+- Búsqueda de marcas ya no redirige a banners; link "volver" de producto (F4-33)
+- Permiso de publicar textos: `publish_texts_texts` → `publish_texts` (F4-33)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

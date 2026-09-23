@@ -27,14 +27,14 @@ export default function Edit({ product }: Props) {
 
     // Verificar permisos al cargar el componente
     useEffect(() => {                
-        if (!hasPermission('edit_texts')) {
-            toast.error('No tienes permisos para editar textos');
-            router.visit(route('subcategories.index'));
+        if (!hasPermission('edit_products')) {
+            toast.error('No tienes permisos para editar productos');
+            router.visit(route('products.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('edit_texts')) {
+    if (!hasPermission('edit_products')) {
         return null;
     }
 

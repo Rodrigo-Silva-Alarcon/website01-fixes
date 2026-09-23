@@ -99,7 +99,7 @@ export default function Index({ records, filters, success, error }: Props) {
             console.log('- edit_texts:', hasPermission('edit_texts'));
             console.log('- delete_texts:', hasPermission('delete_texts'));
             console.log('- show_texts:', hasPermission('show_texts'));
-            console.log('- publish_texts_texts:', hasPermission('publish_texts_texts'));
+            console.log('- publish_texts:', hasPermission('publish_texts'));
             console.log('================================');
         } else {
             console.log('❌ No se encontró usuario autenticado');
@@ -317,7 +317,7 @@ export default function Index({ records, filters, success, error }: Props) {
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {hasPermission('publish_texts_texts') ? (
+                                            {hasPermission('publish_texts') ? (
                                                 <Switch
                                                     checked={text.publish}
                                                     onCheckedChange={() => handleTogglePublicar(text)}

@@ -23,14 +23,14 @@ export default function Create() {
     // Verificar permisos al cargar el componente
     useEffect(() => {
         
-        if (!hasPermission('create_texts')) {
-            toast.error('No tienes permisos para crear categorías');
+        if (!hasPermission('create_subcategories')) {
+            toast.error('No tienes permisos para crear subcategorías');
             router.visit(route('subcategories.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('create_texts')) {
+    if (!hasPermission('create_subcategories')) {
         return null;
     }
 

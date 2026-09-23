@@ -26,6 +26,17 @@ export default function Edit({ inventory }: Props) {
     const error = (props as any).error;
     const { hasPermission } = usePermissions();
 
+    useEffect(() => {
+        if (!hasPermission('edit_inventories')) {
+            toast.error('No tienes permisos para editar inventarios');
+            router.visit(route('inventories.index'));
+        }
+    }, [hasPermission]);
+
+    if (!hasPermission('edit_inventories')) {
+        return null;
+    }
+
     return (
         <InventoryForm
             inventory={inventory}

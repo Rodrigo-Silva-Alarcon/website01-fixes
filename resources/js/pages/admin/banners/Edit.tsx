@@ -26,14 +26,14 @@ export default function Edit({ banner }: Props) {
 
     // Verificar permisos al cargar el componente
     useEffect(() => {                
-        if (!hasPermission('edit_texts')) {
-            toast.error('No tienes permisos para editar textos');
+        if (!hasPermission('edit_banners')) {
+            toast.error('No tienes permisos para editar banners');
             router.visit(route('banners.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('edit_texts')) {
+    if (!hasPermission('edit_banners')) {
         return null;
     }
 

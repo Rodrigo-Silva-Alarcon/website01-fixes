@@ -28,14 +28,14 @@ export default function Edit({ subcategory }: Props) {
 
     // Verificar permisos al cargar el componente
     useEffect(() => {                
-        if (!hasPermission('edit_texts')) {
-            toast.error('No tienes permisos para editar textos');
+        if (!hasPermission('edit_subcategories')) {
+            toast.error('No tienes permisos para editar subcategorías');
             router.visit(route('subcategories.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('edit_texts')) {
+    if (!hasPermission('edit_subcategories')) {
         return null;
     }
 
@@ -44,8 +44,8 @@ export default function Edit({ subcategory }: Props) {
             subcategory={subcategory}
             categories={categories}
             isEdit={true}
-            title="Editar Categoría"
-            description="Modifica la información de la categoría"
+            title="Editar Subcategoría"
+            description="Modifica la información de la subcategoría"
             breadcrumbs={breadcrumbs}
             success={success}
             error={error}

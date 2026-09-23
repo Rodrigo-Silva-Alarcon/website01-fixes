@@ -22,14 +22,14 @@ export default function Create() {
     // Verificar permisos al cargar el componente
     useEffect(() => {
         
-        if (!hasPermission('create_texts')) {
+        if (!hasPermission('create_brands')) {
             toast.error('No tienes permisos para crear marca');
             router.visit(route('brands.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('create_texts')) {
+    if (!hasPermission('create_brands')) {
         return null;
     }
 

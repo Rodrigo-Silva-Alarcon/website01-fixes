@@ -184,7 +184,7 @@ export default function Index({ records, filters, success, error }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(route('banners.index'), {
+        router.get(route('brands.index'), {
             search: searchTerm,
             sort_by: sortBy,
             sort_order: sortOrder,

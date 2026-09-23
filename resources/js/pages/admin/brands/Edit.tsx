@@ -25,14 +25,14 @@ export default function Edit({ brand }: Props) {
 
     // Verificar permisos al cargar el componente
     useEffect(() => {                
-        if (!hasPermission('edit_texts')) {
-            toast.error('No tienes permisos para editar textos');
+        if (!hasPermission('edit_brands')) {
+            toast.error('No tienes permisos para editar marca');
             router.visit(route('brands.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('edit_texts')) {
+    if (!hasPermission('edit_brands')) {
         return null;
     }
 
@@ -40,7 +40,7 @@ export default function Edit({ brand }: Props) {
         <TextForm
             brand={brand}
             isEdit={true}
-            title="Editar Marcas"
+            title="Editar Marca"
             description="Modifica la información del marca"
             breadcrumbs={breadcrumbs}
             success={success}

@@ -9,6 +9,7 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { useEffect } from 'react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { route } from 'ziggy-js';
 
 interface Text {
     id: number;
@@ -45,17 +46,17 @@ export default function Show({ text }: Props) {
     // Verificar permisos al cargar el componente
     useEffect(() => {
         console.log('🔍 Verificando permisos en Show.tsx');
-        console.log('Tiene show_texts:', hasPermission('show_texts'));
-        
-        if (!hasPermission('show_texts')) {
-            console.log('❌ Usuario sin permisos para ver textos - redirigiendo');
-            toast.error('No tienes permisos para ver textos');
-            router.visit('/admin/texts');
+        console.log('Tiene show_products:', hasPermission('show_products'));
+
+        if (!hasPermission('show_products')) {
+            console.log('❌ Usuario sin permisos para ver productos - redirigiendo');
+            toast.error('No tienes permisos para ver productos');
+            router.visit(route('products.index'));
         }
     }, [hasPermission]);
 
     // Si no tiene permisos, no renderizar nada
-    if (!hasPermission('show_texts')) {
+    if (!hasPermission('show_products')) {
         return null;
     }
 
@@ -79,7 +80,7 @@ export default function Show({ text }: Props) {
                                     </CardDescription>
                                 </div>
                             </div>
-                            {hasPermission('edit_texts') && (
+                            {hasPermission('edit_products') && (
                                 <Button variant="outline" size="sm" asChild>
                                     <Link href={`/admin/texts/${text.id}/edit`}>
                                         <Edit className="mr-2 h-4 w-4" />

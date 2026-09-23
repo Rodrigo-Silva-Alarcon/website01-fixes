@@ -21,7 +21,7 @@ export default function Create() {
     const { hasPermission } = usePermissions();
 
     // Verificar permisos al cargar el componente
-   /*  useEffect(() => {
+    useEffect(() => {
 
         if (!hasPermission('create_inventories')) {
             toast.error('No tienes permisos para crear inventarios');
@@ -32,7 +32,7 @@ export default function Create() {
     // Si no tiene permisos, no renderizar nada
     if (!hasPermission('create_inventories')) {
         return null;
-    } */
+    }
 
     return (
         <InventoryForm

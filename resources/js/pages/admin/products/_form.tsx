@@ -596,7 +596,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                         <div className="flex items-center gap-4">
                             {/* Botón de regreso */}
                             <Button variant="outline" size="sm" asChild>
-                                <Link href="{ route('products.index')}">
+                                <Link href={route('products.index')}>
                                     <ArrowLeft className="h-4 w-4" />
                                 </Link>
                             </Button>
