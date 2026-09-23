@@ -15,6 +15,34 @@ class SectorPermissionsSeeder extends Seeder
     {
         // Definir sectores y sus permisos adicionales
         $sectores = [
+            'products' => [
+                'sector_name' => 'productos',
+                'additional_permissions' => [],
+            ],
+            'categories' => [
+                'sector_name' => 'categorías',
+                'additional_permissions' => [],
+            ],
+            'subcategories' => [
+                'sector_name' => 'subcategorías',
+                'additional_permissions' => [],
+            ],
+            'brands' => [
+                'sector_name' => 'marcas',
+                'additional_permissions' => [],
+            ],
+            'banners' => [
+                'sector_name' => 'banners',
+                'additional_permissions' => [],
+            ],
+            'inventories' => [
+                'sector_name' => 'inventarios',
+                'additional_permissions' => [],
+            ],
+            'carts' => [
+                'sector_name' => 'carritos',
+                'additional_permissions' => [],
+            ],
             'productos' => [
                 'sector_name' => 'productos',
                 'additional_permissions' => [

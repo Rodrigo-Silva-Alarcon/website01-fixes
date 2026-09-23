@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('lists carts for authenticated users at admin.carts.index', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -27,6 +28,7 @@ it('lists carts for authenticated users at admin.carts.index', function () {
 });
 
 it('shows empty message when there are no carts', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -40,6 +42,7 @@ it('shows empty message when there are no carts', function () {
 });
 
 it('deletes a cart', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -54,4 +57,15 @@ it('deletes a cart', function () {
 
 it('requires authentication for carts index', function () {
     $this->get(route('admin.carts.index'))->assertRedirect('/login');
+});
+
+it('denies carts index without view_carts permission', function () {
+    seedRbac();
+    $user = User::factory()->create();
+    $role = \App\Models\Role::firstOrCreate(['name' => 'viewer_textos'], ['description' => 'Viewer']);
+    $user->roles()->attach($role->id);
+
+    $this->actingAs($user)
+        ->get(route('admin.carts.index'))
+        ->assertForbidden();
 });

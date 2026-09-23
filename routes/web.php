@@ -71,44 +71,52 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('/texts', TextController::class)->names('admin.texts');
     Route::patch('/texts/{text}/toggle-publish', [TextController::class, 'togglePublish'])->name('admin.texts.toggle-publish');
     
-    // Rutas de productos
-    // Ruta de debug para textos
-    Route::get('/texts/create-debug', function () {
-        return Inertia::render('admin/texts/CreateDebug');
-    })->name('admin.texts.create-debug');
-    
-    // Rutas de categorías
-    Route::put('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
-    Route::patch('/categories/{category}/toggle-publish', [CategoryController::class, 'togglePublish'])->name('categories.toggle-publish');
-    Route::resource('/categories', CategoryController::class)->names('categories');
-    // Sucategorias
-    Route::put('/subcategories/reorder', [SubcategoryController::class, 'reorder'])->name('subcategories.reorder');
-    Route::patch('/subcategories/{subcategory}/toggle-publish', [SubcategoryController::class, 'togglePublish'])->name('subcategories.toggle-publish');
-    Route::resource('/subcategories', SubcategoryController::class)->names('subcategories');
-    // productos
-    Route::put('/products/reorder', [ProductController::class, 'reorder'])->name('products.reorder');
-    Route::patch('/products/{product}/toggle-publish', [ProductController::class, 'togglePublish'])->name('products.toggle-publish');
-    Route::resource('/products', ProductController::class)->names('products');    
-    // banners
-    Route::put('/banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
-    Route::patch('/banners/{banner}/toggle-publish', [BannerController::class, 'togglePublish'])->name('banners.toggle-publish');
-    Route::resource('/banners', BannerController::class)->names('banners');
-    // brands
-    Route::put('/brands/reorder', [BrandController::class, 'reorder'])->name('brands.reorder');
-    Route::patch('/brands/{brand}/toggle-publish', [BrandController::class, 'togglePublish'])->name('brands.toggle-publish');
-    Route::resource('/brands', BrandController::class)->names('brands');
-    // images
+    // Categorías (§4.8.8 RBAC)
+    Route::middleware('permission:view_categories')->group(function () {
+        Route::put('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
+        Route::patch('/categories/{category}/toggle-publish', [CategoryController::class, 'togglePublish'])->name('categories.toggle-publish');
+        Route::resource('/categories', CategoryController::class)->names('categories');
+    });
+    // Subcategorías
+    Route::middleware('permission:view_subcategories')->group(function () {
+        Route::put('/subcategories/reorder', [SubcategoryController::class, 'reorder'])->name('subcategories.reorder');
+        Route::patch('/subcategories/{subcategory}/toggle-publish', [SubcategoryController::class, 'togglePublish'])->name('subcategories.toggle-publish');
+        Route::resource('/subcategories', SubcategoryController::class)->names('subcategories');
+    });
+    // Productos
+    Route::middleware('permission:view_products')->group(function () {
+        Route::put('/products/reorder', [ProductController::class, 'reorder'])->name('products.reorder');
+        Route::patch('/products/{product}/toggle-publish', [ProductController::class, 'togglePublish'])->name('products.toggle-publish');
+        Route::resource('/products', ProductController::class)->names('products');
+    });
+    // Banners
+    Route::middleware('permission:view_banners')->group(function () {
+        Route::put('/banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
+        Route::patch('/banners/{banner}/toggle-publish', [BannerController::class, 'togglePublish'])->name('banners.toggle-publish');
+        Route::resource('/banners', BannerController::class)->names('banners');
+    });
+    // Marcas
+    Route::middleware('permission:view_brands')->group(function () {
+        Route::put('/brands/reorder', [BrandController::class, 'reorder'])->name('brands.reorder');
+        Route::patch('/brands/{brand}/toggle-publish', [BrandController::class, 'togglePublish'])->name('brands.toggle-publish');
+        Route::resource('/brands', BrandController::class)->names('brands');
+    });
+    // Imágenes
     Route::put('/images/reorder', [ImageController::class, 'reorder'])->name('images.reorder');
     Route::post('/images/{product}', [ImageController::class, 'store'])->name('images.store');
     Route::resource('/images', ImageController::class)->names('images')->except(['store']);
-    // inventories
-    Route::resource('/inventories', InventoryController::class)->names('inventories');
-    Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->name('inventories.store_product');
-    Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->name('inventories.destroy_product');
+    // Inventarios
+    Route::middleware('permission:view_inventories')->group(function () {
+        Route::resource('/inventories', InventoryController::class)->names('inventories');
+        Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->name('inventories.store_product');
+        Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->name('inventories.destroy_product');
+    });
 
-    // carts (§4.7.17)
-    Route::get('/carts', [CartController::class, 'index'])->name('admin.carts.index');
-    Route::delete('/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+    // Carritos (§4.7.17 + §4.8.8)
+    Route::middleware('permission:view_carts')->group(function () {
+        Route::get('/carts', [CartController::class, 'index'])->name('admin.carts.index');
+        Route::delete('/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+    });
 
 });
 

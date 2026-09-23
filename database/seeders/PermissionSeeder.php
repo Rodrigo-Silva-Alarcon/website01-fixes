@@ -62,6 +62,15 @@ class PermissionSeeder extends Seeder
         $this->createSectorPermissions('texts', 'textos', [
             'publish_texts' => 'Publicar/despublicar textos'
         ]);
+
+        // Permisos granulares de catálogo y operaciones (§4.8.8)
+        $this->createSectorPermissions('products', 'productos');
+        $this->createSectorPermissions('categories', 'categorías');
+        $this->createSectorPermissions('subcategories', 'subcategorías');
+        $this->createSectorPermissions('brands', 'marcas');
+        $this->createSectorPermissions('banners', 'banners');
+        $this->createSectorPermissions('inventories', 'inventarios');
+        $this->createSectorPermissions('carts', 'carritos');
     }
 
     /**

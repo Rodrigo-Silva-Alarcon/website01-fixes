@@ -56,6 +56,62 @@ return [
             'ruta' => '/admin/productos',
             'permiso_vista' => 'view_productos',
         ],
+
+        'products' => [
+            'nombre' => 'products',
+            'permisos_adicionales' => [],
+            'icono' => 'Package',
+            'ruta' => '/admin/products',
+            'permiso_vista' => 'view_products',
+        ],
+
+        'categories' => [
+            'nombre' => 'categories',
+            'permisos_adicionales' => [],
+            'icono' => 'FolderClosed',
+            'ruta' => '/admin/categories',
+            'permiso_vista' => 'view_categories',
+        ],
+
+        'subcategories' => [
+            'nombre' => 'subcategories',
+            'permisos_adicionales' => [],
+            'icono' => 'Folders',
+            'ruta' => '/admin/subcategories',
+            'permiso_vista' => 'view_subcategories',
+        ],
+
+        'brands' => [
+            'nombre' => 'brands',
+            'permisos_adicionales' => [],
+            'icono' => 'Star',
+            'ruta' => '/admin/brands',
+            'permiso_vista' => 'view_brands',
+        ],
+
+        'banners' => [
+            'nombre' => 'banners',
+            'permisos_adicionales' => [],
+            'icono' => 'Images',
+            'ruta' => '/admin/banners',
+            'permiso_vista' => 'view_banners',
+        ],
+
+        'inventories' => [
+            'nombre' => 'inventories',
+            'permisos_adicionales' => [],
+            'icono' => 'Banknote',
+            'ruta' => '/admin/inventories',
+            'permiso_vista' => 'view_inventories',
+        ],
+
+        'carts' => [
+            'nombre' => 'carts',
+            'permisos_adicionales' => [],
+            'icono' => 'ShoppingBasket',
+            'ruta' => '/admin/carts',
+            'permiso_vista' => 'view_carts',
+        ],
         
         'ventas' => [
             'nombre' => 'ventas',

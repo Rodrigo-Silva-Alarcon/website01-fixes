@@ -45,3 +45,13 @@ function something()
 {
     // ..
 }
+
+/**
+ * Seed roles + permissions RBAC (§4.8.8) for tests that hit admin routes.
+ */
+function seedRbac(): void
+{
+    (new \Database\Seeders\RoleSeeder())->run();
+    (new \Database\Seeders\PermissionSeeder())->run();
+    (new \Database\Seeders\RolePermissionSeeder())->run();
+}
