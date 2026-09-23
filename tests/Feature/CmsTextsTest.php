@@ -39,3 +39,34 @@ it('does not share CMS texts on admin routes', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page->where('cmsTexts', []));
 });
+
+it('shares footer contact CMS keys for conditional footer buttons', function () {
+    $keys = [
+        'footer_whatsapp' => '59170000000',
+        'footer_email' => 'contacto@smarthouse.test',
+        'footer_maps' => 'https://maps.app.goo.gl/xyz',
+        'footer_facebook' => 'https://facebook.com/smarthouse',
+        'footer_address' => 'Av. Siempre Viva 742, La Paz',
+    ];
+
+    foreach ($keys as $name => $content) {
+        Text::create([
+            'name' => $name,
+            'date' => now()->toDateString(),
+            'gender' => 'male',
+            'type' => ['article'],
+            'print_view' => 'a4',
+            'content' => $content,
+            'publish' => true,
+        ]);
+    }
+
+    $this->get('/')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('cmsTexts.footer_whatsapp', '59170000000')
+            ->where('cmsTexts.footer_email', 'contacto@smarthouse.test')
+            ->where('cmsTexts.footer_maps', 'https://maps.app.goo.gl/xyz')
+            ->where('cmsTexts.footer_facebook', 'https://facebook.com/smarthouse')
+            ->where('cmsTexts.footer_address', 'Av. Siempre Viva 742, La Paz'));
+});
