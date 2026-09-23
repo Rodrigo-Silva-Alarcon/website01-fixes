@@ -48,6 +48,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Búsqueda de marcas ya no redirige a banners; link "volver" de producto (F4-33)
 - Permiso de publicar textos: `publish_texts_texts` → `publish_texts` (F4-33)
 - Contraste dark mode: feature strip/About `text-foreground` + strokes; hero `bg-white`; bordes ProductDetail/FindProducts (F4-35)
+- Crop/upscale del banner hero: aspect cercano a 16:9 + `max-h` + `object-position` (F4-36)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos
