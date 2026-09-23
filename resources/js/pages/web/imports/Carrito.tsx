@@ -37,23 +37,42 @@ function Frame10124102({ onClose }: { onClose?: () => void }) {
 }
 
 function ItemDelete({item}:{item:CartItem}) {
+  const [pending, setPending] = useState(false);
+  const remove = () => {
+    if (pending) return;
+    setPending(true);
+    router.post(
+      route('removeshop', { product: item.product_id }),
+      {},
+      {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => toast.success('Producto eliminado del carrito'),
+        onError: () => toast.error('No se pudo eliminar el producto. Inténtalo nuevamente.'),
+        onFinish: () => setPending(false),
+      },
+    );
+  };
   return (
-    <div className="content-stretch flex gap-[4px] items-center relative shrink-0">
-      <div className="relative shrink-0 size-[20px]" data-name="delete">
-        <div className="absolute inset-[15%_20%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-4px_-3px] mask-size-[20px_20px]" data-name="delete" style={{ maskImage: `url('${img}')` }}>
+    <button
+      type="button"
+      onClick={remove}
+      disabled={pending}
+      aria-label={`Eliminar ${item.name} del carrito`}
+      className="group flex items-center gap-[6px] cursor-pointer text-[#191c1f] hover:text-[#d9534f] transition-colors disabled:opacity-60"
+      data-name="delete"
+    >
+      <span className="relative size-[20px] shrink-0" data-name="delete" aria-hidden="true">
+        <span className="absolute inset-[15%_20%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-4px_-3px] mask-size-[20px_20px]" style={{ maskImage: `url('${img}')` }}>
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12 14">
-            <path d={svgPaths.p26e1fe00} fill="var(--fill-0, #191C1F)" id="delete" />
+            <path d={svgPaths.p26e1fe00} fill="currentColor" id="delete" />
           </svg>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={() => router.post(route('removeshop', {product:item.product_id}), {}, { preserveScroll: true, preserveState: true })}
-        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre cursor-pointer" 
-        style={{ fontVariationSettings: "'opsz' 14" }}>
+        </span>
+      </span>
+      <span className="font-dm_sans font-normal leading-[20px] text-[14px] text-nowrap whitespace-pre">
         Eliminar del carrito
-      </button>
-    </div>
+      </span>
+    </button>
   );
 }
 
