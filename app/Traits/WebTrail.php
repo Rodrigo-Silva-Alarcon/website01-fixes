@@ -40,10 +40,10 @@ trait WebTrail {
     }    
 
     function get_populares(){
-        return Product::with('inventory')->where('active', true)->where('pop', true)->limit(8)->get();
+        return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('pop', true)->limit(8)->get();
     }
     function get_detacados(){
-        return Product::with('inventory')->where('active', true)->where('featured', true)->limit(8)->get();
+        return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('featured', true)->limit(8)->get();
     }
     function get_marcas(){
         return Brand::where('active', true)->limit(10)->get();
@@ -57,7 +57,7 @@ trait WebTrail {
     }
     function get_categories_home_all(){
         return Category::with(['products' => function($query){
-            $query->with('inventory')->where('active', true);
+            $query->with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true);
         }])->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
     }
 

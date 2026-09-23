@@ -55,15 +55,25 @@ class Subcategory extends Model
     }
 
     public function getCategoryLabelAttribute(){
-        
-        $categories = Category::pluck('name', 'id');
-        return $categories[$this->category_id] ?? ucfirst($this->category_id);
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->name;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Category::pluck('name', 'id');
+        }
+        return $categories[$this->category_id] ?? ucfirst((string) $this->category_id);
     }
-    
+
     public function getCategorySlugAttribute(){
-        
-        $categories = Category::pluck('slug', 'id');
-        return $categories[$this->category_id] ?? ucfirst($this->category_id);
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->slug;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Category::pluck('slug', 'id');
+        }
+        return $categories[$this->category_id] ?? ucfirst((string) $this->category_id);
     }
 
     public function getImageUrlAttribute()

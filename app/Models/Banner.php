@@ -65,15 +65,25 @@ class Banner extends Model
 
 
     public function getCategoryLabelAttribute(){
-        
-        $categories = Category::pluck('name', 'id');
-        return $categories[$this->category_id] ?? ucfirst($this->category_id);
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->name;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Category::pluck('name', 'id');
+        }
+        return $categories[$this->category_id] ?? ucfirst((string) $this->category_id);
     }
 
     public function getSubcategoryLabelAttribute(){
-        
-        $categories = Subcategory::pluck('name', 'id');
-        return $categories[$this->subcategory_id] ?? ucfirst($this->subcategory_id);
+        if ($this->relationLoaded('subcategory') && $this->subcategory) {
+            return $this->subcategory->name;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Subcategory::pluck('name', 'id');
+        }
+        return $categories[$this->subcategory_id] ?? ucfirst((string) $this->subcategory_id);
     }
 
 

@@ -159,31 +159,58 @@ class Product extends Model
     }
 
     public function getCategoryLabelAttribute(){
-        
-        $categories = Category::pluck('name', 'id');
-        return $categories[$this->category_id] ?? ucfirst($this->category_id);
-    }        
-    
-    public function getCategorySlugAttribute(){        
-        $categories = Category::pluck('slug', 'id');
-        return $categories[$this->category_id] ?? ucfirst($this->category_id);
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->name;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Category::pluck('name', 'id');
+        }
+        return $categories[$this->category_id] ?? ucfirst((string) $this->category_id);
     }
 
-    public function getSubcategoryLabelAttribute(){        
-        $categories = Subcategory::pluck('name', 'id');
-        return $categories[$this->subcategory_id] ?? ucfirst($this->subcategory_id);
+    public function getCategorySlugAttribute(){
+        if ($this->relationLoaded('category') && $this->category) {
+            return $this->category->slug;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Category::pluck('slug', 'id');
+        }
+        return $categories[$this->category_id] ?? ucfirst((string) $this->category_id);
+    }
+
+    public function getSubcategoryLabelAttribute(){
+        if ($this->relationLoaded('subcategory') && $this->subcategory) {
+            return $this->subcategory->name;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Subcategory::pluck('name', 'id');
+        }
+        return $categories[$this->subcategory_id] ?? ucfirst((string) $this->subcategory_id);
     }
 
     public function getSubcategorySlugAttribute(){
-        
-        $categories = Subcategory::pluck('slug', 'id');
-        return $categories[$this->subcategory_id] ?? ucfirst($this->subcategory_id);
+        if ($this->relationLoaded('subcategory') && $this->subcategory) {
+            return $this->subcategory->slug;
+        }
+        static $categories = null;
+        if ($categories === null) {
+            $categories = Subcategory::pluck('slug', 'id');
+        }
+        return $categories[$this->subcategory_id] ?? ucfirst((string) $this->subcategory_id);
     }
 
-
-    public function getBrandLabelAttribute(){        
-        $brands = Brand::pluck('name', 'id');
-        return $brands[$this->brand_id] ?? ucfirst($this->brand_id);
+    public function getBrandLabelAttribute(){
+        if ($this->relationLoaded('brand') && $this->brand) {
+            return $this->brand->name;
+        }
+        static $brands = null;
+        if ($brands === null) {
+            $brands = Brand::pluck('name', 'id');
+        }
+        return $brands[$this->brand_id] ?? ucfirst((string) $this->brand_id);
     }
 }
 
