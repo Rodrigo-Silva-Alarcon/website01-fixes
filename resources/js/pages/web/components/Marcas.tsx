@@ -42,6 +42,7 @@ function Frame10124020({marcas}:{marcas:Brand[]}) {
               >
                 <img
                   alt={brand.name}
+                  loading="lazy"
                   className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
                   src={brand.image_url}
                 />

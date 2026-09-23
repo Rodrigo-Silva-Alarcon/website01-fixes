@@ -391,6 +391,7 @@ function ProductCard({
           <div className="aspect-[264/264] relative shrink-0 w-full">
             <img
               alt={product.name}
+              loading="lazy"
               className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
               src={product.image_url}
             />

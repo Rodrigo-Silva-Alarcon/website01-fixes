@@ -10,9 +10,8 @@ import HeroSlideshow from "@/pages/web/components/HeroSlideshow";
 import { Product, MenuItem, Category, Brand, Cart, Banner } from "@/types/models";
 import Seo from "@/components/Seo";
 
-import "@/pages/web/styles/globals.css";
 import AOS from "aos";
-import "aos/dist/aos.css"; 
+import "aos/dist/aos.css";
 
 import { useEffect }  from "react";
 
