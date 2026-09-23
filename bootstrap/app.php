@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CacheHeaders;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\HandleAppearance;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            CacheHeaders::class,
         ]);
 
         // Registrar middleware personalizados

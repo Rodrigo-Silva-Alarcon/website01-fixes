@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
@@ -16,40 +17,50 @@ use App\Models\Product;
 
 trait WebTrail {
     function get_menu(){
-        $menu = array();
-        $categories = Category::with(['subcategories' => function($query){
-            $query->where('active', true);
-        }])->where('active', true)->get();
-        foreach($categories as $cate){
-            $array = [
-                'id' => $cate->slug,
-                'name' => $cate->name,
-                'icon' => $cate->icon,
-            ];
-            $array['submenu'] = [];
-            foreach($cate->subcategories as $sub){
-                $array['submenu'][] = [
-                    'id' => $sub->slug,
-                    'name' => $sub->name,
-                    'icon' => $sub->icon,
+        return Cache::remember('web_menu', 60, function () {
+            $menu = array();
+            $categories = Category::with(['subcategories' => function($query){
+                $query->where('active', true);
+            }])->where('active', true)->get();
+            foreach($categories as $cate){
+                $array = [
+                    'id' => $cate->slug,
+                    'name' => $cate->name,
+                    'icon' => $cate->icon,
                 ];
+                $array['submenu'] = [];
+                foreach($cate->subcategories as $sub){
+                    $array['submenu'][] = [
+                        'id' => $sub->slug,
+                        'name' => $sub->name,
+                        'icon' => $sub->icon,
+                    ];
+                }
+                $menu[] = $array;
             }
-            $menu[] = $array;            
-        }
-        return $menu;
-    }    
+            return $menu;
+        });
+    }
 
     function get_populares(){
-        return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('pop', true)->limit(8)->get();
+        return Cache::remember('web_populares', 60, function () {
+            return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('pop', true)->limit(8)->get();
+        });
     }
     function get_detacados(){
-        return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('featured', true)->limit(8)->get();
+        return Cache::remember('web_detacados', 60, function () {
+            return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('featured', true)->limit(8)->get();
+        });
     }
     function get_marcas(){
-        return Brand::where('active', true)->limit(10)->get();
+        return Cache::remember('web_marcas', 60, function () {
+            return Brand::where('active', true)->limit(10)->get();
+        });
     }
     function get_banners($page){
-        return Banner::where('active', true)->where('pages', 'like', '%"'.$page.'"%')->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
+        return Cache::remember('web_banners_'.$page, 60, function () use ($page) {
+            return Banner::where('active', true)->where('pages', 'like', '%"'.$page.'"%')->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
+        });
     }
 
     function get_categories_home(){
