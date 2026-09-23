@@ -30,7 +30,7 @@ class ProductController extends Controller
         // Configurar relaciones
         $this->configureRelations(['images']);
         // Configurar imágenes
-        $this->configureImages(['image', 'tecnical_image'], config('variables.folder_product'), 800, NULL, true, 90, NULL);
+        $this->configureImages(['image', 'tecnical_image'], config('variables.folder_product'), 1200, NULL, true, 90, NULL);
         // configuracion de los archivos
         $this->configureFiles(['video_file'], 'videos');
         // Configurar accessors        

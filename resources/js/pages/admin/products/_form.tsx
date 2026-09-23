@@ -610,7 +610,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                         <form onSubmit={submit} className="space-y-6">
                             {/* Campo Nombre */}
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Product</Label>
+                                <Label htmlFor="name">Producto</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -744,7 +744,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                                     <p className="text-sm text-red-500">{errors.image}</p>
                                 )}
                                 <p className="text-sm text-muted-foreground">
-                                    Imagen que se redimensionará automáticamente a 800x600 píxeles
+                                    Imagen que se redimensionará automáticamente a un máximo de 1200px de ancho
                                 </p>
                             </div>
                             <div className="grid gap-2">
@@ -853,7 +853,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                                                     </div>
                                                 )}
                                                 <div className="border-t pt-4">
-                                                    <p className="text-sm text-muted-foreground">
+                                                    <p className="text-sm text-muted-foreground whitespace-normal break-words">
                                                         Las imágenes se subirán y asociarán automáticamente al producto.
                                                     </p>
                                                 </div>
@@ -956,7 +956,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                                                 <p className="text-sm text-red-500">{errors.tecnical_image}</p>
                                             )}
                                             <p className="text-sm text-muted-foreground">
-                                                <small>Imagen que se redimensionará automáticamente a 800x600 píxeles</small>
+                                                <small>Imagen que se redimensionará automáticamente a un máximo de 1200px de ancho</small>
                                             </p>
                                         </div>
                                         <div className='mb-3'>
