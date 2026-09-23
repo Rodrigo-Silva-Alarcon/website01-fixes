@@ -2,123 +2,84 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
-use Illuminate\Support\Str;
+use App\Services\WebContentService;
 
-use App\Models\Proyect;
-use App\Models\Banner;
-use App\Models\Brand;
-use App\Models\Subcategory;
-use App\Models\Category;
-use App\Models\Product;
-
-trait WebTrail {
-    function get_menu(){
-        return Cache::remember('web_menu', 60, function () {
-            $menu = array();
-            $categories = Category::with(['subcategories' => function($query){
-                $query->where('active', true);
-            }])->where('active', true)->get();
-            foreach($categories as $cate){
-                $array = [
-                    'id' => $cate->slug,
-                    'name' => $cate->name,
-                    'icon' => $cate->icon,
-                ];
-                $array['submenu'] = [];
-                foreach($cate->subcategories as $sub){
-                    $array['submenu'][] = [
-                        'id' => $sub->slug,
-                        'name' => $sub->name,
-                        'icon' => $sub->icon,
-                    ];
-                }
-                $menu[] = $array;
-            }
-            return $menu;
-        });
+/**
+ * Backward-compatible facade over WebContentService.
+ * Controllers/middleware keep `use WebTrail;` while logic lives in the service.
+ */
+trait WebTrail
+{
+    private function webContent(): WebContentService
+    {
+        return app(WebContentService::class);
     }
 
-    function get_populares(){
-        return Cache::remember('web_populares', 60, function () {
-            return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('pop', true)->limit(8)->get();
-        });
-    }
-    function get_detacados(){
-        return Cache::remember('web_detacados', 60, function () {
-            return Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('featured', true)->limit(8)->get();
-        });
-    }
-    function get_marcas(){
-        return Cache::remember('web_marcas', 60, function () {
-            return Brand::where('active', true)->limit(10)->get();
-        });
-    }
-    function get_banners($page){
-        return Cache::remember('web_banners_'.$page, 60, function () use ($page) {
-            return Banner::where('active', true)->where('pages', 'like', '%"'.$page.'"%')->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
-        });
+    function get_menu()
+    {
+        return $this->webContent()->menu();
     }
 
-    function get_categories_home(){
-        return Category::with('subcategories')->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
-    }
-    function get_categories_home_all(){
-        return Category::with(['products' => function($query){
-            $query->with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true);
-        }])->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
+    function get_populares()
+    {
+        return $this->webContent()->populares();
     }
 
-    function get_category_slug($slug){
-        return Category::where('slug', $slug)->first();
+    function get_detacados()
+    {
+        return $this->webContent()->destacados();
     }
 
-    function get_subcategory_slug($slug, $slug_category){
-        return Subcategory::where('slug', $slug)->whereHas('category', function($query) use ($slug_category){
-            $query->where('slug', $slug_category);
-        })->first();
-    }
-    
-    function get_products($categories=[], $subcategory=NULL, $marcas=[], $find=NULL){
-        $products = Product::where('active', true)
-                ->with(['inventory', 'category', 'subcategory', 'brand'])
-                ->when($categories, function($query, $categories){
-                    $query->whereIn('category_id', $categories);
-                })
-                ->when($subcategory, function($query, $subcategory){
-                    $query->where('subcategory_id', $subcategory);
-                })
-                ->when($marcas, function($query, $marcas){
-                    $query->whereIn('brand_id', $marcas);
-                })
-                ->when($find, function($query, $find){
-                    $query->where(function($q) use ($find){
-                        $q->where('name', 'like', '%'.$find.'%')->orWhere('summary', 'like', '%'.$find.'%')->orWhere('description', 'like', '%'.$find.'%');
-                    });                    
-                })
-                ->orderby('order', 'ASC')->orderBy('id', 'DESC')->paginate(20);
-        if (request()->isMethod('post')) {
-            $products->withPath(route('products'));
-        }
-        $products->appends(request()->only(['cs', 'ms', 'find', 'category', 'subcategory', 'brand']));
-        return $products;
+    function get_marcas()
+    {
+        return $this->webContent()->marcas();
     }
 
-    function get_product($product, $category, $subcategory=NULL){
-        $product = Product::with(['images', 'inventory'])->where('slug', $product)->where('active', true)
-        ->whereHas('category', function ($query) use ($category) {
-            $query->where('slug', $category);
-        })->when($subcategory, function($qr) use ($subcategory){
-            $qr->whereHas('subcategory', function ($query) use ($subcategory) {
-                $query->where('slug', $subcategory);
-            });
-        });                
-        
-        return $product->first();
+    function get_banners($page)
+    {
+        return $this->webContent()->banners((string) $page);
+    }
+
+    function get_categories_home()
+    {
+        return $this->webContent()->categoriesHome();
+    }
+
+    function get_categories_home_all()
+    {
+        return $this->webContent()->categoriesHomeAll();
+    }
+
+    function get_category_slug($slug)
+    {
+        return $this->webContent()->categoryBySlug((string) $slug);
+    }
+
+    function get_subcategory_slug($slug, $slug_category)
+    {
+        return $this->webContent()->subcategoryBySlug((string) $slug, (string) $slug_category);
+    }
+
+    /**
+     * @param  array<int, int|string>  $categories
+     * @param  array<int, int|string>  $marcas
+     */
+    function get_products($categories = [], $subcategory = null, $marcas = [], $find = null)
+    {
+        return $this->webContent()->products(
+            is_array($categories) ? $categories : [],
+            $subcategory !== null ? (int) $subcategory : null,
+            is_array($marcas) ? $marcas : [],
+            $find !== null ? (string) $find : null,
+        );
+    }
+
+    function get_product($product, $category, $subcategory = null)
+    {
+        return $this->webContent()->productDetail(
+            (string) $product,
+            (string) $category,
+            $subcategory !== null ? (string) $subcategory : null,
+        );
     }
 }
-
-?>
