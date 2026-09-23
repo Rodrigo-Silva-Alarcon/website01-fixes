@@ -47,19 +47,22 @@ class HandleInertiaRequests extends Middleware
         $cateories = $request->cs??[];
         $brands = $request->ms??[];
 
-        if($request->category){            
+        if($request->category){
             $category = $this->get_category_slug($request->category);
             if($category){
                 $cateories = [$category->id];
             }
         }
-        if($request->brand){            
-            $brands = [$request->brand]; 
+        if($request->brand){
+            $brands = [$request->brand];
         }
 
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
-        return [
+        // Solo cargar datos de tienda en rutas públicas (evita queries en admin)
+        $isPublic = ! $request->is('admin*', 'login', 'register', 'password*', 'up');
+
+        $base = [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
@@ -67,19 +70,31 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user() ? $request->user()->load('roles.permissions') : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            // 👇 AÑADE ESTO
             'flash' => [
                 'status' => fn () => $request->session()->get('status'),
                 'error' => fn () => $request->session()->get('error'),
                 'success' => fn () => $request->session()->get('success'),
             ],
-            'menu' => $this->get_menu(),
-            'populares' => $this->get_populares(),
-            'cart' => $this->get_shop_cart(),
-            'cates' => $cateories,
-            'marcas' => $brands,
-            'currentpage' => $request->page??1,
-            'find' => $request->find??'',
         ];
+
+        if ($isPublic) {
+            $base['menu'] = $this->get_menu();
+            $base['populares'] = $this->get_populares();
+            $base['cart'] = $this->get_shop_cart();
+            $base['cates'] = $cateories;
+            $base['marcas'] = $brands;
+            $base['currentpage'] = $request->page??1;
+            $base['find'] = $request->find??'';
+        } else {
+            $base['menu'] = [];
+            $base['populares'] = [];
+            $base['cart'] = null;
+            $base['cates'] = [];
+            $base['marcas'] = [];
+            $base['currentpage'] = 1;
+            $base['find'] = '';
+        }
+
+        return $base;
     }
 }
