@@ -69,7 +69,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
     const { marcas } = usePage<{ marcas: number[] }>().props;
 
     // para el envio de formulario
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         cs: [] as number[],
         ms: [] as number[],
         page:0,
@@ -106,17 +106,11 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
     const displayedBrands = showAll ? brands : brands.slice(0, 5);
 
     const submit: FormEventHandler = (e) => {
-        e.preventDefault();            
-        // Preparar datos para Inertia
-        const submitData = {
-            cs: data.cs,
-            ms: data.ms, 
-        };
-        post( route('products_post'), {
-            ...submitData,
-            forceFormData: true, 
-        });
-
+        e.preventDefault();
+        const params: { cs?: number[]; ms?: number[] } = {};
+        if (data.cs.length) params.cs = data.cs;
+        if (data.ms.length) params.ms = data.ms;
+        router.get(route('products'), params, { preserveScroll: true });
     };
 
   return (

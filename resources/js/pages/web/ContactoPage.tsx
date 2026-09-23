@@ -10,7 +10,7 @@ export default function ContactoPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/Enviar', { preserveScroll: true, onSuccess: () => setData({ name: "", email: "", phone: "", company: "", message: "" }) });
+    post('/enviar', { preserveScroll: true, onSuccess: () => setData({ name: "", email: "", phone: "", company: "", message: "" }) });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

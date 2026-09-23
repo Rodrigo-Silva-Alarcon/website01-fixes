@@ -4,7 +4,7 @@ import svgPathsMobile from "../imports/svg-npyi3pa09n";
 import AppLogoIcon from '@/components/app-logo-icon';
 import { img } from "../imports/svg-5wjm2";
 import { img as imgMobile } from "../imports/svg-njpn6";
-import { Link, usePage, useForm} from "@inertiajs/react";
+import { Link, usePage, useForm, router} from "@inertiajs/react";
 import { route } from 'ziggy-js';
 import {
   Sheet,
@@ -28,16 +28,14 @@ function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTermMobile, setSearchTermMobile] = useState("");
   const [searchTerm, setSearchTerm] = useState(find);
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, processing, errors } = useForm({
     find: searchTerm,
   });
 
   const submit: FormEventHandler = (e) => {
       e.preventDefault();
-      post(route('products_post'), {
-          forceFormData: true,
-      });
-  }; 
+      router.get(route('products'), { find: data.find }, { preserveScroll: true });
+  };
 
 
   if (searchOpen) {
@@ -158,7 +156,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
     
     const [searchTerm, setSearchTerm] = useState(find);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
       page: page,
       cs:cs,
       ms:ms,
@@ -171,13 +169,14 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
       setData('cs', cs);
       setData('page', page);
     }, [searchTerm]);
-  
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('products_post'), {
-            forceFormData: true,
-        });
-    }; 
+        const params: { find?: string; page?: number; cs?: number[]; ms?: number[] } = { find: data.find, page: 1 };
+        if (data.cs.length) params.cs = data.cs;
+        if (data.ms.length) params.ms = data.ms;
+        router.get(route('products'), params, { preserveScroll: true });
+    };
   
   return (
     <div className="bg-white relative w-full" data-name="Header">
