@@ -89,7 +89,7 @@ function ProductCard({
           <div className="aspect-square relative shrink-0 w-full">
             <img
               alt={producto.nombre}
-              className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-cover pointer-events-none size-full"
+              className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
               src={producto.imagen}
             />
           </div>

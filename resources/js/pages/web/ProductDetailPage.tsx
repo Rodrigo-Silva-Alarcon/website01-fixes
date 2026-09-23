@@ -510,7 +510,7 @@ function RelatedProductCard({product}:{product: Product;}) {
             <div className="aspect-square relative shrink-0 w-full">
               <img
                 alt={product.name}
-                className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-cover pointer-events-none size-full"
+                className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
                 src={product.image_url}
               />
             </div>
