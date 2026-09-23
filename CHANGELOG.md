@@ -55,6 +55,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Home con 10 marcas (renombre Mueblería Andes→Philips + Magafesa, Haier, Premier, Sony, Xiaomi, Hisense, Redragon) (F4-40)
 - Mensajes flash de marca/banner/producto: textos copy-paste corregidos ("Baner"/"Bamer"/"Producto" en contextos erróneos) (F4-41)
 - `SESSION_ENCRYPT=true` en `.env.example` (§5.1.10) (F4-42)
+- `categoriesHomeAll()`: eager load de productos limitado a 8 por categoría (§5.2.6) (F4-43)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

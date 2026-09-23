@@ -86,7 +86,11 @@ class WebContentService
     {
         return Category::with([
             'products' => function ($query) {
-                $query->with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true);
+                $query->with(['inventory', 'category', 'subcategory', 'brand'])
+                    ->where('active', true)
+                    ->orderBy('order', 'ASC')
+                    ->orderBy('id', 'DESC')
+                    ->limit(8);
             },
         ])->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
     }
