@@ -88,14 +88,14 @@ class ProductController extends Controller
     public function update(ProductRequest $request, Product $product){
         
         $this->updateRecord($request, $product);
-        return redirect()->route('products.index')->with('success', 'Categoría actualizada exitosamente.');
+        return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
 
     }
  
     public function destroy(Product $product){
 
         $this->destroyRecord($product);
-        return redirect()->route('products.index')->with('success', 'Categoría eliminada exitosamente.');
+        return redirect()->route('products.index')->with('success', 'Producto eliminado exitosamente.');
 
     }
 

@@ -53,6 +53,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - "Añadir al carrito" siempre visible en cards del home (sin hover) (F4-38)
 - Home con 5 categorías (Comida, Electrodomésticos, Cocina, Equipos de sonido, Consolas) (F4-39)
 - Home con 10 marcas (renombre Mueblería Andes→Philips + Magafesa, Haier, Premier, Sony, Xiaomi, Hisense, Redragon) (F4-40)
+- Mensajes flash de marca/banner/producto: textos copy-paste corregidos ("Baner"/"Bamer"/"Producto" en contextos erróneos) (F4-41)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

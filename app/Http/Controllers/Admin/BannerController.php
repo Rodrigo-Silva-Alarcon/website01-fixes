@@ -55,7 +55,7 @@ class BannerController extends Controller
     public function store(BannerRequest $request){
 
         $this->createRecord($request, new Banner());
-        return redirect()->route('banners.index')->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('banners.index')->with('success', 'Banner creado exitosamente.');
         
     }
 
@@ -82,14 +82,14 @@ class BannerController extends Controller
     public function update(BannerRequest $request, Banner $banner){
         
         $this->updateRecord($request, $banner);
-        return redirect()->route('banners.index')->with('success', 'Baner actualizado exitosamente.');
+        return redirect()->route('banners.index')->with('success', 'Banner actualizado exitosamente.');
 
     }
  
     public function destroy(Banner $banner){
 
         $this->destroyRecord($banner);
-        return redirect()->route('banners.index')->with('success', 'Bamer eliminado exitosamente.');
+        return redirect()->route('banners.index')->with('success', 'Banner eliminado exitosamente.');
 
     }
 

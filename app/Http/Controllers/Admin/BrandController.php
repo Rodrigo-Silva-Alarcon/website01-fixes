@@ -46,7 +46,7 @@ class BrandController extends Controller
     public function store(BrandRequest $request){
 
         $this->createRecord($request, new Brand());
-        return redirect()->route('brands.index')->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('brands.index')->with('success', 'Marca creada exitosamente.');
         
     }
 
@@ -67,14 +67,14 @@ class BrandController extends Controller
     public function update(BrandRequest $request, Brand $brand){
         
         $this->updateRecord($request, $brand);
-        return redirect()->route('brands.index')->with('success', 'Baner actualizado exitosamente.');
+        return redirect()->route('brands.index')->with('success', 'Marca actualizada exitosamente.');
 
     }
  
     public function destroy(Brand $brand){
 
         $this->destroyRecord($brand);
-        return redirect()->route('brands.index')->with('success', 'Bamer eliminado exitosamente.');
+        return redirect()->route('brands.index')->with('success', 'Marca eliminada exitosamente.');
 
     }
 
