@@ -13,6 +13,7 @@ import { Category, Inventory, Product } from "@/types/models";
 import { Link, router, usePage } from "@inertiajs/react";
 import Price from "@/pages/web/imports/Price";
 import { route } from 'ziggy-js';
+import ResponsiveImg from "@/components/ResponsiveImg";
 
 function CategoryTitle({category}:{category:Category}) {
   return (
@@ -137,11 +138,12 @@ function Cards({category}:{category:Category}) {
                       className="aspect-[1/1] relative shrink-0 w-full mb-3"
                       data-name="image 10"
                     >
-                      <img
+                      <ResponsiveImg
                         alt={product.name}
                         loading="lazy"
                         className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% aspect-[1/1] object-contain pointer-events-none size-full"
                         src={product.image_url}
+                        webpSrc={product.image_webp_url}
                       />
                     </div>
                     <div className="h-0 relative shrink-0 w-full">

@@ -7,6 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Brand } from "@/types/models";
 import { usePage, Link } from "@inertiajs/react";
 import { route } from 'ziggy-js';
+import ResponsiveImg from "@/components/ResponsiveImg";
 
 function Frame10124020({marcas}:{marcas:Brand[]}) {
 
@@ -40,11 +41,12 @@ function Frame10124020({marcas}:{marcas:Brand[]}) {
                 className="h-[100px] relative shrink-0 w-full"
                 data-name="image 4"
               >
-                <img
+                <ResponsiveImg
                   alt={brand.name}
                   loading="lazy"
                   className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
                   src={brand.image_url}
+                  webpSrc={brand.image_webp_url}
                 />
               </div>
             </Link>

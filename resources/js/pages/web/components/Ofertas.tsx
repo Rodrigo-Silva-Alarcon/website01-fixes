@@ -10,6 +10,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import ResponsiveImg from "@/components/ResponsiveImg";
 
 
 function LinkCarrito({product}:{product:Product}) {
@@ -125,11 +126,12 @@ function Cards({populares}:{populares:Product[]}) {
                       className="aspect-[1/1] relative shrink-0 w-full mb-2"
                       data-name="image 10"
                     >
-                      <img
+                      <ResponsiveImg
                         alt={product.name}
                         loading="lazy"
                         className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain aspect-[1/1] pointer-events-none size-full w-full"
                         src={product.image_url}
+                        webpSrc={product.image_webp_url}
                       />
                     </div>
                     <div className="h-0 relative shrink-0 w-full mb-4">

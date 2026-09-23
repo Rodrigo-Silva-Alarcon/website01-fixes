@@ -466,6 +466,14 @@ trait PostTrait
                 throw new \Exception("No se pudo guardar la imagen");
             }
 
+            // Variantes WebP (misma base de nombre, extensión .webp)
+            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $filePath);
+            try {
+                $image->toWebp(82)->save($webpPath);
+            } catch (\Throwable) {
+                // WebP es best-effort; la imagen original ya quedó guardada.
+            }
+
             // Crear thumbnail si está configurado
             if ($this->imageThumbnail) {
                 $thumbPath = $fullPath . config('variables.thumbs');
@@ -481,6 +489,13 @@ trait PostTrait
                 
                 if (!$thumbnail->save($thumbPath . $filename)) {
                     throw new \Exception("No se pudo guardar el thumbnail");
+                }
+
+                $thumbWebp = preg_replace('/\.[^.]+$/', '.webp', $thumbPath . $filename);
+                try {
+                    $thumbnail->toWebp(82)->save($thumbWebp);
+                } catch (\Throwable) {
+                    // best-effort
                 }
             }
 

@@ -9,6 +9,7 @@ import Price from "@/pages/web/imports/Price";
 import { route } from "ziggy-js";
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
+import ResponsiveImg from "@/components/ResponsiveImg";
 
 interface FormProps {
   products: Product[];
@@ -389,11 +390,12 @@ function ProductCard({
           className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[20px] relative w-full cursor-pointer text-left hover:opacity-90 transition-opacity"
         >
           <div className="aspect-[264/264] relative shrink-0 w-full">
-            <img
+            <ResponsiveImg
               alt={product.name}
               loading="lazy"
               className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
               src={product.image_url}
+              webpSrc={product.image_webp_url}
             />
           </div>
           <div className="h-0 relative shrink-0 w-full">

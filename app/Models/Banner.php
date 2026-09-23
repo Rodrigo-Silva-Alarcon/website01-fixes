@@ -33,7 +33,7 @@ class Banner extends Model
         'pages' => 'array'
     ];
 
-    protected $appends =['image_url', 'image_thumbs_url'];
+    protected $appends =['image_url', 'image_thumbs_url', 'image_webp_url'];
     
     public function scopePublicados($query)
     {
@@ -50,6 +50,19 @@ class Banner extends Model
         if ($this->image) {
             $imagePath = str_replace('storage/', '', $this->image);
             return asset(config('variables.folder_banner'). $imagePath);
+        }
+        return null;
+    }
+
+    public function getImageWebpUrlAttribute()
+    {
+        if ($this->image) {
+            $imagePath = str_replace('storage/', '', $this->image);
+            $path = config('variables.folder_banner') . $imagePath;
+            $webp = preg_replace('/\.[^.]+$/', '.webp', $path);
+            if (is_file(public_path($webp))) {
+                return asset($webp);
+            }
         }
         return null;
     }

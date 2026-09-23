@@ -44,6 +44,7 @@ class Product extends Model
     protected $appends =[
         'image_url', 
         'image_thumbs_url', 
+        'image_webp_url',
         'tecnical_image_url', 
         'tecnical_image_thumbs_url', 
         'video_file_url',
@@ -121,6 +122,18 @@ class Product extends Model
     {
         if ($this->image) {
             return asset($this->productImagePath(config('variables.folder_product'), true));
+        }
+        return null;
+    }
+
+    public function getImageWebpUrlAttribute()
+    {
+        if ($this->image) {
+            $path = $this->productImagePath(config('variables.folder_product'));
+            $webp = preg_replace('/\.[^.]+$/', '.webp', $path);
+            if (is_file(public_path($webp))) {
+                return asset($webp);
+            }
         }
         return null;
     }

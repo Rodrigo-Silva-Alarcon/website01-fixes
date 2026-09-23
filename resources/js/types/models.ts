@@ -46,12 +46,13 @@ export interface Category{
     image:string;
     image_url: string;
     image_thumbs_url:string;
+    image_webp_url?: string | null;
     summary: string;
     active: boolean;
     created_at: string;
     updated_at: string;
-    subcategories: Subcategory[]; 
-    products: Product[]; 
+    subcategories: Subcategory[];
+    products: Product[];
 }
 
 export interface Subcategory{
@@ -95,6 +96,7 @@ export interface Product{
     created_at: string;
     updated_at: string;
     image_url: string; // contiene la direccion de la image
+    image_webp_url?: string | null;
     tecnical_image_url: string; //. contiene la direccion la imagen de ficha tecnica
     video_file_url:string; //. continene la direccion del video
     images:Image[]; // array de imagenes
@@ -125,6 +127,7 @@ export interface Banner{
     pages: string[];
     image_url: string; // contiene la direccion de la image
     image_url_thumbs: string;
+    image_webp_url?: string | null;
 }
 export interface Image{
     id: number;
@@ -153,6 +156,7 @@ export interface Brand{
     name: string;
     image: string;
     image_url: string;
+    image_webp_url?: string | null;
     active: boolean;
 }
 

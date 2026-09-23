@@ -24,7 +24,7 @@ class Brand extends Model
         'order' => 'integer',
     ];
 
-    protected $appends =['image_url', 'image_url_thumbs'];
+    protected $appends =['image_url', 'image_url_thumbs', 'image_webp_url'];
 
 
     public function scopePublicados($query)
@@ -42,6 +42,19 @@ class Brand extends Model
         if ($this->image) {
             $imagePath = str_replace('storage/', '', $this->image);
             return asset(config('variables.folder_banner'). $imagePath);
+        }
+        return null;
+    }
+
+    public function getImageWebpUrlAttribute()
+    {
+        if ($this->image) {
+            $imagePath = str_replace('storage/', '', $this->image);
+            $path = config('variables.folder_banner') . $imagePath;
+            $webp = preg_replace('/\.[^.]+$/', '.webp', $path);
+            if (is_file(public_path($webp))) {
+                return asset($webp);
+            }
         }
         return null;
     }

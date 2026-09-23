@@ -26,7 +26,7 @@ class Category extends Model
         'order' => 'integer',
     ];
     
-    protected $appends =['image_url', 'image_thumbs_url'];
+    protected $appends =['image_url', 'image_thumbs_url', 'image_webp_url'];
 
     public function setNameAttribute($value){
         $this->attributes['name'] = $value;
@@ -48,6 +48,19 @@ class Category extends Model
         if ($this->image) {
             $imagePath = str_replace('storage/', '', $this->image);
             return asset(config('variables.folder_category'). $imagePath);
+        }
+        return null;
+    }
+
+    public function getImageWebpUrlAttribute()
+    {
+        if ($this->image) {
+            $imagePath = str_replace('storage/', '', $this->image);
+            $path = config('variables.folder_category') . $imagePath;
+            $webp = preg_replace('/\.[^.]+$/', '.webp', $path);
+            if (is_file(public_path($webp))) {
+                return asset($webp);
+            }
         }
         return null;
     }
