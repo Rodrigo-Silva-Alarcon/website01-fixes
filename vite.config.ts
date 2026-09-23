@@ -20,4 +20,18 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('tinymce') || id.includes('@tinymce')) return 'vendor-tinymce';
+                        if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) return 'vendor-charts';
+                        if (id.includes('framer-motion') || id.includes('aos')) return 'vendor-motion';
+                        return 'vendor';
+                    }
+                },
+            },
+        },
+    },
 });
