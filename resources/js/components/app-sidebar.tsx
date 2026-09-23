@@ -59,7 +59,7 @@ export function AppSidebar() {
         },
         {
             title: 'Carrito de Compras',
-            href: route('products.index'),
+            href: route('admin.carts.index'),
             icon: ShoppingBasket,
             permission: 'access_dashboard',
         },

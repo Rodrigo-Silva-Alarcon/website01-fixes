@@ -35,6 +35,7 @@ class ExcludeAdminZiggyRoutes
                     'brands.*',
                     'images.*',
                     'inventories.*',
+                    'admin.carts.*',
                     'profile.*',
                     'password.edit',
                     'password.update',

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\ShopController;
@@ -104,8 +105,10 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('/inventories', InventoryController::class)->names('inventories');
     Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->name('inventories.store_product');
     Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->name('inventories.destroy_product');
-    
 
+    // carts (§4.7.17)
+    Route::get('/carts', [CartController::class, 'index'])->name('admin.carts.index');
+    Route::delete('/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
 
 });
 
