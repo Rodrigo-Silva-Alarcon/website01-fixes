@@ -18,7 +18,7 @@ export default function Price({inventory}:{inventory:Inventory}) {
       {mostrarOferta ? (
         <>
             <p
-                className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#fa8232]"
+                className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#b45309]"
                 style={{ fontVariationSettings: "'opsz' 14" }}
             >
                 {inventory.money} {inventory.amount}

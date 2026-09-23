@@ -21,7 +21,7 @@ function Banner({product}:{product:Product}) {
                       </svg>
                     </div>
                   </div>
-                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#008ecc] text-[14px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#006696] text-[14px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>
                 </div>
@@ -35,7 +35,7 @@ function Banner({product}:{product:Product}) {
                 </Link>
               </div>
               { product.inventory?.amount &&(                      
-                <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#fa8232] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
+                <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#c45500] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                   {product.inventory.money} {product.inventory.amount}
                 </p>
               )}    
@@ -94,7 +94,7 @@ function Banner1({product}:{product:Product}) {
                   </div>
                   <Link 
                     href={route('category', {category:product.category_slug})} 
-                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#008ecc] text-[14px] text-nowrap whitespace-pre" 
+                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#008ecc] text-[14px] text-nowrap whitespace-pre"
                     style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>

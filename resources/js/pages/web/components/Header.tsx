@@ -55,7 +55,7 @@ function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {
             autoFocus
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-transparent font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] outline-none border-none placeholder:text-[#cacccd] min-w-0 flex-1" 
+            className="bg-transparent font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] outline-none border-none placeholder:text-[#767676] min-w-0 flex-1" 
             style={{ fontVariationSettings: "'opsz' 14" }}
           />
         </form>
@@ -199,7 +199,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                   placeholder="Buscar por palabra clave"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-transparent font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre outline-none border-none placeholder:text-[#cacccd] min-w-0 w-[200px]" 
+                  className="bg-transparent font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre outline-none border-none placeholder:text-[#767676] min-w-0 w-[200px]" 
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 />
                 <button type="submit" className="relative shrink-0 size-[20px] cursor-pointer" data-name="search">

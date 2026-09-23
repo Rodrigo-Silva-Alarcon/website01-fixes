@@ -381,7 +381,7 @@ function ProductInfo({
                 <div
                   /* onClick={() => setDescriptionOpen(!descriptionOpen)} */
                   onClick={() => (modald?setOpen(true):setDescriptionOpen(!descriptionOpen))}
-                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#fa8232] text-[22px] text-left hover:underline cursor-pointer"
+                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#c45500] text-[22px] text-left hover:underline cursor-pointer"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >
                   Descripción del Producto
@@ -444,7 +444,7 @@ function ProductInfo({
                 <div
                   
                   onClick={() => (modalt?setOpent(true):setCaracteristicasOpen(!caracteristicasOpen))}
-                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#fa8232] text-[22px] text-left hover:underline cursor-pointer"
+                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#c45500] text-[22px] text-left hover:underline cursor-pointer"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >
                   Caracteristicas Generales

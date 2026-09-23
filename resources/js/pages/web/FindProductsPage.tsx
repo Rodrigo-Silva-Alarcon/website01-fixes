@@ -121,7 +121,7 @@ function ProductCard({
             <div className="content-start flex flex-wrap font-dm_sans font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">
               {producto.precioAnterior && (
                 <p
-                  className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#fa8232]"
+                  className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#b45309]"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >
                   Bs. {producto.precioAnterior}.00
@@ -377,7 +377,7 @@ function FilterSidebar({
           </div>
         </div>
         <p
-          className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#cacccd] text-[16px] text-nowrap whitespace-pre"
+          className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#595959] text-[16px] text-nowrap whitespace-pre"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
           Limpiar ({totalFilters}) filtros
@@ -385,7 +385,7 @@ function FilterSidebar({
       </button>
 
       <p
-        className="font-dm_sans font-normal leading-[20px] min-w-full relative shrink-0 text-[#cacccd] text-[14px] text-center w-[min-content]"
+        className="font-dm_sans font-normal leading-[20px] min-w-full relative shrink-0 text-[#595959] text-[14px] text-center w-[min-content]"
         style={{ fontVariationSettings: "'opsz' 14" }}
       >
         {productos.length} productos encontrados
