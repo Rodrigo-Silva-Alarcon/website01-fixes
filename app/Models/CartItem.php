@@ -49,8 +49,7 @@ class CartItem extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            $imagePath = str_replace('storage/', '', $this->image);
-            return asset(config('variables.folder_product') . $imagePath);
+            return asset($this->productImagePath(false));
         }
         return null;
     }
@@ -58,10 +57,22 @@ class CartItem extends Model
     public function getImageThumbsUrlAttribute()
     {
         if ($this->image) {
-            $imagePath = str_replace('storage/', '', $this->image);
-            return asset(config('variables.folder_product') .config('variables.thumbs') . $imagePath);
+            return asset($this->productImagePath(true));
         }
         return null;
+    }
+
+    private function productImagePath(bool $thumb = false): string
+    {
+        $folder = config('variables.folder_product');
+        $imagePath = str_replace('storage/', '', $this->image);
+        if (str_starts_with($imagePath, $folder)) {
+            $imagePath = substr($imagePath, strlen($folder));
+        }
+        if ($thumb) {
+            return $folder . config('variables.thumbs') . $imagePath;
+        }
+        return $folder . $imagePath;
     }
 
 }

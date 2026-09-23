@@ -113,39 +113,43 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            $imagePath = str_replace('storage/', '', $this->image);
-            return asset(config('variables.folder_product') . $imagePath);
-            //return asset($imagePath);
+            return asset($this->productImagePath(config('variables.folder_product')));
         }
         return null;
     }
     public function getImageThumbsUrlAttribute()
     {
         if ($this->image) {
-            $imagePath = str_replace('storage/', '', $this->image);
-            return asset(config('variables.folder_product') .config('variables.thumbs') . $imagePath);
-            //return asset($imagePath);
+            return asset($this->productImagePath(config('variables.folder_product'), true));
         }
         return null;
     }
-    
+
     public function getTecnicalImageUrlAttribute()
     {
         if ($this->tecnical_image) {
-            $imagePath = str_replace('storage/', '', $this->tecnical_image);
-            return asset(config('variables.folder_product') . $imagePath);
-            //return asset($imagePath);
+            return asset($this->productImagePath(config('variables.folder_product'), false, $this->tecnical_image));
         }
         return null;
     }
     public function getTecnicalImageThumbsUrlAttribute()
     {
         if ($this->tecnical_image) {
-            $imagePath = str_replace('storage/', '', $this->tecnical_image);
-            return asset(config('variables.folder_product') .config('variables.thumbs') . $imagePath);
-            //return asset($imagePath);
+            return asset($this->productImagePath(config('variables.folder_product'), true, $this->tecnical_image));
         }
         return null;
+    }
+
+    private function productImagePath(string $folder, bool $thumb = false, ?string $rawPath = null): string
+    {
+        $imagePath = str_replace('storage/', '', $rawPath ?? $this->image);
+        if (str_starts_with($imagePath, $folder)) {
+            $imagePath = substr($imagePath, strlen($folder));
+        }
+        if ($thumb) {
+            return $folder . config('variables.thumbs') . $imagePath;
+        }
+        return $folder . $imagePath;
     }
 
     public function getVideoFileUrlAttribute()
