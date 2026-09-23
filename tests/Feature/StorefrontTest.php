@@ -73,6 +73,22 @@ it('keeps unpublished products out of category listings', function () {
     $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page->has('categories.0.products', 0));
 });
 
+it('includes inventory price data for product listing cards', function () {
+    $category = Category::create(['name' => 'Cameras', 'active' => true]);
+    $product = Product::create(['name' => 'Camera One', 'category_id' => $category->id, 'active' => true]);
+    App\Models\Inventory::create([
+        'product_id' => $product->id,
+        'amount' => 150,
+        'offer_amount' => 210,
+        'stock' => 3,
+        'money' => 'Bs.',
+    ]);
+
+    $this->get('/productos')->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->where('products.data.0.inventory.amount', '150.00')
+        ->where('products.data.0.inventory.money', 'Bs.'));
+});
+
 it('provides GET pagination links after filtering', function () {
     $category = Category::create(['name' => 'Cameras', 'active' => true]);
     for ($i = 1; $i <= 21; $i++) {

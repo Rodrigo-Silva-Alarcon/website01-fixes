@@ -10,6 +10,7 @@ import { route } from "ziggy-js";
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
 import ResponsiveImg from "@/components/ResponsiveImg";
+import AddToCartButton from "@/pages/web/components/AddToCartButton";
 
 interface FormProps {
   products: Product[];
@@ -382,55 +383,59 @@ function ProductCard({
 }: {
   product: Product;
 }) {
+  const hasPrice = productPrice(product.inventory) !== null;
   return (
     <div data-aos="fade-up" className="interactive-card basis-0 bg-[#f2f4f5] grow min-h-px min-w-[280px] md:min-w-[300px] relative rounded-[16px] shrink-0 max-w-[337px]">
       <div className="min-w-inherit overflow-clip rounded-[inherit] size-full">
-        <Link 
-          href={route('product', {category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All'), product:product.slug})}          
-          className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[20px] relative w-full cursor-pointer text-left hover:opacity-90 transition-opacity"
-        >
-          <div className="aspect-[264/264] relative shrink-0 w-full">
-            <ResponsiveImg
-              alt={product.name}
-              loading="lazy"
-              className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
-              src={product.image_url}
-              webpSrc={product.image_webp_url}
-            />
-          </div>
-          <div className="h-0 relative shrink-0 w-full">
-            <div className="absolute bottom-0 left-0 right-0 top-[-0.5px]">
-              <svg
-                className="block size-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 297 1"
-              >
-                <line
-                  stroke="var(--stroke-0, #191C1F)"
-                  strokeWidth="0.5"
-                  x2="297"
-                  y1="0.25"
-                  y2="0.25"
-                />
-              </svg>
+        <div className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[20px] relative w-full">
+          <Link
+            href={route('product', {category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All'), product:product.slug})}
+            className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit w-full cursor-pointer text-left hover:opacity-90 transition-opacity"
+          >
+            <div className="aspect-[264/264] relative shrink-0 w-full">
+              <ResponsiveImg
+                alt={product.name}
+                loading="lazy"
+                className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
+                src={product.image_url}
+                webpSrc={product.image_webp_url}
+              />
             </div>
-          </div>
-          <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-            <p
-              className="-webkit-box font-dm_sans font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[20px] w-full"
-              style={{ fontVariationSettings: "'opsz' 14" }}
-            >
-              {product.name}
-            </p>
-            { productPrice(product.inventory) !== null && (
-                <>
-                  <Price 
+            <div className="h-0 relative shrink-0 w-full">
+              <div className="absolute bottom-0 left-0 right-0 top-[-0.5px]">
+                <svg
+                  className="block size-full"
+                  fill="none"
+                  preserveAspectRatio="none"
+                  viewBox="0 0 297 1"
+                >
+                  <line
+                    stroke="var(--stroke-0, #191C1F)"
+                    strokeWidth="0.5"
+                    x2="297"
+                    y1="0.25"
+                    y2="0.25"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
+              <p
+                className="-webkit-box font-dm_sans font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[20px] w-full"
+                style={{ fontVariationSettings: "'opsz' 14" }}
+              >
+                {product.name}
+              </p>
+              { hasPrice && (
+                  <Price
                     inventory={product.inventory}/>
-                </>
-            )}
-          </div>
-        </Link>
+              )}
+            </div>
+          </Link>
+          {hasPrice && (
+            <AddToCartButton product={product} />
+          )}
+        </div>
       </div>
     </div>
   );

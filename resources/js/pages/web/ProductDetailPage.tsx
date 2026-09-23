@@ -13,6 +13,7 @@ import Layout from "@/pages/web/layouts/Layout";
 import { usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
 import ProductJsonLd from "@/components/ProductJsonLd";
+import AddToCartButton from "@/pages/web/components/AddToCartButton";
 import {
   Carousel,
   CarouselContent,
@@ -499,67 +500,58 @@ function ProductInfo({
 }
 
 function RelatedProductCard({product}:{product: Product;}) {
+    const hasPrice = productPrice(product.inventory) !== null;
     return (
-      <Link
+      <div
         data-aos="fade-up"
-        href={route('product', {product:product.slug,category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-        className="interactive-card basis-0 bg-[#f2f4f5] grow min-h-px min-w-[240px] sm:min-w-[260px] md:min-w-[280px] lg:min-w-[300px] relative rounded-[16px] shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+        className="interactive-card basis-0 bg-[#f2f4f5] grow min-h-px min-w-[240px] sm:min-w-[260px] md:min-w-[280px] lg:min-w-[300px] relative rounded-[16px] shrink-0"
       >
         <div className="min-w-inherit overflow-clip rounded-[inherit] size-full">
           <div className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[16px] md:p-[20px] relative w-full">
-            <div className="aspect-square relative shrink-0 w-full">
-              <img
-                alt={product.name}
-                loading="lazy"
-                className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
-                src={product.image_url}
-              />
-            </div>
-            <div className="h-0 relative shrink-0 w-full">
-              <div className="absolute bottom-0 left-0 right-0 top-[-0.5px]">
-                <svg
-                  className="block size-full"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  viewBox="0 0 276 1"
-                >
-                  <line
-                    stroke="var(--stroke-0, #191C1F)"
-                    strokeWidth="0.5"
-                    x2="276"
-                    y1="0.25"
-                    y2="0.25"
-                  />
-                </svg>
+            <Link
+              href={route('product', {product:product.slug,category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
+              className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit w-full cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              <div className="aspect-square relative shrink-0 w-full">
+                <img
+                  alt={product.name}
+                  loading="lazy"
+                  className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
+                  src={product.image_url}
+                />
               </div>
-            </div>
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full text-left">
-              <p
-                className="-webkit-box font-['DM_Sans:Bold',sans-serif] font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[18px] md:text-[20px] w-full"
-                style={{ fontVariationSettings: "'opsz' 14" }}
-              >
-                {product.name}
-              </p>
-              {/* <div className="content-start flex flex-wrap font-['DM_Sans:Regular',sans-serif] font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">
-                {producto.precioAnterior && (
-                  <p
-                    className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#fa8232]"
-                    style={{ fontVariationSettings: "'opsz' 14" }}
+              <div className="h-0 relative shrink-0 w-full">
+                <div className="absolute bottom-0 left-0 right-0 top-[-0.5px]">
+                  <svg
+                    className="block size-full"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 276 1"
                   >
-                    Bs. {producto.precioAnterior}.00
-                  </p>
-                )}
+                    <line
+                      stroke="var(--stroke-0, #191C1F)"
+                      strokeWidth="0.5"
+                      x2="276"
+                      y1="0.25"
+                      y2="0.25"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full text-left">
                 <p
-                  className="relative shrink-0 text-[#191c1f]"
+                  className="-webkit-box font-['DM_Sans:Bold',sans-serif] font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[18px] md:text-[20px] w-full"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >
-                  Bs. {producto.precio}.00
+                  {product.name}
                 </p>
-              </div> */}
-            </div>
+                {hasPrice && <Price inventory={product.inventory} />}
+              </div>
+            </Link>
+            {hasPrice && <AddToCartButton product={product} />}
           </div>
         </div>
-      </Link>
+      </div>
     );
   }
 
