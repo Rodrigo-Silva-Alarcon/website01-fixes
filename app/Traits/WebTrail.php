@@ -84,7 +84,7 @@ trait WebTrail {
     
     function get_products($categories=[], $subcategory=NULL, $marcas=[], $find=NULL){
         $products = Product::where('active', true)
-                ->with(['inventory', 'category', 'subcategory'])
+                ->with(['inventory', 'category', 'subcategory', 'brand'])
                 ->when($categories, function($query, $categories){
                     $query->whereIn('category_id', $categories);
                 })
