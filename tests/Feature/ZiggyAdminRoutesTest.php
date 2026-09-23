@@ -16,6 +16,7 @@ it('does not expose admin ziggy routes on public pages', function () {
 });
 
 it('still exposes admin ziggy routes on admin pages for authenticated users', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -26,6 +27,7 @@ it('still exposes admin ziggy routes on admin pages for authenticated users', fu
 });
 
 it('exposes admin ziggy routes to authenticated users on public pages for SPA navigation', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 

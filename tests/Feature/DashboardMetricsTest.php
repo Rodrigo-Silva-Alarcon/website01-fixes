@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('shows dashboard metrics for admins', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
@@ -33,6 +34,7 @@ it('shows dashboard metrics for admins', function () {
 });
 
 it('lists low stock inventories on dashboard', function () {
+    seedRbac();
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 

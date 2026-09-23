@@ -9,7 +9,11 @@ test('guests are redirected to the login page', function () {
 });
 
 test('authenticated users can visit the dashboard', function () {
-    $this->actingAs($user = User::factory()->create());
+    seedRbac();
+    $user = User::factory()->create();
+    $user->assignRole('admin');
 
-    $this->get(route('admin.dashboard'))->assertOk();
+    $this->actingAs($user)
+        ->get(route('admin.dashboard'))
+        ->assertOk();
 });

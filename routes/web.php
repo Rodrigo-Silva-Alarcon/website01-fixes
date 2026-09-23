@@ -49,27 +49,33 @@ Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('r
 // Rutas del panel de administración con prefijo admin/
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('admin.dashboard');  
-    
-    // Rutas de usuarios
-    Route::resource('/users', UserController::class)->except('show')->names('admin.users');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    Route::get('/users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password.edit');
-    Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
-    
+    Route::get('dashboard', [DashboardController::class, 'dashboard'])
+        ->middleware('permission:access_dashboard')
+        ->name('admin.dashboard');
+
+    // Rutas de usuarios (§5.1.1)
+    Route::middleware('permission:view_users')->group(function () {
+        Route::resource('/users', UserController::class)->except('show')->names('admin.users');
+        Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
+        Route::get('/users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password.edit');
+        Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
+    });
+
     // Rutas de roles (solo para administradores)
     Route::middleware('role:admin')->group(function () {
         Route::resource('/roles', RoleController::class)->names('admin.roles');
     });
-    
+
     // Rutas de permisos (solo para administradores)
     Route::middleware('role:admin')->group(function () {
         Route::resource('/permissions', PermissionController::class)->names('admin.permissions');
     });
-    
-    // Rutas de textos
-    Route::resource('/texts', TextController::class)->names('admin.texts');
-    Route::patch('/texts/{text}/toggle-publish', [TextController::class, 'togglePublish'])->name('admin.texts.toggle-publish');
+
+    // Rutas de textos (§5.1.1)
+    Route::middleware('permission:view_texts')->group(function () {
+        Route::resource('/texts', TextController::class)->names('admin.texts');
+        Route::patch('/texts/{text}/toggle-publish', [TextController::class, 'togglePublish'])->name('admin.texts.toggle-publish');
+    });
     
     // Categorías (§4.8.8 RBAC)
     Route::middleware('permission:view_categories')->group(function () {
@@ -101,10 +107,12 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         Route::patch('/brands/{brand}/toggle-publish', [BrandController::class, 'togglePublish'])->name('brands.toggle-publish');
         Route::resource('/brands', BrandController::class)->names('brands');
     });
-    // Imágenes
-    Route::put('/images/reorder', [ImageController::class, 'reorder'])->name('images.reorder');
-    Route::post('/images/{product}', [ImageController::class, 'store'])->name('images.store');
-    Route::resource('/images', ImageController::class)->names('images')->except(['store']);
+    // Imágenes de producto (§5.1.1 — requiere view_products)
+    Route::middleware('permission:view_products')->group(function () {
+        Route::put('/images/reorder', [ImageController::class, 'reorder'])->name('images.reorder');
+        Route::post('/images/{product}', [ImageController::class, 'store'])->name('images.store');
+        Route::resource('/images', ImageController::class)->names('images')->except(['store']);
+    });
     // Inventarios
     Route::middleware('permission:view_inventories')->group(function () {
         Route::resource('/inventories', InventoryController::class)->names('inventories');

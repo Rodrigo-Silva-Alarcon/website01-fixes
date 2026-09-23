@@ -130,11 +130,14 @@ it('provides GET pagination links after filtering', function () {
 });
 
 it('opens the text editor without debug output', function () {
+    seedRbac();
     $text = App\Models\Text::create([
         'name' => 'Editable text', 'date' => '2026-09-08',
         'gender' => 'male', 'type' => ['article'], 'print_view' => 'a4',
     ]);
-    $this->actingAs(App\Models\User::factory()->create())
+    $user = App\Models\User::factory()->create();
+    $user->assignRole('editor_textos');
+    $this->actingAs($user)
         ->get(route('admin.texts.edit', $text))->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('admin/texts/Edit')->where('text.id', $text->id));
 });

@@ -77,14 +77,14 @@ test('usuario puede verificar si tiene un permiso', function () {
         'description' => 'Administrador',
     ]);
     $permission = Permission::create([
-        'name' => 'create_user',
-        'description' => 'Crear usuarios',
+        'name' => 'view_users',
+        'description' => 'Ver usuarios',
     ]);
 
     $role->permissions()->attach($permission->id);
     $user->roles()->attach($role->id);
 
-    expect($user->hasPermission('create_user'))->toBeTrue();
+    expect($user->hasPermission('view_users'))->toBeTrue();
     expect($user->hasPermission('delete_user'))->toBeFalse();
 });
 
@@ -109,8 +109,8 @@ test('middleware de permiso funciona correctamente', function () {
         'description' => 'Administrador',
     ]);
     $permission = Permission::create([
-        'name' => 'create_user',
-        'description' => 'Crear usuarios',
+        'name' => 'view_users',
+        'description' => 'Ver usuarios',
     ]);
 
     $role->permissions()->attach($permission->id);

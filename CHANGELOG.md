@@ -32,6 +32,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Variables de producción documentadas en `.env.example` (F4-24)
 - Columna `image` en `categories`/`subcategories` + seed de imágenes de categoría (F4-30)
 - Hero de inicio con banners seed + logos de marcas en `brands.image` (F4-32)
+- Middleware `permission:` en dashboard/users/texts/images (§5.1.1 / F4-34)
 
 ### Fixed
 - Import duplicado de `globals.css` en Home/About (F4-20)
