@@ -4,6 +4,7 @@ import { img, img1 } from "../imports/svg-adrl1";
 import { Product } from "@/types/models";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import ResponsiveImg from "@/components/ResponsiveImg";
 
 function Banner({product}:{product:Product}) {
   return (
@@ -47,9 +48,12 @@ function Banner({product}:{product:Product}) {
           <Link 
             href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
             className="relative shrink-0 size-[180px] sm:size-[240px]" data-name="image 6">
-            {product.image_url && (
-              <img alt={product.name} className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full" src={product.image_url} />
-            )}
+            <ResponsiveImg
+              alt={product.name}
+              className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
+              src={product.image_url}
+              webpSrc={product.image_webp_url}
+            />
           </Link>
         </div>
       </div>
@@ -119,9 +123,12 @@ function Banner1({product}:{product:Product}) {
           <Link 
             href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
             className="h-[180px] sm:h-[240px] relative shrink-0 w-[160px] sm:w-[215px]" data-name="Image">
-            {product.image_url && (
-              <img alt={product.name} className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full" src={product.image_url} />
-            )}
+            <ResponsiveImg
+              alt={product.name}
+              className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
+              src={product.image_url}
+              webpSrc={product.image_webp_url}
+            />
           </Link>
         </div>
       </div>
