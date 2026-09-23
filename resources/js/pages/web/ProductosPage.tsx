@@ -455,7 +455,7 @@ function Pagination({ products }: { products: Pagination<Product> }) {
           disabled={!link.url || link.active}
           aria-current={link.active ? 'page' : undefined}
           onClick={() => {
-            if (link.url) router.get(link.url, { cs: cates, ms: marcas, find }, { preserveScroll: true });
+            if (link.url) router.get(link.url, {}, { preserveScroll: true });
           }}
           className={`rounded-full px-4 py-2 disabled:cursor-default ${link.active ? 'bg-[#fa8232] text-white' : 'border disabled:opacity-40'}`}
         >

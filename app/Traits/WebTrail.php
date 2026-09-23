@@ -92,6 +92,7 @@ trait WebTrail {
         if (request()->isMethod('post')) {
             $products->withPath(route('products'));
         }
+        $products->appends(request()->only(['cs', 'ms', 'find', 'category', 'subcategory', 'brand']));
         return $products;
     }
 

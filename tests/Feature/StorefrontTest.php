@@ -75,7 +75,7 @@ it('provides GET pagination links after filtering', function () {
         Product::create(['name' => 'Camera '.$i, 'category_id' => $category->id, 'active' => true]);
     }
     $this->post('/Productos/Filtrar', ['cs' => [$category->id]])->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->where('products.next_page_url', route('products').'?page=2'));
+        ->assertInertia(fn (Assert $page) => $page->where('products.next_page_url', route('products').'?cs%5B0%5D=1&page=2'));
     $this->get('/Productos?page=2&cs[]='.$category->id)->assertOk()
         ->assertInertia(fn (Assert $page) => $page->has('products.data', 1));
 });
