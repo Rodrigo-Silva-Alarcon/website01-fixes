@@ -21,6 +21,16 @@ export default [
             'react/react-in-jsx-scope': 'off',
             'react/prop-types': 'off',
             'react/no-unescaped-entities': 'off',
+            // Pre-existing Figma/admin codebase uses `any` extensively; keep as warn so CI can gate real errors.
+            '@typescript-eslint/no-explicit-any': 'warn',
+            '@typescript-eslint/no-unused-vars': [
+                'warn',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
         },
         settings: {
             react: {
@@ -41,4 +51,13 @@ export default [
         ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js'],
     },
     prettier, // Turn off all rules that might conflict with Prettier
+    {
+        files: ['tests/**/*.mjs', '**/*.test.mjs'],
+        languageOptions: {
+            globals: {
+                Buffer: 'readonly',
+                process: 'readonly',
+            },
+        },
+    },
 ];

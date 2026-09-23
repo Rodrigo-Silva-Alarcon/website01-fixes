@@ -11,9 +11,7 @@ import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 
 // Interfaz para los datos del formulario
-interface PermissionFormData extends Partial<Permission> {
-    // No hay campos adicionales para permisos
-}
+type PermissionFormData = Partial<Permission>;
 
 // Interfaz para las props del formulario
 interface FormProps {

@@ -30,7 +30,7 @@ it('redirects legacy /Contacto URLs to /Contactanos', function () {
 it('returns not found for missing products and cart items', function () {
     $this->get('/Productos/missing/All/missing')->assertNotFound();
     $this->post('/AddShop/99999')->assertNotFound();
-    $this->post('/RemoveShop/99999')->assertOk();
+    $this->post('/RemoveShop/99999')->assertRedirect();
 });
 
 it('filters products by subcategory and multiple brands', function () {

@@ -155,21 +155,14 @@ export default function Index({ records, filters, success, error }: Props) {
 
     // Console.log para verificar permisos del usuario en sector textos
     useEffect(() => {
-        
         const user = (page.props as any).auth?.user;
-        
-        if (user) {            
-            
-            const userPermissions = user.roles?.flatMap((role: any) => 
+        if (user) {
+            const userPermissions = user.roles?.flatMap((role: any) =>
                 role.permissions?.map((permission: any) => permission.name) || []
             ) || [];
-            
-            const textsPermissions = userPermissions.filter((permission: string) => 
+            void userPermissions.filter((permission: string) =>
                 permission.includes('texts') || permission.includes('text')
             );
-
-        } else {
-            
         }
     }, [hasPermission, (page.props as any).auth?.user]);
 

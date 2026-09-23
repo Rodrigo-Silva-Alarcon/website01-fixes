@@ -677,7 +677,7 @@ export default function ProductDetailPage({menu, populares, product, categories,
 
   useEffect(() => {
     const observer = new ResizeObserver(entries => {
-      for (let entry of entries) {
+      for (const entry of entries) {
         setHeight(entry.contentRect.height);
       }
     });

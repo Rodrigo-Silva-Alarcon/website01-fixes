@@ -14,7 +14,7 @@ function MenuItemComponent({
     isHovered: boolean;
   }) {
 
-  var icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
+  const icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
 
   return (
     <Link  
@@ -78,7 +78,7 @@ function MenuItemComponent({
   );
 }
 
-function Submenu({ items, id }: { items: MenuItem[]; id:String }) {
+function Submenu({ items, id }: { items: MenuItem[]; id:string }) {
   return (
     <div
       className="absolute top-full left-1/2 -translate-x-1/2 z-50 w-[240px] animate-in fade-in slide-in-from-top-2 duration-200"
@@ -88,7 +88,7 @@ function Submenu({ items, id }: { items: MenuItem[]; id:String }) {
           <div className="box-border flex flex-col gap-[20px] items-start p-[20px] relative w-full h-full">
             {items.map((item) => {
               const img = item.icon || '/default-icon.svg';
-               var icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
+               const icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
               return (
                 <Link
                   href={route('subcategory', {category: id, subcategory:item.id})}
