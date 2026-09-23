@@ -307,7 +307,7 @@ export default function Index({ records, categories, filters, success, error }: 
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Subcategorías" />
+            <Head title="Productos" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-6">
                 {/* Header con botón crear */}
                 <div className="flex items-center justify-between">
