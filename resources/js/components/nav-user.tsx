@@ -3,14 +3,22 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/c
 import { UserInfo } from '@/components/user-info';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { logout } from '@/routes';
 import { type SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { ChevronsUpDown } from 'lucide-react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 
 export function NavUser() {
     const { auth } = usePage<SharedData>().props;
     const { state } = useSidebar();
     const isMobile = useIsMobile();
+    const cleanup = useMobileNavigation();
+
+    const handleLogout = () => {
+        cleanup();
+        router.flushAll();
+    };
 
     return (
         <SidebarMenu>
@@ -30,6 +38,14 @@ export function NavUser() {
                         <UserMenuContent user={auth.user} />
                     </DropdownMenuContent>
                 </DropdownMenu>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Cerrar sesión">
+                    <Link href={logout()} as="button" onClick={handleLogout}>
+                        <LogOut />
+                        <span>Cerrar sesión</span>
+                    </Link>
+                </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
     );
