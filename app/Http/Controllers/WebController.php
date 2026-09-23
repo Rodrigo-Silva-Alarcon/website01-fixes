@@ -74,7 +74,7 @@ class WebController extends Controller{
 
         return Inertia::render('web/ProductDetailPage', [
             'product' => $product,
-            'products' => Product::where('active', true)->where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(4)->get()
+            'products' => Product::with('inventory')->where('active', true)->where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(4)->get()
         ]);
     }
 
