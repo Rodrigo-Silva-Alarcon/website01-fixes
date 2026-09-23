@@ -31,7 +31,7 @@ export default function HeroSlideshow() {
               <img
                 src={banner.image_url}
                 alt={banner.name}
-                className="w-full h-full object-cover object-[50%_45%]"
+                className="w-full h-full object-contain object-[50%_45%]"
               />
             </div>
           </CarouselItem>
