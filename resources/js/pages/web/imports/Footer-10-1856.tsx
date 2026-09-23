@@ -85,7 +85,7 @@ function Frame10124038() {
     <div className="box-border content-start flex flex-wrap gap-[20px] items-start px-0 py-[20px] relative shrink-0 w-full">
       <div aria-hidden="true" className="absolute border-[#cacccd] border-[1px_0px_0px] border-solid inset-0 pointer-events-none" />
       <p className="basis-0 font-dm_sans font-normal grow leading-[20px] min-h-px min-w-[300px] relative shrink-0 text-[#cacccd] text-[14px]" style={{ fontVariationSettings: "'opsz' 14" }}>
-        © Smart House, 2025. Todos los derechos reservados.
+        © Smart House, {new Date().getFullYear()}. Todos los derechos reservados.
       </p>
       <p className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#cacccd] text-[14px] text-nowrap text-right whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
         Desarrollado por MegaLink S.R.L.

@@ -99,7 +99,7 @@ export default function Footer() {
           {/* Copyright */}
           <div className="box-border content-start flex flex-col md:flex-row flex-wrap gap-[12px] md:gap-[20px] items-start md:items-center justify-between px-0 py-[20px] relative w-full border-t border-[#cacccd]">
             <p className="font-dm_sans font-normal leading-[20px] text-[#cacccd] text-[14px] text-center md:text-left w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
-              © Smart House, 2025. Todos los derechos reservados.
+              © Smart House, {new Date().getFullYear()}. Todos los derechos reservados.
             </p>
             <p className="font-dm_sans font-normal leading-[20px] text-[#cacccd] text-[14px] text-center md:text-right w-full md:w-auto whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
               Desarrollado por MegaLink S.R.L.
