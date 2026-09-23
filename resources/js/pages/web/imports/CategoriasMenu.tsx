@@ -9,9 +9,13 @@ import { route } from "ziggy-js";
 function MenuItemComponent({
     item,
     isHovered,
+    onEnter,
+    onLeave,
   }: {
     item: MenuItem;
     isHovered: boolean;
+    onEnter?: () => void;
+    onLeave?: () => void;
   }) {
 
   const icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
@@ -19,8 +23,10 @@ function MenuItemComponent({
   return (
     <Link  
     href={route('category', { category: item.id })}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
       className={`content-stretch flex gap-[5px] items-center justify-center relative shrink-0 ${
-        isHovered? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
+        isHovered? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-pointer hover:opacity-80 transition-opacity'
       }`}
     >
       {icono ? (
@@ -131,9 +137,9 @@ export default function CategoriasMenu({menu}:{menu:MenuItem[]}) {
             {menu.map((item) => {
               const isHovered = hoveredItem === item.id;
 
-              if (item.submenu) {
+              if (item.submenu && item.submenu.length > 0) {
                 return (
-                  <button
+                  <div
                     key={item.id}
                     className="relative py-[12px]"
                     onMouseEnter={() => setHoveredItem(item.id)}
@@ -141,12 +147,14 @@ export default function CategoriasMenu({menu}:{menu:MenuItem[]}) {
                   >
                     <MenuItemComponent
                       item={item}
-                      isHovered={isHovered}                    
+                      isHovered={isHovered}
+                      onEnter={() => setHoveredItem(item.id)}
+                      onLeave={() => setHoveredItem(null)}
                     />
-                    {isHovered && item.submenu.length > 0 && (
+                    {isHovered && (
                       <Submenu items={item.submenu} id={item.id} />
-                    )} 
-                  </button>
+                    )}
+                  </div>
                 );
               }
 

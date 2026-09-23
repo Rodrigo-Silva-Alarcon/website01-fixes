@@ -89,6 +89,22 @@ it('includes inventory price data for product listing cards', function () {
         ->where('products.data.0.inventory.money', 'Bs.'));
 });
 
+it('builds category menu links from active category slugs', function () {
+    $category = Category::create(['name' => 'Cocina', 'active' => true]);
+    Category::create(['name' => 'Draft', 'active' => false]);
+    $sub = App\Models\Subcategory::create(['name' => 'Hornos', 'category_id' => $category->id, 'active' => true]);
+
+    $this->get('/productos')->assertOk()->assertInertia(function (Assert $page) use ($category, $sub) {
+        $page->has('menu', 1)
+            ->where('menu.0.id', $category->slug)
+            ->where('menu.0.name', 'Cocina')
+            ->where('menu.0.submenu.0.id', $sub->slug);
+    });
+
+    $this->get('/productos/'.$category->slug)->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('web/ProductosPage'));
+});
+
 it('provides GET pagination links after filtering', function () {
     $category = Category::create(['name' => 'Cameras', 'active' => true]);
     for ($i = 1; $i <= 21; $i++) {
