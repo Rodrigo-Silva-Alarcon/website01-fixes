@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tighten\Ziggy\BladeRouteGenerator;
 use Tighten\Ziggy\Ziggy;
 
 class ExcludeAdminZiggyRoutes
@@ -17,8 +18,15 @@ class ExcludeAdminZiggyRoutes
     public function handle(Request $request, Closure $next): Response
     {
         Ziggy::clearRoutes();
+        // Cada request debe emitir Script completo (const Ziggy=...), no MergeScript;
+        // el flag estatico persiste entre requests en tests/Octane.
+        BladeRouteGenerator::$generated = false;
 
-        $needsAdminRoutes = $request->is('admin')
+        // Autenticados siempre necesitan rutas admin (navegación SPA desde /login
+        // no recarga el HTML, el payload Ziggy del request inicial persiste).
+        // Anónimos en / solo reciben rutas públicas.
+        $needsAdminRoutes = auth()->check()
+            || $request->is('admin')
             || $request->is('admin/*')
             || $request->is('settings/*')
             || $request->is('user/*');
