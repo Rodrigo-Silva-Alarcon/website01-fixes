@@ -29,9 +29,9 @@ Verificado en navegador: las tres imágenes cargan con HTTP 200 (webp preferente
 
 ## Limitaciones (fuera de alcance)
 
-- **Brands**: `brands.image` sigue en `NULL`; no existe `public/data/brands/` con assets. El placeholder de F4-17 es el comportamiento correcto hasta que el cliente suba logos.
+- **Brands**: resuelto en F4-32 (`brands.image` + assets en `data/banners/` vía `folder_banner`).
 - **Contenido de imágenes de producto**: varios productos asocian un asset con contenido incorrecto (p. ej. Refrigeradora → teléfono). Es data quality del cliente; los archivos cargan correctamente (HTTP 200).
-- **Banners**: la tabla `banners` está vacía en este entorno; hay archivos huérfanos en `public/data/banners/` sin filas que los referencien.
+- **Banners**: tabla vacía y archivos huérfanos → seed en F4-32.
 
 ## Verificación
 
