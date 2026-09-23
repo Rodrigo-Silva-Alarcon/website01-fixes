@@ -10,6 +10,7 @@ export default function HeroSlideshow() {
   );
 
   const { banners } = usePage<{ banners: Banner[] }>().props;
+  const hasMultiple = banners.length > 1;
 
   return (
     <div className="relative" data-aos="fade">
@@ -17,13 +18,13 @@ export default function HeroSlideshow() {
         className="w-full"
         opts={{
           align: "start",
-          loop: true,
+          loop: hasMultiple,
         }}
-        plugins={[plugin.current]}
+        plugins={hasMultiple ? [plugin.current] : []}
       >
         <CarouselContent>
                     
-            {banners.map((banner, index) => ( 
+            {banners.map((banner) => (
             <CarouselItem key={banner.id}>
               {/* h-[300px] md:h-[400px] lg:h-[500px] */}
             <div className="w-full aspect-[9/4] md:aspect-[26/9] xl:aspect-[32/9]">
@@ -36,8 +37,12 @@ export default function HeroSlideshow() {
           </CarouselItem>
           ))}          
         </CarouselContent>        
-        <CarouselPrevious className="left-4 bg-white/80 hover:bg-white" />
-        <CarouselNext className="right-4 bg-white/80 hover:bg-white" />
+        {hasMultiple && (
+          <>
+            <CarouselPrevious className="left-4 bg-white/80 hover:bg-white" />
+            <CarouselNext className="right-4 bg-white/80 hover:bg-white" />
+          </>
+        )}
       </Carousel>
     </div>
   );
