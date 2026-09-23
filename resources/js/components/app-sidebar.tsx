@@ -69,7 +69,7 @@ export function AppSidebar() {
             icon: Users,
             permission: 'view_users',
         },
-        /* {
+        {
             title: 'Roles',
             href: '/admin/roles',
             icon: Shield,
@@ -87,12 +87,6 @@ export function AppSidebar() {
             icon: FileText,
             permission: 'view_texts',
         },
-        {
-            title: 'Productos',
-            href: '/admin/productos',
-            icon: Package,
-            permission: 'view_productos',
-        }, */
     ];
 
     const mainNavItems: NavItem[] = allNavItems
