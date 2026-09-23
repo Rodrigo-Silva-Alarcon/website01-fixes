@@ -198,7 +198,7 @@ export default function Ofertas() {
           <div className="flex flex-col items-center size-full">
             <div className="box-border content-stretch flex flex-col gap-[20px] lg:gap-[64px] items-center px-[20px] lg:px-[64px] py-[80px] relative size-full max-w-[100vw]">
               <p
-                className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#191c1f] text-[39px] text-center w-full"
+                className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-foreground text-[39px] text-center w-full"
                 style={{ fontVariationSettings: "'opsz' 14" }}
               >
                 Productos populares

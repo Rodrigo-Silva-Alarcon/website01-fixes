@@ -9,7 +9,7 @@ import {
   CarouselItem,
 } from "@/pages/web/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Category, Inventory, Product } from "@/types/models";
+import { Category, Product } from "@/types/models";
 import { Link, router, usePage } from "@inertiajs/react";
 import Price from "@/pages/web/imports/Price";
 import { route } from 'ziggy-js';
@@ -19,7 +19,7 @@ function CategoryTitle({category}:{category:Category}) {
   return (
     <div className="content-center flex flex-wrap gap-[12px] md:gap-[20px] items-center relative shrink-0 w-full">
       <p
-        className="basis-0 font-dm_sans font-bold grow leading-[1.1] min-h-px min-w-px relative shrink-0 text-[#191c1f] text-[28px] sm:text-[32px] md:text-[39px]"
+        className="basis-0 font-dm_sans font-bold grow leading-[1.1] min-h-px min-w-px relative shrink-0 text-foreground text-[28px] sm:text-[32px] md:text-[39px]"
         style={{ fontVariationSettings: "'opsz' 14" }}
       >
         {category.name}
@@ -205,7 +205,7 @@ export default function BlockCategory() {
 
   return (
     <>
-    {categories.map((category, index) => {
+    {categories.map((category) => {
         if(category.products.length){
             return (                    
             <div key={category.id} data-aos="fade-up" data-aos-delay="100">
