@@ -14,6 +14,7 @@ import {
 import Carrito from "../imports/Carrito";
 import { MenuItem, Product, Cart } from "@/types/models";
 import { toast } from 'sonner';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 
 interface PageProps {
   flash?: {
@@ -28,9 +29,20 @@ function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTermMobile, setSearchTermMobile] = useState("");
   const [searchTerm, setSearchTerm] = useState(find);
+  const debouncedFind = useDebouncedValue(searchTerm, 300);
   const { data, setData, processing, errors } = useForm({
     find: searchTerm,
   });
+
+  useEffect(() => {
+    setData('find', searchTerm);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedFind === (find ?? '')) return;
+    router.get(route('products'), { find: debouncedFind }, { preserveScroll: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedFind]);
 
   const submit: FormEventHandler = (e) => {
       e.preventDefault();
@@ -155,6 +167,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
     const ms = marcas && marcas.length > 0 ? marcas : [];
     
     const [searchTerm, setSearchTerm] = useState(find);
+    const debouncedFind = useDebouncedValue(searchTerm, 300);
 
     const { data, setData, processing, errors } = useForm({
       page: page,
@@ -169,6 +182,15 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
       setData('cs', cs);
       setData('page', page);
     }, [searchTerm]);
+
+    useEffect(() => {
+      if (debouncedFind === (find ?? '')) return;
+      const params: { find?: string; page?: number; cs?: number[]; ms?: number[] } = { find: debouncedFind, page: 1 };
+      if (cs.length) params.cs = cs;
+      if (ms.length) params.ms = ms;
+      router.get(route('products'), params, { preserveScroll: true });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedFind]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
