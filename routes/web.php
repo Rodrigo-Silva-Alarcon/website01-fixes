@@ -31,7 +31,7 @@ Route::get('/Servicios', [WebController::class, 'services'])->name('services');
 Route::get('/Contactanos', [WebController::class, 'contact'])->name('contact');
 Route::redirect('/Contacto', '/Contactanos');
 Route::redirect('/contacto', '/Contactanos');
-Route::post('/Enviar', [WebController::class, 'store'])->name('store');
+    Route::post('/Enviar', [WebController::class, 'store'])->middleware('throttle:5,1')->name('store');
 Route::get('/Find', [WebController::class, 'storefind'])->name('storefind');
 
 Route::post('/AddShop/{product}', [ShopController::class, 'add'])->name('addshop');
