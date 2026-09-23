@@ -50,6 +50,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Contraste dark mode: feature strip/About `text-foreground` + strokes; hero `bg-white`; bordes ProductDetail/FindProducts (F4-35)
 - Crop/upscale del banner hero: aspect cercano a 16:9 + `max-h` + `object-position` (F4-36)
 - Banner hero Samsung pixelado: `object-contain` + asset `ab94c496…jpg` reemplaza `e002f7b5…png` (F4-37)
+- "Añadir al carrito" siempre visible en cards del home (sin hover) (F4-38)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

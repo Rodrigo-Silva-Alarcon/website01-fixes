@@ -169,7 +169,7 @@ function Cards({populares}:{populares:Product[]}) {
 
                   {productPrice(product.inventory) !== null && (
                     <div
-                    className="box-border content-stretch flex-col gap-[4px] items-center justify-center px-0 py-[4px] relative shrink-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden group-hover:flex"
+                    className="box-border content-stretch flex-col gap-[4px] items-center justify-center px-0 py-[4px] relative shrink-0 w-full flex"
                     data-name="Botón1"
                   >
                     <LinkCarrito
