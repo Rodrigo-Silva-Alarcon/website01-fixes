@@ -45,9 +45,13 @@ class SaveUserRequest extends FormRequest
             'roles.*' => 'exists:roles,id',
         ];
 
-        // Solo agregar password en creación
+        // Solo agregar password en creacion (5.1.6: letras + numeros)
         if ($this->isMethod('post')) {
-            $rules['password'] = 'required|confirmed|min:8';
+            $rules['password'] = [
+                'required',
+                'confirmed',
+                \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers(),
+            ];
             $rules['password_confirmation'] = 'required|min:8';
         }
 
@@ -83,6 +87,8 @@ class SaveUserRequest extends FormRequest
             'password.required' => 'La contraseña es obligatoria.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.letters' => 'La contraseña debe contener al menos una letra.',
+            'password.numbers' => 'La contraseña debe contener al menos un número.',
             
             'password_confirmation.required' => 'La confirmación de contraseña es obligatoria.',
             'password_confirmation.min' => 'La confirmación de contraseña debe tener al menos 8 caracteres.',
