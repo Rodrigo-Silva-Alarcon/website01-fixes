@@ -18,27 +18,27 @@ function MenuItemComponent({
 
   return (
     <Link  
-    href={item.submenu.length > 0
-      ? '#'
-      : route('category', { category: item.id })
-    }
+    href={route('category', { category: item.id })}
       className={`content-stretch flex gap-[5px] items-center justify-center relative shrink-0 ${
         isHovered? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
       }`}
     >
-      <div
-        className="relative shrink-0 size-[24px]"
-        data-name={item.icon}
-      >
+      {icono ? (
         <div
-          className="absolute inset-[14.58%_10.42%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.5px_-3.5px] mask-size-[24px_24px]"
+          className="relative shrink-0 size-[24px]"
           data-name={item.icon}
-        >          
-          <div className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
-              dangerouslySetInnerHTML={{ __html: String(icono) }}
-          />
+        >
+          <div
+            className="absolute inset-[14.58%_10.42%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.5px_-3.5px] mask-size-[24px_24px]"
+            data-name={item.icon}
+          >
+            <div
+              className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
+              dangerouslySetInnerHTML={{ __html: icono }}
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
       <p
         className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre"
         style={{ fontVariationSettings: "'opsz' 14" }}
@@ -95,11 +95,14 @@ function Submenu({ items, id }: { items: MenuItem[]; id:String }) {
                   key={item.id}
                   className="flex gap-[5px] items-center justify-start relative shrink-0"
                 >
-                  <div className="relative shrink-0 size-[24px]" data-name={item.name}>
-                    <div className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
-                      dangerouslySetInnerHTML={{ __html: String(icono) }}
-                    />
-                  </div>
+                  {icono ? (
+                    <div className="relative shrink-0 size-[24px]" data-name={item.name}>
+                      <div
+                        className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
+                        dangerouslySetInnerHTML={{ __html: icono }}
+                      />
+                    </div>
+                  ) : null}
                   <p
                     className="font-['DM_Sans',sans-serif] font-normal leading-[20px] text-[#191c1f] text-[14px] whitespace-pre"
                     style={{ fontVariationSettings: "'opsz' 14" }}
