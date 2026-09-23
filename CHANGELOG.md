@@ -31,6 +31,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Permisos RBAC granulares de catálogo + middleware en rutas admin (F4-23)
 - Variables de producción documentadas en `.env.example` (F4-24)
 - Columna `image` en `categories`/`subcategories` + seed de imágenes de categoría (F4-30)
+- Hero de inicio con banners seed + logos de marcas en `brands.image` (F4-32)
 
 ### Fixed
 - Import duplicado de `globals.css` en Home/About (F4-20)
@@ -39,6 +40,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - CSP permite Vite HMR y Bunny Fonts; favicon SVG (F4-26)
 - Sin desborde en tarjetas de destacados/banners (F4-28)
 - Títulos de sección legibles en dark mode (`text-foreground`) (F4-29)
+- Texto vertical en cards destacados (F4-31)
+- Alturas/posición de imagen asimétricas en destacados (F4-32)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

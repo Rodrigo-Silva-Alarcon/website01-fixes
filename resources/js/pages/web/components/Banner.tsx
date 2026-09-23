@@ -7,10 +7,10 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 
 function Banner({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#e0eef3] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
-      <div className="flex flex-row items-center justify-center min-w-inherit overflow-clip rounded-[inherit] size-full">
-        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-center justify-center min-w-inherit p-[20px] relative w-full">
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-[160px] relative shrink-0" data-name="Content">
+    <div className="basis-0 bg-[#e0eef3] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+      <div className="flex flex-1 flex-row items-start justify-center min-w-inherit overflow-clip rounded-[inherit]">
+        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-start justify-center min-w-inherit p-[20px] relative w-full">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-[306px] min-w-[160px] relative shrink-0" data-name="Content">
             <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
                 <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
@@ -81,10 +81,10 @@ function Button_pay({product}:{product:Product}){
 }
 function Banner1({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#191c1f] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
-      <div className="flex flex-row items-center min-w-inherit overflow-clip rounded-[inherit] size-full">
-        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] lg:gap-[64px] items-center min-w-inherit p-[20px] relative w-full">
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-[160px] relative shrink-0" data-name="Content">
+    <div className="basis-0 bg-[#191c1f] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+      <div className="flex flex-1 flex-row items-start min-w-inherit overflow-clip rounded-[inherit]">
+        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-start min-w-inherit p-[20px] relative w-full">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-[306px] min-w-[160px] relative shrink-0" data-name="Content">
             <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
                 <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
@@ -106,7 +106,9 @@ function Banner1({product}:{product:Product}) {
                   href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
                   className="font-dm_sans font-bold leading-[1.2] relative shrink-0 text-[24px] sm:text-[31px] text-white w-full break-words min-w-0" style={{ fontVariationSettings: "'opsz' 14" }}>
                   <p className="mb-0">{product.name}</p>
+                  {product.summary && (
                   <p>{product.summary}</p>
+                  )}
                 </Link>
               </div>
               { product.inventory?.amount &&(
@@ -121,7 +123,7 @@ function Banner1({product}:{product:Product}) {
           </div>
           <Link
             href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-            className="h-[160px] sm:h-[200px] lg:h-[240px] relative shrink-0 w-[140px] sm:w-[180px] lg:w-[215px]" data-name="Image">
+            className="relative shrink-0 size-[160px] sm:size-[200px] lg:size-[240px]" data-name="Image">
             <ResponsiveImg
               alt={product.name}
               className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
@@ -142,7 +144,7 @@ export default function Destacados() {
     <div data-aos="zoom-in" data-aos-delay="200">
       <div className="relative size-full" data-name="Banner">
         <div className="size-full">
-          <div className="box-border content-start flex flex-col lg:flex-row gap-[16px] items-start px-[16px] sm:px-[32px] md:px-[64px] py-[40px] md:py-[80px] relative size-full">
+          <div className="box-border content-start flex flex-col lg:flex-row gap-[16px] items-stretch px-[16px] sm:px-[32px] md:px-[64px] py-[40px] md:py-[80px] relative size-full">
             {destacados.map((product, index) =>
               index % 2 === 0 ? (
                 <Banner key={index} product={product} />                
