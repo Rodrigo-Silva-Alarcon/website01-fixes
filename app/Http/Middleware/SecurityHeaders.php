@@ -32,18 +32,35 @@ class SecurityHeaders
 
         $contentType = (string) $response->headers->get('Content-Type', '');
         if ($response->isSuccessful() && str_contains($contentType, 'text/html')) {
+            $styleSrc = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net";
+            $fontSrc = "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net";
+            $scriptSrc = "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+            $connectSrc = "connect-src 'self' ws: wss:";
+
+            // Vite HMR: public/hot existe solo en local
+            $hotFile = public_path('hot');
+            if (is_file($hotFile)) {
+                $hotOrigin = rtrim((string) file_get_contents($hotFile));
+                if ($hotOrigin !== '' && preg_match('#^https?://#i', $hotOrigin) === 1) {
+                    $scriptSrc .= ' '.$hotOrigin;
+                    $styleSrc .= ' '.$hotOrigin;
+                    $connectSrc .= ' '.$hotOrigin;
+                    $fontSrc .= ' '.$hotOrigin;
+                }
+            }
+
             $csp = implode('; ', [
                 "default-src 'self'",
                 "base-uri 'self'",
                 "object-src 'none'",
                 "frame-ancestors 'self'",
                 "form-action 'self'",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-                "font-src 'self' data: https://fonts.gstatic.com",
+                $scriptSrc,
+                $styleSrc,
+                $fontSrc,
                 "img-src 'self' data: blob:",
                 "media-src 'self'",
-                "connect-src 'self' ws: wss:",
+                $connectSrc,
             ]);
 
             $response->headers->set('Content-Security-Policy', $csp);

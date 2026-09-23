@@ -16,6 +16,25 @@ it('sets security headers on public HTML responses', function () {
     expect($csp)->not->toBeNull();
     expect($csp)->toContain("default-src 'self'");
     expect($csp)->toContain("object-src 'none'");
+    expect($csp)->toContain('https://fonts.bunny.net');
+});
+
+it('allows Vite HMR origin in CSP when hot file exists', function () {
+    $hot = public_path('hot');
+    $hadHot = is_file($hot);
+    if (!$hadHot) {
+        file_put_contents($hot, 'http://127.0.0.1:5173');
+    }
+
+    try {
+        $response = $this->get('/');
+        $csp = $response->headers->get('Content-Security-Policy');
+        expect($csp)->toContain('http://127.0.0.1:5173');
+    } finally {
+        if (!$hadHot && is_file($hot)) {
+            unlink($hot);
+        }
+    }
 });
 
 it('does not apply CSP to error responses without HTML success', function () {
