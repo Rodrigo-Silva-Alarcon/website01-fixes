@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Image extends Model
 {
@@ -22,7 +23,12 @@ class Image extends Model
     ];
 
     protected $appends = ['image_url'];
-    
+
+    public function imagetable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function getImageUrlAttribute(){
         if ($this->name) {
             $imagePath = str_replace('storage/', '', $this->name);

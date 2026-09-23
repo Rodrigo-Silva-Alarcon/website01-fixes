@@ -55,5 +55,14 @@ class Brand extends Model
         return null;
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }
 

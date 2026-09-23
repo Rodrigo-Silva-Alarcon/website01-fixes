@@ -86,6 +86,9 @@ class Banner extends Model
         return $categories[$this->subcategory_id] ?? ucfirst((string) $this->subcategory_id);
     }
 
-
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
 
