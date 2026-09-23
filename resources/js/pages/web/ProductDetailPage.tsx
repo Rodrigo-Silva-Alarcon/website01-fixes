@@ -14,6 +14,7 @@ import { usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
 import ProductJsonLd from "@/components/ProductJsonLd";
 import AddToCartButton from "@/pages/web/components/AddToCartButton";
+import ResponsiveImg from "@/components/ResponsiveImg";
 import {
   Carousel,
   CarouselContent,
@@ -69,7 +70,7 @@ function ImageGallery({ images }: { images: { image: string}[] }) {
             {images.map((image, index) => (
               <CarouselItem key={index} className="h-full">
                 <div className="aspect-square md:aspect-[264/264] relative rounded-[20px] h-full bg-white">
-                  <img
+                  <ResponsiveImg
                     alt={`Imagen ${index + 1} del producto`}
                     className="absolute inset-0 max-w-none object-contain pointer-events-none rounded-[20px] size-full"
                     src={image.image}
@@ -108,7 +109,7 @@ function ImageGallery({ images }: { images: { image: string}[] }) {
                     className="absolute inset-0 pointer-events-none rounded-[20px]"
                   >
                     <div className="absolute bg-white inset-0 rounded-[20px]" />
-                    <img
+                    <ResponsiveImg
                       alt={`Miniatura ${index + 1}`}
                       className="absolute max-w-none object-contain rounded-[20px] size-full"
                       src={image.image}
@@ -513,11 +514,12 @@ function RelatedProductCard({product}:{product: Product;}) {
               className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit w-full cursor-pointer hover:opacity-90 transition-opacity"
             >
               <div className="aspect-square relative shrink-0 w-full">
-                <img
+                <ResponsiveImg
                   alt={product.name}
                   loading="lazy"
                   className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
                   src={product.image_url}
+                  webpSrc={product.image_webp_url}
                 />
               </div>
               <div className="h-0 relative shrink-0 w-full">

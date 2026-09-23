@@ -114,14 +114,20 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset($this->productImagePath(config('variables.folder_product')));
+            $path = $this->productImagePath(config('variables.folder_product'));
+            if (is_file(public_path($path))) {
+                return asset($path);
+            }
         }
         return null;
     }
     public function getImageThumbsUrlAttribute()
     {
         if ($this->image) {
-            return asset($this->productImagePath(config('variables.folder_product'), true));
+            $path = $this->productImagePath(config('variables.folder_product'), true);
+            if (is_file(public_path($path))) {
+                return asset($path);
+            }
         }
         return null;
     }

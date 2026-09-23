@@ -89,6 +89,19 @@ it('includes inventory price data for product listing cards', function () {
         ->where('products.data.0.inventory.money', 'Bs.'));
 });
 
+it('returns null image_url when product image file is missing', function () {
+    $category = Category::create(['name' => 'Cameras', 'active' => true]);
+    $product = Product::create([
+        'name' => 'Broken photo',
+        'category_id' => $category->id,
+        'active' => true,
+        'image' => 'data/products/does-not-exist.png',
+    ]);
+
+    expect($product->image_url)->toBeNull();
+    expect($product->image_webp_url)->toBeNull();
+});
+
 it('builds category menu links from active category slugs', function () {
     $category = Category::create(['name' => 'Cocina', 'active' => true]);
     Category::create(['name' => 'Draft', 'active' => false]);
