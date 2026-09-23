@@ -56,25 +56,33 @@ function Precio({inventory}:{inventory:Inventory}){
   const fin = inventory.fin ? new Date(inventory.fin) : null;
 
   const mostrarOferta =
-    (ini && fin && ini <= hoy && hoy <= fin) || // rango válido
-    (ini && !fin && ini <= hoy) ||              // solo fecha inicial
-    (!ini && fin && hoy <= fin);                // solo fecha final
+    (ini && fin && ini <= hoy && hoy <= fin) ||
+    (ini && !fin && ini <= hoy) ||
+    (!ini && fin && hoy <= fin);
 
   return (
     <div className="content-start flex flex-wrap font-dm_sans font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">
-      <p
-        className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#fa8232]"
-        style={{ fontVariationSettings: "'opsz' 14" }}
-      >
-        {inventory.money} {inventory.amount}
-      </p>
-
-      {mostrarOferta && (
+      {mostrarOferta ? (
+        <>
+          <p
+            className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#fa8232]"
+            style={{ fontVariationSettings: "'opsz' 14" }}
+          >
+            {inventory.money} {inventory.amount}
+          </p>
+          <p
+            className="relative shrink-0 text-[#191c1f]"
+            style={{ fontVariationSettings: "'opsz' 14" }}
+          >
+            {inventory.money} {inventory.offer_amount}
+          </p>
+        </>
+      ) : (
         <p
           className="relative shrink-0 text-[#191c1f]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
-          {inventory.money} {inventory.offer_amount}
+          {inventory.money} {inventory.amount}
         </p>
       )}
     </div>
