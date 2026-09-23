@@ -67,13 +67,13 @@ function Card({item, pending, onQuantityChange}:{item:CartItem; pending:boolean;
       <div className="overflow-clip rounded-[inherit] size-full">
         <div className="box-border content-stretch flex gap-[20px] items-start p-[15px] lg:p-[20px] relative w-full">
           <div className="hidden md:block relative shrink-0 size-[100px]" data-name="image 10">
-            <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={item.image_url} />
+            <img alt={item.name} className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={item.image_url} />
           </div>
           <div className="hidden md:block bg-[#191c1f] self-stretch shrink-0 w-[0.5px]" />
           <div className="basis-0 content-stretch flex flex-col gap-[16px] grow items-start min-h-px min-w-px relative shrink-0">
             <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 text-[#191c1f] w-full">
               <div className="md:hidden relative shrink-0 size-[150px] mx-auto" data-name="image 10">
-                <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={item.image_url} />
+                <img alt={item.name} className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={item.image_url} />
               </div>
               <p className="-webkit-box font-dm_sans font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[18px] lg:text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                 {item.name} 
@@ -240,7 +240,7 @@ function Itemproduct({producto}:{producto:Product; }){
           data-name="image 10"
         >
           <img
-            alt=""
+            alt={producto.name}
             className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-cover pointer-events-none size-full"
             src={producto.image_url}
           />

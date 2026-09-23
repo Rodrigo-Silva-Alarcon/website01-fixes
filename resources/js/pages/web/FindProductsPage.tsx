@@ -88,7 +88,7 @@ function ProductCard({
         <div className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[16px] md:p-[20px] relative w-full">
           <div className="aspect-square relative shrink-0 w-full">
             <img
-              alt=""
+              alt={producto.nombre}
               className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-cover pointer-events-none size-full"
               src={producto.imagen}
             />

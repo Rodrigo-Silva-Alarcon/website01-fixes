@@ -126,7 +126,7 @@ function Cards({populares}:{populares:Product[]}) {
                       data-name="image 10"
                     >
                       <img
-                        alt=""
+                        alt={product.name}
                         className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain aspect-[1/1] pointer-events-none size-full w-full"
                         src={product.image_url}
                       />

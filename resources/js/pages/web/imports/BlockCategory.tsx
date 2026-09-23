@@ -138,7 +138,7 @@ function Cards({category}:{category:Category}) {
                       data-name="image 10"
                     >
                       <img
-                        alt=""
+                        alt={product.name}
                         className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% aspect-[1/1] object-contain pointer-events-none size-full"
                         src={product.image_url}
                       />
