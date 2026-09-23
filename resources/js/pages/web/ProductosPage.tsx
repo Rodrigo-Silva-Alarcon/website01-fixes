@@ -8,6 +8,7 @@ import { Product, MenuItem, Category, Brand, Cart } from "@/types/models";
 import Price from "@/pages/web/imports/Price";
 import { route } from "ziggy-js";
 import { Link, router, useForm, usePage } from "@inertiajs/react";
+import Seo from "@/components/Seo";
 
 interface FormProps {
   products: Product[];
@@ -501,6 +502,10 @@ export default function ProductosPage({categories, brands}:FormProps) {
   
   return (
     <Layout>
+        <Seo
+          title="Productos"
+          description="Explora nuestro catálogo de productos de tecnología y electrodomésticos. Encuentra lo que necesitas al mejor precio."
+        />
         <div className="max-w-[1440px] mx-auto w-full mt-4">
           {/* Main Content */}
           <div className="content-start flex flex-col lg:flex-row gap-0 items-start justify-center relative w-full">

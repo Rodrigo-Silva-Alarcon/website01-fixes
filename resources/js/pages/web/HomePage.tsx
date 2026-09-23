@@ -8,6 +8,7 @@ import FeaturesSection from "@/pages/web/imports/Frame1";
 import Destacados from "@/pages/web/components/Banner";
 import HeroSlideshow from "@/pages/web/components/HeroSlideshow";
 import { Product, MenuItem, Category, Brand, Cart, Banner } from "@/types/models";
+import Seo from "@/components/Seo";
 
 import "@/pages/web/styles/globals.css";
 import AOS from "aos";
@@ -36,6 +37,10 @@ export default function HomePage({populares, categorias, destacados, marcas, cat
   
   return (
     <Layout>      
+      <Seo
+        title="Inicio"
+        description="SmartHouse - Tecnología y electrodomésticos para tu hogar. Encuentra productos de marcas líderes con los mejores precios."
+      />
       <HeroSlideshow/>      
       <section className="max-w-[1440px] mx-auto">
         <Ofertas />

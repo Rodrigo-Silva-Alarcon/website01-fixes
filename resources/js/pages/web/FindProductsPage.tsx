@@ -8,6 +8,7 @@ import Footer from "@/pages/web/components/Footer";
 import svgPaths from "@/pages/web/imports/svg-mfz9y2svub";
 import img1 from "@/pages/web/assets/f8e9fbf64ad966e39cf0b463c0120ea3d9e01a32.png";
 import { img } from "@/pages/web/imports/svg-lrge5";
+import Seo from "@/components/Seo";
 
 // Mock data
 const productos = [
@@ -552,6 +553,10 @@ export default function FindProductsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Seo
+        title="Buscar productos"
+        description="Encuentra productos de tecnología y electrodomésticos con nuestra búsqueda inteligente."
+      />
       {/* Top Info Banner */}
       <div className="h-[40px]">
         <Info />

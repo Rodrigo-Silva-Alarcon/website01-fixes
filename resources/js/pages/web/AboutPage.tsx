@@ -3,10 +3,15 @@ import Layout from "@/pages/web/layouts/Layout";
 import AboutHeroSection from "@/pages/web/components/AboutHeroSection";
 import AboutFeaturesSection from "@/pages/web/components/AboutFeaturesSection";
 import { MenuItem, Product, Cart } from "@/types/models";
+import Seo from "@/components/Seo";
 
 export default function AboutPage() {
   return (
     <Layout>
+      <Seo
+        title="Sobre nosotros"
+        description="Conoce SmartHouse: misión, visión y características. Tu tienda de confianza en tecnología y electrodomésticos."
+      />
       <section className="max-w-[1440px] mx-auto">
         {/* Hero Section */}
         <div data-aos="fade-up">

@@ -11,6 +11,7 @@ import { route } from "ziggy-js";
 import Modal from "@/components/modal-web";
 import Layout from "@/pages/web/layouts/Layout";
 import { usePage } from "@inertiajs/react";
+import Seo from "@/components/Seo";
 import {
   Carousel,
   CarouselContent,
@@ -700,6 +701,12 @@ export default function ProductDetailPage({menu, populares, product, categories,
 
   return (
     <Layout>    
+        <Seo
+          title={product.name}
+          description={product.summary || product.description?.replace(/<[^>]*>/g, "").slice(0, 160) || "Producto SmartHouse"}
+          image={product.image_url || undefined}
+          type="product"
+        />
         <div className="bg-[#f2f4f5]">
           <div className="box-border content-stretch flex flex-col gap-[40px] md:gap-[60px] lg:gap-[80px] items-center  px-[20px] md:px-[40px] lg:px-[64px] py-[40px] md:py-[60px] lg:py-[80px] relative w-full">
             {/* Product Detail Section */}

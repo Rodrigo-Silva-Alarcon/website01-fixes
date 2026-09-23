@@ -1,6 +1,7 @@
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useForm } from "@inertiajs/react";
 import Layout from "./layouts/Layout";
+import Seo from "@/components/Seo";
 
 export default function ContactoPage() {
   const { data: formData, setData, post, processing, errors, recentlySuccessful } = useForm({
@@ -18,6 +19,10 @@ export default function ContactoPage() {
 
   return (
     <Layout>
+      <Seo
+        title="Contáctanos"
+        description="¿Tienes dudas o necesitas ayuda? Contáctanos y te responderemos pronto. Estamos aquí para ayudarte."
+      />
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
