@@ -2,7 +2,7 @@ import imgImagen from "@/pages/web/assets/0910ac1d5d324ffc5ab52eb69e64b2089e2e74
 
 function Texto20Px() {
   return (
-    <div className="basis-0 content-stretch flex flex-col gap-[20px] grow items-start min-h-px min-w-[300px] relative shrink-0 text-[#191c1f]" data-name="Texto20px">
+    <div className="basis-0 content-stretch flex flex-col gap-[20px] grow items-start min-h-px min-w-[300px] relative shrink-0 text-foreground" data-name="Texto20px">
       <p data-aos="fade-right" className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[32px] md:text-[49px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
         Sobre Smart House Bolivia
       </p>

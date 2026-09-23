@@ -193,7 +193,7 @@ function ProductInfo({
 
           <div className="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
             <p
-              className="font-dm_sans font-bold leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre"
+              className="font-dm_sans font-bold leading-[20px] relative shrink-0 text-foreground text-[14px] text-nowrap whitespace-pre"
               style={{ fontVariationSettings: "'opsz' 14" }}
             >
               Marca: 
@@ -204,7 +204,7 @@ function ProductInfo({
             >
               <div className="content-stretch flex gap-[4px] items-center relative shrink-0">
                 <p
-                  className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre"
+                  className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-foreground text-[14px] text-nowrap whitespace-pre"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >
                   {product.brand_label}
@@ -420,7 +420,7 @@ function ProductInfo({
               
               {descriptionOpen && (
                 <div
-                  className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] w-full text-left content_product"
+                  className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
                   style={{ fontVariationSettings: "'opsz' 14" }}
                 >       
                   <div  dangerouslySetInnerHTML={{ __html: product.description }} />
@@ -429,7 +429,7 @@ function ProductInfo({
             </div>
             <div
               aria-hidden="true"
-              className="absolute border-[#191c1f] border-[0.5px_0px] border-solid inset-0 pointer-events-none"
+              className="absolute border-border border-[0.5px_0px] border-solid inset-0 pointer-events-none"
             />
           </button>
 
@@ -488,7 +488,7 @@ function ProductInfo({
             </div>
             <div
               aria-hidden="true"
-              className="absolute border-[#191c1f] border-[0.5px_0px] border-solid inset-0 pointer-events-none"
+              className="absolute border-border border-[0.5px_0px] border-solid inset-0 pointer-events-none"
             />
           </button>
           )}
@@ -734,7 +734,7 @@ export default function ProductDetailPage({menu, populares, product, categories,
         >                          
             <>
             <div
-              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] w-full text-left content_product"
+              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
               style={{ fontVariationSettings: "'opsz' 14" }}
             >  
               <div dangerouslySetInnerHTML={{ __html: product.description }} />
@@ -748,7 +748,7 @@ export default function ProductDetailPage({menu, populares, product, categories,
         >                          
             <>
             <div
-              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] w-full text-left content_product"
+              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
               style={{ fontVariationSettings: "'opsz' 14" }}
             >  
               <div dangerouslySetInnerHTML={{ __html: product.tecnical_info }} />

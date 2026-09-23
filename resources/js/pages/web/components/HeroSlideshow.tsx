@@ -27,10 +27,10 @@ export default function HeroSlideshow() {
             {banners.map((banner) => (
             <CarouselItem key={banner.id}>
               {/* h-[300px] md:h-[400px] lg:h-[500px] */}
-            <div className="w-full aspect-[9/4] md:aspect-[26/9] xl:aspect-[32/9]">
-              <img 
-                src={banner.image_url} 
-                alt={banner.name} 
+            <div className="w-full bg-white aspect-[9/4] md:aspect-[26/9] xl:aspect-[32/9]">
+              <img
+                src={banner.image_url}
+                alt={banner.name}
                 className="w-full h-full object-cover"
               />
             </div>

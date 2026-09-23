@@ -444,12 +444,12 @@ function Pagination({
           onClick={() => onPageChange(page)}
           className={`box-border content-stretch flex gap-[10px] items-center justify-center p-[4px] relative rounded-[40px] shrink-0 ${
             currentPage === page
-              ? "border border-[#191c1f] border-solid"
+              ? "border border-border border-solid"
               : ""
           }`}
         >
           <p
-            className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#191c1f] text-[20px] text-center w-[30px]"
+            className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-foreground text-[20px] text-center w-[30px]"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
             {page}
@@ -459,7 +459,7 @@ function Pagination({
 
       <div className="box-border content-stretch flex gap-[10px] items-center justify-center p-[4px] relative rounded-[40px] shrink-0">
         <p
-          className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#191c1f] text-[20px] text-center w-[30px]"
+          className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-foreground text-[20px] text-center w-[30px]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
           ...
@@ -471,7 +471,7 @@ function Pagination({
         className="box-border content-stretch flex gap-[10px] items-center justify-center p-[4px] relative rounded-[40px] shrink-0"
       >
         <p
-          className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#191c1f] text-[20px] text-center w-[30px]"
+          className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-foreground text-[20px] text-center w-[30px]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
           {totalPages}
@@ -590,7 +590,7 @@ export default function FindProductsPage() {
                 <div className="content-stretch flex flex-col gap-[16px] items-start justify-center relative shrink-0 w-full">
                   <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
                     <p
-                      className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#191c1f] text-[32px] md:text-[40px] lg:text-[49px] w-full"
+                      className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-foreground text-[32px] md:text-[40px] lg:text-[49px] w-full"
                       style={{
                         fontVariationSettings: "'opsz' 14",
                       }}

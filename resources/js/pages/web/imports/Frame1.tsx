@@ -3,7 +3,7 @@ import svgPaths from "./svg-ar2awh50gg";
 function Info() {
   return (
     <div
-      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-[#191c1f] text-[14px]"
+      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-foreground text-[14px]"
       data-name="Info"
     >
       <p className="font-['Public_Sans:Medium',sans-serif] font-medium relative shrink-0 uppercase w-[192px]">
@@ -46,7 +46,7 @@ function Feature() {
                 className="absolute inset-[-2.25%_-2.5%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -75,7 +75,7 @@ function Feature() {
                 className="absolute inset-[-4.55%_-4.95%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -104,7 +104,7 @@ function Feature() {
                 className="absolute inset-[-8.99%_-2.53%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -133,7 +133,7 @@ function Feature() {
                 className="absolute inset-[-4.49%_-533.33%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -165,7 +165,7 @@ function Feature() {
 function Info1() {
   return (
     <div
-      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-[#191c1f] text-[14px]"
+      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-foreground text-[14px]"
       data-name="Info"
     >
       <p className="font-['Public_Sans:Medium',sans-serif] font-medium relative shrink-0 uppercase w-[192px]">
@@ -208,7 +208,7 @@ function Feature1() {
                 className="absolute inset-[-3.53%_-3.33%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -237,7 +237,7 @@ function Feature1() {
                 className="absolute inset-[-0.75px_-7.5%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -266,7 +266,7 @@ function Feature1() {
                 className="absolute inset-[-12%_-0.75px]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -295,7 +295,7 @@ function Feature1() {
                 className="absolute inset-[-8.57%_-11.48%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -324,7 +324,7 @@ function Feature1() {
                 className="absolute inset-[-8.57%_-11.4%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -356,7 +356,7 @@ function Feature1() {
 function Info2() {
   return (
     <div
-      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-[#191c1f] text-[14px]"
+      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-foreground text-[14px]"
       data-name="Info"
     >
       <p className="font-['Public_Sans:Medium',sans-serif] font-medium relative shrink-0 uppercase w-[192px]">
@@ -399,7 +399,7 @@ function Feature2() {
                 className="absolute inset-[-3.33%_-2.31%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -428,7 +428,7 @@ function Feature2() {
                 className="absolute inset-[-0.75px_-15%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -457,7 +457,7 @@ function Feature2() {
                 className="absolute inset-[-0.75px_-30%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -486,7 +486,7 @@ function Feature2() {
                 className="absolute inset-[-0.75px_-2.31%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
@@ -518,7 +518,7 @@ function Feature2() {
 function Info3() {
   return (
     <div
-      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-[#191c1f] text-[14px]"
+      className="content-stretch flex flex-col gap-[4px] items-start leading-[20px] relative shrink-0 text-foreground text-[14px]"
       data-name="Info"
     >
       <p className="font-['Public_Sans:Medium',sans-serif] font-medium relative shrink-0 uppercase w-[192px]">
@@ -561,7 +561,7 @@ function Feature3() {
                 className="absolute inset-[-2.86%_-2.48%]"
                 style={
                   {
-                    "--stroke-0": "rgba(25, 28, 31, 1)",
+                    "--stroke-0": "var(--foreground)",
                   } as React.CSSProperties
                 }
               >
