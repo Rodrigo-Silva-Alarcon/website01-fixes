@@ -10,7 +10,7 @@ import {
 } from "@/pages/web/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { Category, Inventory, Product } from "@/types/models";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import Price from "@/pages/web/imports/Price";
 import { route } from 'ziggy-js';
 

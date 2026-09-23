@@ -8,7 +8,7 @@ import {
   CarouselItem,
 } from "@/pages/web/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 

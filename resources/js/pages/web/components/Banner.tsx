@@ -2,7 +2,7 @@ import svgPaths from "../imports/svg-ebgpxejlry";
 import imgImage from "@/pages/web/assets/e6ff3417e24ae221ecb7179d94af93cf33ba079b.png";
 import { img, img1 } from "../imports/svg-adrl1";
 import { Product } from "@/types/models";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 function Banner({product}:{product:Product}) {
