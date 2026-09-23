@@ -175,7 +175,8 @@ export interface Cart{
     id:number;
     user_id:number;
     cart_session:string;
-    cart_items:CartItem[]
+    cart_items:CartItem[];
+    cartItems?:CartItem[];
 }
 
 export interface CartItem{

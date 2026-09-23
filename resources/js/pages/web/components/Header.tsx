@@ -135,12 +135,17 @@ function Frame10124071Mobile({ onOpenCart }: { onOpenCart: () => void }) {
 
 export default function Header({ populares, cart}:{ populares:Product[];cart:Cart;}) {
 
-  const [cartOpen, setCartOpen] = useState(false);  
+  const [cartOpen, setCartOpen] = useState(false);
   const { props } = usePage() as { props: { flash?: { status?: string } } };
   const status = props.flash?.status;
-  if(status){
-    toast.success(status);
-  }
+  useEffect(() => {
+    if (status) toast.success(status);
+  }, [status]);
+
+  const cartCount = (cart?.cart_items ?? cart?.cartItems ?? []).reduce(
+    (sum, item) => sum + (item.amount ?? 0),
+    0,
+  );
 
     const { currentpage } = usePage<{ currentpage: number }>().props;
     const { cates } = usePage<{ cates: number[] }>().props;
@@ -247,7 +252,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                   Contacto
                 </p>
               </Link>
-              <button onClick={() => setCartOpen(true)} className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
+              <button onClick={() => setCartOpen(true)} className="relative bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
                 <div className="relative shrink-0 size-[20px]" data-name="shopping_cart">
                   <div className="absolute inset-[9.38%_15.53%_10.18%_6.25%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-1.5px_-2.25px] mask-size-[24px_24px]" data-name="shopping_cart" style={{ maskImage: `url('${img}')` }}>
                     <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 17">
@@ -255,6 +260,14 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                     </svg>
                   </div>
                 </div>
+                {cartCount > 0 && (
+                  <span
+                    aria-label={`${cartCount} productos en el carrito`}
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#fa8232] text-white text-[11px] font-bold leading-[18px] text-center"
+                  >
+                    {cartCount}
+                  </span>
+                )}
                 <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
                   Carrito
                 </p>
