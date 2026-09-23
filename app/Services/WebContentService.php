@@ -137,7 +137,7 @@ class WebContentService
 
     public function productDetail(string $product, string $category, ?string $subcategory = null): ?Product
     {
-        return Product::with(['images', 'inventory'])
+        return Product::with(['images', 'inventory', 'category', 'subcategory', 'brand'])
             ->where('slug', $product)
             ->where('active', true)
             ->whereHas('category', fn ($q) => $q->where('slug', $category))

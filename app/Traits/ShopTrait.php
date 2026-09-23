@@ -12,9 +12,10 @@ use App\Models\Cart;
 use App\Models\CartItem;
 trait ShopTrait {
     
-    function get_shop_cart(){        
-        return Cart::with(['cartItems'])->where('cart_session', session('shop'))->first();        
-    }    
+    function get_shop_cart(){
+        return Cart::with(['cartItems.product.inventory', 'cartItems.product.images'])
+            ->where('cart_session', session('shop'))->first();
+    }
 }
 
 ?>
