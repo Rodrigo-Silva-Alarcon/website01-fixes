@@ -28,9 +28,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Redirects **301** para rutas legacy con mayúsculas (F4-19)
 - Eager loading en detalle de producto y carrito (F4-21)
 - Placeholder de imagen en banner y carrito (F4-22)
+- Permisos RBAC granulares de catálogo + middleware en rutas admin (F4-23)
+- Variables de producción documentadas en `.env.example` (F4-24)
 
 ### Fixed
 - Import duplicado de `globals.css` en Home/About (F4-20)
+- Política de contraseña: min 8 + letras + números (F4-25 / 5.1.6)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos
@@ -72,4 +75,5 @@ Ver `docs/fase1-*.md`:
 | §4.8.2 Inventario faltante (16/75) | Datos desde admin |
 | §4.8.3 Rol de usuario `example@website01.com` | Cambio en BD/admin |
 | 26 vulnerabilidades npm | Triaje pendiente |
+| reCAPTCHA (5.1.8) | Requiere site/secret keys del cliente |
 | `Show.tsx` clonados de texts | Bug de plantilla; fix aparte |
