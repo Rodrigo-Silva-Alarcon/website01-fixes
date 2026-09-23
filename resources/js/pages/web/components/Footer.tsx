@@ -1,8 +1,18 @@
 import svgPaths from "@/pages/web/imports/svg-3m2zodg2fw";
 import AppLogoIcon from '@/components/app-logo-icon';
 import { img } from "@/pages/web/imports/svg-ksqrv";
+import { usePage } from "@inertiajs/react";
 
 export default function Footer() {
+  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
+  const texts = cmsTexts ?? {};
+  const whatsappHref = texts.footer_whatsapp
+    ? `https://wa.me/${texts.footer_whatsapp.replace(/[^\d]/g, "")}`
+    : "https://wa.me/1234567890";
+  const emailHref = texts.footer_email
+    ? `mailto:${texts.footer_email}`
+    : "mailto:info@smarthouse.com";
+
   return (
     <footer className="bg-[#191c1f] relative w-full" data-name="Footer">
       <div className="flex flex-col items-center w-full">
@@ -22,7 +32,7 @@ export default function Footer() {
             <div className="content-start flex flex-wrap gap-[12px] md:gap-[16px] items-center justify-center md:justify-end">
               {/* WhatsApp */}
               <a 
-                href="https://wa.me/1234567890" 
+                href={whatsappHref}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
@@ -41,7 +51,7 @@ export default function Footer() {
 
               {/* Correo */}
               <a 
-                href="mailto:info@smarthouse.com"
+                href={emailHref}
                 className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
               >
                 <div className="relative shrink-0 size-[20px]" data-name="mail">

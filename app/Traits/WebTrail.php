@@ -82,4 +82,12 @@ trait WebTrail
             $subcategory !== null ? (string) $subcategory : null,
         );
     }
+
+    /**
+     * @return array<string, string>
+     */
+    function get_cms_texts(): array
+    {
+        return $this->webContent()->cmsTexts();
+    }
 }

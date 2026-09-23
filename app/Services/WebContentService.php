@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
+use App\Models\Text;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Collection;
@@ -144,5 +145,22 @@ class WebContentService
                 $qr->whereHas('subcategory', fn ($query) => $query->where('slug', $subcategory));
             })
             ->first();
+    }
+
+    /**
+     * Published CMS texts as name => content for frontend consumption.
+     *
+     * @return array<string, string>
+     */
+    public function cmsTexts(): array
+    {
+        return Cache::remember('web_cms_texts', 60, function (): array {
+            return Text::query()
+                ->where('publish', true)
+                ->get(['name', 'content'])
+                ->filter(fn (Text $t) => filled($t->content))
+                ->mapWithKeys(fn (Text $t) => [$t->name => (string) $t->content])
+                ->all();
+        });
     }
 }

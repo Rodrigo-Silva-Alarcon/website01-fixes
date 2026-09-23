@@ -85,6 +85,7 @@ class HandleInertiaRequests extends Middleware
             $base['marcas'] = $brands;
             $base['currentpage'] = $request->page??1;
             $base['find'] = $request->find??'';
+            $base['cmsTexts'] = $this->get_cms_texts();
         } else {
             $base['menu'] = [];
             $base['populares'] = [];
@@ -93,6 +94,7 @@ class HandleInertiaRequests extends Middleware
             $base['marcas'] = [];
             $base['currentpage'] = 1;
             $base['find'] = '';
+            $base['cmsTexts'] = [];
         }
 
         return $base;
