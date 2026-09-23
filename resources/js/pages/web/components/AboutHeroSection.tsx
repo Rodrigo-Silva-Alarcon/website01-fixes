@@ -6,7 +6,7 @@ function Texto20Px() {
       <p data-aos="fade-right" className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[32px] md:text-[49px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
         Sobre Smart House Bolivia
       </p>
-      <p data-aos="fade-right" data-aos-delay="100" className="font-poppins-regular leading-[1.4] not-italic relative shrink-0 text-[14px] md:text-[16px] w-full">Yorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.</p>
+      <p data-aos="fade-right" data-aos-delay="100" className="font-poppins-regular leading-[1.4] not-italic relative shrink-0 text-[14px] md:text-[16px] w-full">Smart House es una empresa boliviana especializada en la venta de electrodomésticos, muebles y tecnología para el hogar. Ofrecemos una amplia gama de productos de marcas reconocidas, con atención personalizada y precios competitivos en todo el país. Nuestro compromiso es brindar soluciones prácticas y de calidad para que cada hogar cuente con lo mejor.</p>
     </div>
   );
 }

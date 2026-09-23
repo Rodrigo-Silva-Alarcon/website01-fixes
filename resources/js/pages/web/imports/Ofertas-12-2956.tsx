@@ -7,7 +7,7 @@ function Info() {
         Misión
       </p>
       <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
-        Yorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.
+        Ofrecer a nuestros clientes productos de calidad para el hogar, con atención cercana, precios justos y entrega confiable en toda Bolivia, construyendo relaciones de largo plazo basadas en la confianza y el servicio.
       </p>
     </div>
   );
@@ -63,7 +63,7 @@ function Info1() {
         Visión
       </p>
       <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
-        Yorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.
+        Ser la tienda de referencia en Bolivia para electrodomésticos, muebles y tecnología, reconocida por la calidad de su catálogo, la innovación de sus servicios y la satisfacción de sus clientes.
       </p>
     </div>
   );
