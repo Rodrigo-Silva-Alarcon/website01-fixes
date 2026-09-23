@@ -39,7 +39,7 @@ export default function ProductJsonLd({ product }: { product: Product }) {
     url: absoluteUrl(
       typeof window !== "undefined"
         ? window.location.pathname
-        : `/Productos/${product.category_slug}/${product.subcategory_slug || "All"}/${product.slug}`,
+        : `/productos/${product.category_slug}/${product.subcategory_slug || "All"}/${product.slug}`,
     ),
     image: images.length ? images : undefined,
   };

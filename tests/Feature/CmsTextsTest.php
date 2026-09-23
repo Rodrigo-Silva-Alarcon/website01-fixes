@@ -40,6 +40,23 @@ it('does not share CMS texts on admin routes', function () {
         ->assertInertia(fn ($page) => $page->where('cmsTexts', []));
 });
 
+it('redirects legacy mixed-case paths with 301', function () {
+    $map = [
+        '/Contacto' => '/contactanos',
+        '/contacto' => '/contactanos',
+        '/Nosotros' => '/nosotros',
+        '/Productos' => '/productos',
+        '/Marcas' => '/marcas',
+        '/Servicios' => '/contactanos',
+        '/Contactanos' => '/contactanos',
+        '/Find' => '/find',
+    ];
+
+    foreach ($map as $from => $to) {
+        $this->get($from)->assertStatus(301)->assertRedirect($to);
+    }
+});
+
 it('shares footer contact CMS keys for conditional footer buttons', function () {
     $keys = [
         'footer_whatsapp' => '59170000000',

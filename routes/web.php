@@ -31,14 +31,14 @@ Route::get('/productos/{category}/{subcategory}', [WebController::class, 'produc
 Route::get('/productos/{category}/{subcategory}/{product}', [WebController::class, 'product'])->name('product');
 Route::get('/servicios', [WebController::class, 'services'])->name('services');
 Route::get('/contactanos', [WebController::class, 'contact'])->name('contact');
-Route::redirect('/Contacto', '/contactanos');
-Route::redirect('/contacto', '/contactanos');
-Route::redirect('/Nosotros', '/nosotros');
-Route::redirect('/Productos', '/productos');
-Route::redirect('/Marcas', '/marcas');
-Route::redirect('/Servicios', '/contactanos');
-Route::redirect('/Contactanos', '/contactanos');
-Route::redirect('/Find', '/find');
+Route::redirect('/Contacto', '/contactanos', 301);
+Route::redirect('/contacto', '/contactanos', 301);
+Route::redirect('/Nosotros', '/nosotros', 301);
+Route::redirect('/Productos', '/productos', 301);
+Route::redirect('/Marcas', '/marcas', 301);
+Route::redirect('/Servicios', '/contactanos', 301);
+Route::redirect('/Contactanos', '/contactanos', 301);
+Route::redirect('/Find', '/find', 301);
 Route::post('/enviar', [WebController::class, 'store'])->middleware('throttle:5,1')->name('store');
 Route::get('/find', [WebController::class, 'storefind'])->name('storefind');
 
