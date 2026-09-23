@@ -39,6 +39,8 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
         delete_image: false,
         active: banner.active,
         sw_title: banner.sw_title,
+        start_date: banner.start_date || '',
+        end_date: banner.end_date || '',
         _method: isEdit ? 'PUT' : 'POST',
     });
 
@@ -83,6 +85,8 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
             summary: data.summary,            
             active: data.active,
             sw_title: data.sw_title,
+            start_date: data.start_date || null,
+            end_date: data.end_date || null,
             delete_image: data.delete_image,
         };
         
@@ -425,6 +429,34 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
                         {errors.active && (
                             <p className="text-sm text-red-500">{errors.active}</p>
                         )}
+
+                        {/* Programación de fechas */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="start_date">Fecha de inicio (opcional)</Label>
+                                <Input
+                                    id="start_date"
+                                    type="date"
+                                    value={data.start_date}
+                                    onChange={(e) => setData('start_date', e.target.value)}
+                                />
+                                {errors.start_date && (
+                                    <p className="text-sm text-red-500">{errors.start_date}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="end_date">Fecha de fin (opcional)</Label>
+                                <Input
+                                    id="end_date"
+                                    type="date"
+                                    value={data.end_date}
+                                    onChange={(e) => setData('end_date', e.target.value)}
+                                />
+                                {errors.end_date && (
+                                    <p className="text-sm text-red-500">{errors.end_date}</p>
+                                )}
+                            </div>
+                        </div>
 
                         <div className="flex items-center gap-4">
                             <Button disabled={processing}>

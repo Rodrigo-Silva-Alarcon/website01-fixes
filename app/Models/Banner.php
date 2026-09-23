@@ -23,6 +23,8 @@ class Banner extends Model
         'pages',
         'order',
         'active',
+        'start_date',
+        'end_date',
         'sw_title',
     ];
 
@@ -30,14 +32,30 @@ class Banner extends Model
         'active' => 'bool',
         'sw_title' => 'bool',
         'order' => 'integer',
-        'pages' => 'array'
+        'pages' => 'array',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     protected $appends =['image_url', 'image_thumbs_url', 'image_webp_url'];
-    
+
     public function scopePublicados($query)
     {
         return $query->where('active', true);
+    }
+
+    public function scopeScheduled($query)
+    {
+        $today = now()->toDateString();
+
+        return $query
+            ->where('active', true)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('start_date')->orWhere('start_date', '<=', $today);
+            })
+            ->where(function ($q) use ($today) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', $today);
+            });
     }
 
     public function scopeNoPublicados($query)

@@ -65,7 +65,7 @@ class WebContentService
     public function banners(string $page): Collection
     {
         return Cache::remember('web_banners_'.$page, 60, function () use ($page): Collection {
-            return Banner::where('active', true)
+            return Banner::scheduled()
                 ->where('pages', 'like', '%"' . $page . '"%')
                 ->orderBy('order', 'ASC')
                 ->orderBy('id', 'DESC')

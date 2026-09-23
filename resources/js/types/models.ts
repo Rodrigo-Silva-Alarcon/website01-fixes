@@ -123,6 +123,8 @@ export interface Banner{
     summary: string;
     active:boolean;
     sw_title:boolean;
+    start_date?: string | null;
+    end_date?: string | null;
     created_at: string;
     pages: string[];
     image_url: string; // contiene la direccion de la image

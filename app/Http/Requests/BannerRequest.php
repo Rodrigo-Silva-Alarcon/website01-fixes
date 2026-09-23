@@ -33,6 +33,8 @@ class BannerRequest extends FormRequest
             'pages' => 'nullable',
             'active' => 'nullable|string|max:2',
             'sw_title' => 'nullable|string|max:2',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
         ];
     }
 
@@ -51,6 +53,9 @@ class BannerRequest extends FormRequest
             'summary' => 'resumen',
             'active' => 'publico',
             'pages' => 'paginas',
+            'start_date.date' => 'La fecha de inicio debe ser válida.',
+            'end_date.date' => 'La fecha de fin debe ser válida.',
+            'end_date.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la de inicio.',
         ];
     }
 }
