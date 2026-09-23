@@ -9,8 +9,8 @@ function Banner({product}:{product:Product}) {
   return (
     <div className="basis-0 bg-[#e0eef3] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-row items-center justify-center min-w-inherit overflow-clip rounded-[inherit] size-full">
-        <div className="box-border content-stretch flex flex-col sm:flex-row gap-[20px] sm:gap-[40px] items-center justify-center min-w-inherit p-[20px] relative w-full">
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-0 relative shrink-0" data-name="Content">
+        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-center justify-center min-w-inherit p-[20px] relative w-full">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-[160px] relative shrink-0" data-name="Content">
             <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
                 <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
@@ -83,8 +83,8 @@ function Banner1({product}:{product:Product}) {
   return (
     <div className="basis-0 bg-[#191c1f] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-row items-center min-w-inherit overflow-clip rounded-[inherit] size-full">
-        <div className="box-border content-stretch flex flex-col sm:flex-row gap-[20px] sm:gap-[40px] lg:gap-[64px] items-center min-w-inherit p-[20px] relative w-full">
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-0 relative shrink-0" data-name="Content">
+        <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] lg:gap-[64px] items-center min-w-inherit p-[20px] relative w-full">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-[160px] relative shrink-0" data-name="Content">
             <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
               <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
                 <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
