@@ -1,4 +1,3 @@
-import "@/pages/web/styles/globals.css";
 import Layout from "@/pages/web/layouts/Layout";
 import AboutHeroSection from "@/pages/web/components/AboutHeroSection";
 import AboutFeaturesSection from "@/pages/web/components/AboutFeaturesSection";

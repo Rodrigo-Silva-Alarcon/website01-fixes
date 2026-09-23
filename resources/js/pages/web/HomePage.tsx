@@ -1,4 +1,3 @@
-import "@/pages/web/styles/globals.css";
 import Ofertas from "@/pages/web/components/Ofertas";
 import Categorias from "@/pages/web/components/Categorias";
 import MarcasLogos from "@/pages/web/components/Marcas";
