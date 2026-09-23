@@ -21,23 +21,29 @@ use Inertia\Inertia;
 
 Route::get('/', [WebController::class, 'homepage'])->name('home');
 Route::get('/sitemap.xml', \App\Http\Controllers\SitemapController::class)->name('sitemap');
-Route::get('/Nosotros', [WebController::class, 'about'])->name('about');
-Route::get('/Productos', [WebController::class, 'products'])->name('products');
-Route::post('/Productos/Filtrar', [WebController::class, 'products'])->name('products_post');
-Route::get('/Marcas/{brand}', [WebController::class, 'products'])->name('brand');
-Route::get('/Productos/{category}', [WebController::class, 'products'])->name('category');
-Route::get('/Productos/{category}/{subcategory}', [WebController::class, 'products'])->name('subcategory');
-Route::get('/Productos/{category}/{subcategory}/{product}', [WebController::class, 'product'])->name('product');
-Route::get('/Servicios', [WebController::class, 'services'])->name('services');
-Route::get('/Contactanos', [WebController::class, 'contact'])->name('contact');
-Route::redirect('/Contacto', '/Contactanos');
-Route::redirect('/contacto', '/Contactanos');
-    Route::post('/Enviar', [WebController::class, 'store'])->middleware('throttle:5,1')->name('store');
-Route::get('/Find', [WebController::class, 'storefind'])->name('storefind');
+Route::get('/nosotros', [WebController::class, 'about'])->name('about');
+Route::get('/productos', [WebController::class, 'products'])->name('products');
+Route::post('/productos/filtrar', [WebController::class, 'products'])->name('products_post');
+Route::get('/marcas/{brand}', [WebController::class, 'products'])->name('brand');
+Route::get('/productos/{category}', [WebController::class, 'products'])->name('category');
+Route::get('/productos/{category}/{subcategory}', [WebController::class, 'products'])->name('subcategory');
+Route::get('/productos/{category}/{subcategory}/{product}', [WebController::class, 'product'])->name('product');
+Route::get('/servicios', [WebController::class, 'services'])->name('services');
+Route::get('/contactanos', [WebController::class, 'contact'])->name('contact');
+Route::redirect('/Contacto', '/contactanos');
+Route::redirect('/contacto', '/contactanos');
+Route::redirect('/Nosotros', '/nosotros');
+Route::redirect('/Productos', '/productos');
+Route::redirect('/Marcas', '/marcas');
+Route::redirect('/Servicios', '/contactanos');
+Route::redirect('/Contactanos', '/contactanos');
+Route::redirect('/Find', '/find');
+Route::post('/enviar', [WebController::class, 'store'])->middleware('throttle:5,1')->name('store');
+Route::get('/find', [WebController::class, 'storefind'])->name('storefind');
 
-Route::post('/AddShop/{product}', [ShopController::class, 'add'])->name('addshop');
-Route::patch('/Shop/{product}', [ShopController::class, 'update'])->name('updateshop');
-Route::post('/RemoveShop/{product}', [ShopController::class, 'remove'])->name('removeshop');
+Route::post('/addshop/{product}', [ShopController::class, 'add'])->name('addshop');
+Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('updateshop');
+Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');
 
 // Rutas del panel de administración con prefijo admin/
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {

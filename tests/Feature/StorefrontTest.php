@@ -13,24 +13,28 @@ uses(RefreshDatabase::class);
 it('renders public pages with existing components', function (string $url, string $component) {
     $this->get($url)->assertOk()->assertInertia(fn (Assert $page) => $page->component($component));
 })->with([
-    ['/', 'web/HomePage'], ['/Nosotros', 'web/AboutPage'],
-    ['/Productos', 'web/ProductosPage'], ['/Contactanos', 'web/ContactoPage'],
-    ['/Find?find=camera', 'web/ProductosPage'],
+    ['/', 'web/HomePage'], ['/nosotros', 'web/AboutPage'],
+    ['/productos', 'web/ProductosPage'], ['/contactanos', 'web/ContactoPage'],
+    ['/find?find=camera', 'web/ProductosPage'],
 ]);
 
 it('directs service enquiries to contact', function () {
-    $this->get('/Servicios')->assertRedirect('/Contactanos');
+    $this->get('/servicios')->assertRedirect('/contactanos');
+    $this->get('/Servicios')->assertRedirect('/contactanos');
 });
 
-it('redirects legacy /Contacto URLs to /Contactanos', function () {
-    $this->get('/Contacto')->assertRedirect('/Contactanos');
-    $this->get('/contacto')->assertRedirect('/Contactanos');
+it('redirects legacy capitalized and contact URLs to lowercase', function () {
+    $this->get('/Contacto')->assertRedirect('/contactanos');
+    $this->get('/contacto')->assertRedirect('/contactanos');
+    $this->get('/Contactanos')->assertRedirect('/contactanos');
+    $this->get('/Nosotros')->assertRedirect('/nosotros');
+    $this->get('/Productos')->assertRedirect('/productos');
 });
 
 it('returns not found for missing products and cart items', function () {
-    $this->get('/Productos/missing/All/missing')->assertNotFound();
-    $this->post('/AddShop/99999')->assertNotFound();
-    $this->post('/RemoveShop/99999')->assertRedirect();
+    $this->get('/productos/missing/All/missing')->assertNotFound();
+    $this->post('/addshop/99999')->assertNotFound();
+    $this->post('/removeshop/99999')->assertRedirect();
 });
 
 it('filters products by subcategory and multiple brands', function () {
@@ -40,18 +44,18 @@ it('filters products by subcategory and multiple brands', function () {
         Product::create(['name' => 'Camera '.$brand, 'category_id' => $category->id, 'subcategory_id' => $sub->id, 'brand_id' => $brand, 'active' => true]);
     }
     Product::create(['name' => 'Indoor', 'category_id' => $category->id, 'active' => true]);
-    $this->get('/Productos/'.$category->slug.'/'.$sub->slug)->assertOk()
+    $this->get('/productos/'.$category->slug.'/'.$sub->slug)->assertOk()
         ->assertInertia(fn (Assert $page) => $page->has('products.data', 3));
-    $this->get('/Productos?ms[]=1&ms[]=2')->assertOk()
+    $this->get('/productos?ms[]=1&ms[]=2')->assertOk()
         ->assertInertia(fn (Assert $page) => $page->has('products.data', 2));
 });
 
 it('validates contact and sends a message', function () {
     Mail::fake();
-    $this->post('/Enviar', [])->assertSessionHasErrors(['name', 'email', 'phone']);
+    $this->post('/enviar', [])->assertSessionHasErrors(['name', 'email', 'phone']);
     Mail::assertNothingSent();
-    $this->post('/Enviar', ['name' => 'Test', 'email' => 'test@example.com', 'phone' => '12345678'])
-        ->assertRedirect('/Contactanos')->assertSessionHas('status');
+    $this->post('/enviar', ['name' => 'Test', 'email' => 'test@example.com', 'phone' => '12345678'])
+        ->assertRedirect('/contactanos')->assertSessionHas('status');
     Mail::assertSent(MessageReceived::class, function ($mail) {
         expect($mail->render())->toContain('Test');
         return true;
@@ -74,9 +78,9 @@ it('provides GET pagination links after filtering', function () {
     for ($i = 1; $i <= 21; $i++) {
         Product::create(['name' => 'Camera '.$i, 'category_id' => $category->id, 'active' => true]);
     }
-    $this->post('/Productos/Filtrar', ['cs' => [$category->id]])->assertOk()
+    $this->post('/productos/filtrar', ['cs' => [$category->id]])->assertOk()
         ->assertInertia(fn (Assert $page) => $page->where('products.next_page_url', route('products').'?cs%5B0%5D=1&page=2'));
-    $this->get('/Productos?page=2&cs[]='.$category->id)->assertOk()
+    $this->get('/productos?page=2&cs[]='.$category->id)->assertOk()
         ->assertInertia(fn (Assert $page) => $page->has('products.data', 1));
 });
 

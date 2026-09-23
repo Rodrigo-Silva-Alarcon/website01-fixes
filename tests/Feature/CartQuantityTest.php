@@ -17,23 +17,23 @@ beforeEach(function () {
 
 it('persists increased and decreased quantities and recalculates the subtotal', function () {
     foreach ([3, 2, 1] as $amount) {
-        $this->withSession(['shop' => 'my-cart'])->from('/Productos')
-            ->patch('/Shop/123', ['amount' => $amount, 'unit_price' => 1, 'sub_total' => 1])
-            ->assertRedirect('/Productos');
+        $this->withSession(['shop' => 'my-cart'])->from('/productos')
+            ->patch('/shop/123', ['amount' => $amount, 'unit_price' => 1, 'sub_total' => 1])
+            ->assertRedirect('/productos');
         expect($this->item->fresh()->amount)->toBe($amount);
         expect($this->item->fresh()->sub_total)->toBe(number_format(12.35 * $amount, 2, '.', ''));
-        $this->get('/Productos')->assertInertia(fn (Assert $page) => $page->where('cart.cart_items.0.amount', $amount));
+        $this->get('/productos')->assertInertia(fn (Assert $page) => $page->where('cart.cart_items.0.amount', $amount));
     }
 });
 
 it('rejects invalid quantities without changing the cart', function ($amount) {
-    $this->withSession(['shop' => 'my-cart'])->patch('/Shop/123', ['amount' => $amount])
+    $this->withSession(['shop' => 'my-cart'])->patch('/shop/123', ['amount' => $amount])
         ->assertSessionHasErrors('amount');
     expect($this->item->fresh()->amount)->toBe(1);
 })->with([0, -1, 1.5, 10000, 'invalid', null]);
 
 it('does not update another sessions cart', function () {
-    $this->patch('/Shop/123', ['amount' => 2])->assertNotFound();
-    $this->withSession(['shop' => 'other-cart'])->patch('/Shop/123', ['amount' => 2])->assertNotFound();
+    $this->patch('/shop/123', ['amount' => 2])->assertNotFound();
+    $this->withSession(['shop' => 'other-cart'])->patch('/shop/123', ['amount' => 2])->assertNotFound();
     expect($this->item->fresh()->amount)->toBe(1);
 });
