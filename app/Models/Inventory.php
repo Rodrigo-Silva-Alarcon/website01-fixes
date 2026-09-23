@@ -26,6 +26,11 @@ class Inventory extends Model
         'stock' => 'integer',
     ];
 
+    public function getStockAttribute($value): int
+    {
+        return $value ?? 0;
+    }
+
     /**
      * Get the product that owns the inventory.
      */

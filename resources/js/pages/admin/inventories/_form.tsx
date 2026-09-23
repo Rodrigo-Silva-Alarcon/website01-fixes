@@ -30,7 +30,7 @@ export default function InventoryForm({ inventory, products, isEdit = false, tit
         offer_amount: inventory.offer_amount||'',
         ini: inventory.ini||'',
         fin: inventory.fin||'',
-        stock: inventory.stock || '',
+        stock: String(inventory.stock ?? 0),
         money: inventory.money || 'BOB',
         _method: isEdit ? 'PUT' : 'POST',
     });

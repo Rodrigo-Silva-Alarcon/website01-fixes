@@ -26,7 +26,7 @@ class InventoryRequest extends FormRequest
         return [
             'product_id' => 'required|integer|exists:products,id',
             'amount' => 'required|numeric|min:0',
-            'stock' => 'nullable|integer|min:0',
+            'stock' => 'nullable|integer|min:0', // null → 0 en controller/model
             'offer_amount'  => 'nullable|numeric|min:0',
             'ini'  => 'nullable|date',
             'fin'  => 'nullable|date',

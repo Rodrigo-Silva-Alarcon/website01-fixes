@@ -239,7 +239,7 @@ export default function Index({ records, filters, success, error }: Props) {
                                     <TableRow key={inventory.id}>
                                         <TableCell className="font-medium">{inventory.product?.name}</TableCell>
                                         <TableCell>{inventory.amount}</TableCell>
-                                        <TableCell>{inventory.stock}</TableCell>
+                                        <TableCell>{inventory.stock ?? 0}</TableCell>
                                         <TableCell>{inventory.money}</TableCell>
                                         <TableCell>
                                             {new Date(inventory.created_at).toLocaleDateString()}
