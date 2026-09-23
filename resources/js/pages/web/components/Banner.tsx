@@ -1,5 +1,4 @@
 import svgPaths from "../imports/svg-ebgpxejlry";
-import imgImage from "@/pages/web/assets/e6ff3417e24ae221ecb7179d94af93cf33ba079b.png";
 import { img, img1 } from "../imports/svg-adrl1";
 import { Product } from "@/types/models";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -8,13 +7,13 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 
 function Banner({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#e0eef3] grow  w-full lg:min-w-[300px] relative rounded-[20px] shrink-0" data-name="Banner">
-      <div className="flex flex-row items-center justify-center min-w-inherit size-full">
-        <div className="box-border content-stretch flex flex-col sm:flex-row gap-[20px] sm:gap-[40px] items-center justify-center min-w-inherit p-[20px] relative w-full">          
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start  relative shrink-0" data-name="Content">
-            <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full" data-name="CONTENT">
-              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full" data-name="Heading">
-                <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0">
+    <div className="basis-0 bg-[#e0eef3] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+      <div className="flex flex-row items-center justify-center min-w-inherit overflow-clip rounded-[inherit] size-full">
+        <div className="box-border content-stretch flex flex-col sm:flex-row gap-[20px] sm:gap-[40px] items-center justify-center min-w-inherit p-[20px] relative w-full">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-0 relative shrink-0" data-name="Content">
+            <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
+              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
+                <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
                   <div className="relative shrink-0 size-[24px]" data-name="sports_esports">
                     <div className="absolute inset-[22.92%_10.43%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.504px_-5.5px] mask-size-[24px_24px]" data-name="sports_esports" style={{ maskImage: `url('${img}')` }}>
                       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19 13">
@@ -22,32 +21,32 @@ function Banner({product}:{product:Product}) {
                       </svg>
                     </div>
                   </div>
-                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#006696] text-[14px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#006696] text-[14px] text-nowrap whitespace-pre max-w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>
                 </div>
-                <Link 
+                <Link
                   href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-                  className="font-dm_sans font-bold leading-[1.2] min-w-full relative shrink-0 text-[#191c1f] text-[24px] sm:text-[31px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  className="font-dm_sans font-bold leading-[1.2] relative shrink-0 text-[#191c1f] text-[24px] sm:text-[31px] w-full break-words min-w-0" style={{ fontVariationSettings: "'opsz' 14" }}>
                   <p className="mb-0">{product.name}</p>
-                  {product.summary && ( 
+                  {product.summary && (
                   <p>{product.summary}</p>
                   )}
                 </Link>
               </div>
-              { product.inventory?.amount &&(                      
+              { product.inventory?.amount &&(
                 <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#c45500] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                   {product.inventory.money} {product.inventory.amount}
                 </p>
-              )}    
+              )}
             </div>
-            <Button_pay 
+            <Button_pay
               product={product}
               />
           </div>
-          <Link 
+          <Link
             href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-            className="relative shrink-0 size-[180px] sm:size-[240px]" data-name="image 6">
+            className="relative shrink-0 size-[160px] sm:size-[200px] lg:size-[240px]" data-name="image 6">
             <ResponsiveImg
               alt={product.name}
               className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
@@ -82,13 +81,13 @@ function Button_pay({product}:{product:Product}){
 }
 function Banner1({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#191c1f] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0" data-name="Banner">
+    <div className="basis-0 bg-[#191c1f] grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-row items-center min-w-inherit overflow-clip rounded-[inherit] size-full">
         <div className="box-border content-stretch flex flex-col sm:flex-row gap-[20px] sm:gap-[40px] lg:gap-[64px] items-center min-w-inherit p-[20px] relative w-full">
-          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start  relative shrink-0" data-name="Content">
-            <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full" data-name="CONTENT">
-              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full" data-name="Heading">
-                <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0">
+          <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-w-0 relative shrink-0" data-name="Content">
+            <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full min-w-0" data-name="CONTENT">
+              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full min-w-0" data-name="Heading">
+                <div className="content-stretch flex gap-[5px] items-center justify-center relative shrink-0 max-w-full">
                   <div className="relative shrink-0 size-[24px]" data-name="sports_esports">
                     <div className="absolute inset-[22.92%_10.43%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.504px_-5.5px] mask-size-[24px_24px]" data-name="sports_esports" style={{ maskImage: `url('${img}')` }}>
                       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19 13">
@@ -96,33 +95,33 @@ function Banner1({product}:{product:Product}) {
                       </svg>
                     </div>
                   </div>
-                  <Link 
-                    href={route('category', {category:product.category_slug})} 
-                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#008ecc] text-[14px] text-nowrap whitespace-pre"
+                  <Link
+                    href={route('category', {category:product.category_slug})}
+                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#008ecc] text-[14px] text-nowrap whitespace-pre max-w-full"
                     style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>
                 </div>
-                <Link 
+                <Link
                   href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-                  className="font-dm_sans font-bold leading-[1.2] min-w-full relative shrink-0 text-[24px] sm:text-[31px] text-white w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  className="font-dm_sans font-bold leading-[1.2] relative shrink-0 text-[24px] sm:text-[31px] text-white w-full break-words min-w-0" style={{ fontVariationSettings: "'opsz' 14" }}>
                   <p className="mb-0">{product.name}</p>
                   <p>{product.summary}</p>
                 </Link>
               </div>
-              { product.inventory?.amount &&(    
+              { product.inventory?.amount &&(
               <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#fa8232] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                 {product.inventory.money} {product.inventory.amount}
               </p>
               )}
             </div>
-            <Button_pay 
+            <Button_pay
               product={product}
               />
           </div>
-          <Link 
+          <Link
             href={route('product', { product:product.slug, category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-            className="h-[180px] sm:h-[240px] relative shrink-0 w-[160px] sm:w-[215px]" data-name="Image">
+            className="h-[160px] sm:h-[200px] lg:h-[240px] relative shrink-0 w-[140px] sm:w-[180px] lg:w-[215px]" data-name="Image">
             <ResponsiveImg
               alt={product.name}
               className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
