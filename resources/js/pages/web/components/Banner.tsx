@@ -5,10 +5,13 @@ import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import { currencyLabel } from "@/lib/cart";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useRef } from "react";
 
 function Banner({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#e0eef3] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+    <div className="basis-0 h-full bg-[#e0eef3] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-1 flex-row items-start justify-center min-w-inherit overflow-clip rounded-[inherit]">
         <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-start justify-center min-w-inherit p-[20px] relative w-full">
           <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-[306px] min-w-[160px] relative shrink-0" data-name="Content">
@@ -82,7 +85,7 @@ function Button_pay({product}:{product:Product}){
 }
 function Banner1({product}:{product:Product}) {
   return (
-    <div className="basis-0 bg-[#191c1f] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+    <div className="basis-0 h-full bg-[#191c1f] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-1 flex-row items-start min-w-inherit overflow-clip rounded-[inherit]">
         <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-start min-w-inherit p-[20px] relative w-full">
           <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-[306px] min-w-[160px] relative shrink-0" data-name="Content">
@@ -141,19 +144,39 @@ function Banner1({product}:{product:Product}) {
 export default function Destacados() {
 
   const { destacados } = usePage<{ destacados: Product[] }>().props;
+  const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+  const hasMultiple = destacados.length > 1;
+
   return (
     <div data-aos="zoom-in" data-aos-delay="200">
       <div className="relative size-full" data-name="Banner">
-        <div className="size-full">
-          <div className="box-border content-start flex flex-col lg:flex-row gap-[16px] items-stretch px-[16px] sm:px-[32px] md:px-[64px] py-[40px] md:py-[80px] relative size-full">
-            {destacados.map((product, index) =>
-              index % 2 === 0 ? (
-                <Banner key={index} product={product} />                
-              ) : (
-                <Banner1 key={index} product={product} />
-              )
-            )}            
-          </div>
+        <div className="box-border content-start flex flex-col px-[16px] sm:px-[32px] md:px-[64px] py-[40px] md:py-[80px] relative size-full">
+          <Carousel
+            className="w-full"
+            opts={{ align: "start", loop: hasMultiple }}
+            plugins={hasMultiple ? [plugin.current] : []}
+          >
+            <CarouselContent className="-ml-[16px]">
+              {destacados.map((product, index) => (
+                <CarouselItem
+                  key={product.id ?? index}
+                  className="pl-[16px] basis-full sm:basis-1/2 xl:basis-1/3"
+                >
+                  {index % 2 === 0 ? (
+                    <Banner product={product} />
+                  ) : (
+                    <Banner1 product={product} />
+                  )}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {hasMultiple && (
+              <>
+                <CarouselPrevious className="-left-2 sm:left-4 bg-white/80 hover:bg-white" />
+                <CarouselNext className="-right-2 sm:right-4 bg-white/80 hover:bg-white" />
+              </>
+            )}
+          </Carousel>
         </div>
       </div>
     </div>
