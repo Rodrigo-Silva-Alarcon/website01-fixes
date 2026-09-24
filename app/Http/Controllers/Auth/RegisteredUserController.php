@@ -46,6 +46,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        if ($user->hasPermission('access_dashboard')) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('home', absolute: false));
     }
 }

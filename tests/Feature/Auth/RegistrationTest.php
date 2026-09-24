@@ -17,7 +17,7 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('admin.dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });
 
 test('weak password without number is rejected on register', function () {
