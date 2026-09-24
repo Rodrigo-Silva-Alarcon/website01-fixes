@@ -1,16 +1,9 @@
 
 import { Inventory } from "@/types/models";
+import { isOnOffer } from "@/lib/product-enquiry";
 
 export default function Price({inventory}:{inventory:Inventory}) {
-    
-    const hoy = new Date();
-    const ini = inventory.ini ? new Date(inventory.ini) : null;
-    const fin = inventory.fin ? new Date(inventory.fin) : null;
-
-    const mostrarOferta =
-        (ini && fin && ini <= hoy && hoy <= fin) || // rango válido
-        (ini && !fin && ini <= hoy) ||              // solo fecha inicial
-        (!ini && fin && hoy <= fin);                // solo fecha final
+  const mostrarOferta = isOnOffer(inventory);
 
   return (
     <div className="content-start flex flex-wrap font-dm_sans font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">

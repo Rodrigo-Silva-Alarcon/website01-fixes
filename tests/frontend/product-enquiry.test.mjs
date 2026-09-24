@@ -19,7 +19,7 @@ test('uses the active offer when deciding if a product has a price', () => {
     const inventory = { amount: '100', offer_amount: '80', ini: '2026-09-01', fin: '2026-09-30', money: 'BOB' };
     assert.equal(productPrice(inventory, new Date('2026-09-09')), 80);
     assert.equal(productPrice(inventory, new Date('2026-10-01')), 100);
-    assert.equal(productPrice({ ...inventory, offer_amount: null }, new Date('2026-09-09')), null);
+    assert.equal(productPrice({ ...inventory, offer_amount: null }, new Date('2026-09-09')), 100);
 });
 
 test('encodes product information and its link for the requested WhatsApp number', () => {

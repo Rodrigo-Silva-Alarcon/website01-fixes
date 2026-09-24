@@ -1,4 +1,4 @@
-import { productPrice } from "@/lib/product-enquiry";
+import { isOnOffer, productPrice } from "@/lib/product-enquiry";
 import svgPaths from "../imports/svg-o54k4pn05p";
 import { img as maskImg } from "../imports/svg-nochp";
 import { Inventory, Product } from "@/types/models";
@@ -52,14 +52,7 @@ function LinkCarrito({product}:{product:Product}) {
   );
 }
 function Precio({inventory}:{inventory:Inventory}){
-  const hoy = new Date();
-  const ini = inventory.ini ? new Date(inventory.ini) : null;
-  const fin = inventory.fin ? new Date(inventory.fin) : null;
-
-  const mostrarOferta =
-    (ini && fin && ini <= hoy && hoy <= fin) ||
-    (ini && !fin && ini <= hoy) ||
-    (!ini && fin && hoy <= fin);
+  const mostrarOferta = isOnOffer(inventory);
 
   return (
     <div className="content-start flex flex-wrap font-dm_sans font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">

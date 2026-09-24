@@ -10,9 +10,20 @@ export function productPrice(inventory?: InventoryPrice | null, now = new Date()
     if (!inventory) return null;
     const start = inventory.ini ? new Date(inventory.ini) : null;
     const end = inventory.fin ? new Date(inventory.fin) : null;
-    const onOffer = (start || end) && (!start || start <= now) && (!end || now <= end);
-    const price = Number(onOffer ? inventory.offer_amount : inventory.amount);
+    const onOffer = Boolean((start || end) && (!start || start <= now) && (!end || now <= end));
+    const offer = inventory.offer_amount != null && inventory.offer_amount !== '' ? Number(inventory.offer_amount) : NaN;
+    const base = Number(inventory.amount);
+    const price = onOffer && Number.isFinite(offer) && offer > 0 ? offer : base;
     return Number.isFinite(price) && price > 0 ? price : null;
+}
+
+export function isOnOffer(inventory?: InventoryPrice | null, now = new Date()): boolean {
+    if (!inventory) return false;
+    const start = inventory.ini ? new Date(inventory.ini) : null;
+    const end = inventory.fin ? new Date(inventory.fin) : null;
+    const window = Boolean((start || end) && (!start || start <= now) && (!end || now <= end));
+    const offer = inventory.offer_amount != null && inventory.offer_amount !== '' ? Number(inventory.offer_amount) : NaN;
+    return window && Number.isFinite(offer) && offer > 0;
 }
 
 export function productEnquiryUrl(product: {
