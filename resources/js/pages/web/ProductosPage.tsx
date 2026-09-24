@@ -509,7 +509,7 @@ export default function ProductosPage({categories, brands}:FormProps) {
           description="Explora nuestro catálogo de productos de tecnología y electrodomésticos. Encuentra lo que necesitas al mejor precio."
         />
         <div className="max-w-[1440px] mx-auto w-full mt-4">
-          <h1 className="text-[24px] md:text-[32px] font-bold text-[#191c1f] px-4 pt-4">Productos</h1>
+          <h1 className="text-[24px] md:text-[32px] font-bold text-[#006696] px-4 pt-4">Productos</h1>
           {/* Main Content */}
           <div className="content-start flex flex-col lg:flex-row gap-0 items-start justify-center relative w-full">
             {/* Mobile Filter Toggle */}

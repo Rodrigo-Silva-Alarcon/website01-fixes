@@ -9,13 +9,9 @@ import { route } from "ziggy-js";
 function MenuItemComponent({
     item,
     isHovered,
-    onEnter,
-    onLeave,
   }: {
     item: MenuItem;
     isHovered: boolean;
-    onEnter?: () => void;
-    onLeave?: () => void;
   }) {
 
   const icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
@@ -23,8 +19,6 @@ function MenuItemComponent({
   return (
     <Link  
     href={route('category', { category: item.id })}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
       className={`content-stretch flex gap-[5px] items-center justify-center relative shrink-0 ${
         isHovered? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-pointer hover:opacity-80 transition-opacity'
       }`}
@@ -148,8 +142,6 @@ export default function CategoriasMenu({menu}:{menu:MenuItem[]}) {
                     <MenuItemComponent
                       item={item}
                       isHovered={isHovered}
-                      onEnter={() => setHoveredItem(item.id)}
-                      onLeave={() => setHoveredItem(null)}
                     />
                     {isHovered && (
                       <Submenu items={item.submenu} id={item.id} />

@@ -172,8 +172,8 @@ export default function Destacados() {
             </CarouselContent>
             {hasMultiple && (
               <>
-                <CarouselPrevious className="-left-2 sm:left-4 bg-white/80 hover:bg-white" />
-                <CarouselNext className="-right-2 sm:right-4 bg-white/80 hover:bg-white" />
+                <CarouselPrevious className="left-0 bottom-full mb-2 top-auto translate-y-0 bg-white/80 hover:bg-white" />
+                <CarouselNext className="right-0 bottom-full mb-2 top-auto translate-y-0 bg-white/80 hover:bg-white" />
               </>
             )}
           </Carousel>
