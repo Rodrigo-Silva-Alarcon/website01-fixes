@@ -164,7 +164,7 @@ class UserController extends Controller
     public function updatePassword(Request $request, User $user)
     {
         $request->validate([
-            'password' => 'required|confirmed|min:8',
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()],
         ]);
 
         $user->update(['password' => Hash::make($request->password)]);

@@ -71,9 +71,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Footer: iconos Instagram y X/Twitter configurables via CMS (§4.7.8) (F4-56)
 - Dependencias: npm audit fix redujo 26 vulnerabilidades a 2 (axios inertia, sin fix) (F4-57)
 - Auth: Ziggy en `/login` incluye rutas admin → dashboard SPA ya no queda en blanco tras login (F4-58)
+- Seguridad: throttle:5,1 en rutas de reset de contrasena + password rule admin letras/numeros (1.4/1.6) (F4-59)
+- UI: home sin AOS (hueco blanco), contacto via cmsTexts, logo wordmark en login (F4-60)
+- Codigo: typos WebTrail->WebTrait, get_detacados->get_destacados, tecnical_info->technical_info + migracion (7.5) (F4-61)
+- DB: indices y foreign keys donde hay 0 huerfanos (2.7) (F4-62)
+
+### Verified as already resolved (analisis-mejoras)
+- 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked
 
 ### Verified as already resolved
-- §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos
 
 ## Fase 3 — Rendimiento y arquitectura (DONE, 7/7)
 
