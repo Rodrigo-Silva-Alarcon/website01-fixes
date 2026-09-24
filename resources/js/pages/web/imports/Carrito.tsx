@@ -224,16 +224,6 @@ function Frame10124106({items, pending}:{items:CartItem[]; pending:boolean}) {
     <div className="relative shrink-0 w-full">
       <div className="size-full">
         <div className="box-border content-stretch flex flex-col gap-[16px] items-start px-[32px] py-0 pb-[32px] relative w-full">
-          <Link
-            href={route("checkout")}
-            aria-disabled={pending}
-            className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
-            data-name="BotonCheckout"
-          >
-            <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
-              Finalizar pedido
-            </p>
-          </Link>
           <a
             href={pending ? undefined : url}
             aria-disabled={pending}
@@ -253,6 +243,16 @@ function Frame10124106({items, pending}:{items:CartItem[]; pending:boolean}) {
               Solicitar pedido por WhatsApp
             </p>
           </a>
+          <Link
+            href={route("checkout")}
+            aria-disabled={pending}
+            className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+            data-name="BotonCheckout"
+          >
+            <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+              Realizar Pedido
+            </p>
+          </Link>
         </div>
       </div>
     </div>
