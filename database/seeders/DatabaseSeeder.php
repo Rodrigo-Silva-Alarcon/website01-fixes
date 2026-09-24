@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RolePermissionSeeder::class,
             SubcategorySeeder::class,
+            ProductSeeder::class,
         ]);
 
         // Crear usuarios de prueba

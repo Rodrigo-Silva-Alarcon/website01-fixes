@@ -59,6 +59,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Imágenes de los 8 productos alineadas con título; categoría Comida eliminada; imagen de Electrodomésticos corregida (F4-44)
 - Logo nuevo Smart House (casa naranja + nodos azules + wordmark) en header/footer/admin/favicon (F4-45)
 - Subcategorías e iconos del menú hover (4 categorías, seed + orden `order`) (F4-46)
+- Productos para Equipos de sonido y Consolas en home (10 items con imagen/precio) (F4-47)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos
