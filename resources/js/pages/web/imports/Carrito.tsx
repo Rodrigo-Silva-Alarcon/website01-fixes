@@ -224,21 +224,32 @@ function Frame10124106({items, pending}:{items:CartItem[]; pending:boolean}) {
     <div className="relative shrink-0 w-full">
       <div className="size-full">
         <div className="box-border content-stretch flex flex-col gap-[16px] items-start px-[32px] py-0 pb-[32px] relative w-full">
-          <a 
+          <Link
+            href={route("checkout")}
+            aria-disabled={pending}
+            className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+            data-name="BotonCheckout"
+          >
+            <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+              Finalizar pedido
+            </p>
+          </Link>
+          <a
             href={pending ? undefined : url}
             aria-disabled={pending}
             target="_blank"
             rel="noopener noreferrer"
-            className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" 
-            data-name="Botón3">
+            className="interactive-button border border-[#fa8232] text-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+            data-name="Botón3"
+          >
             <div className="relative shrink-0 size-[20px]" data-name="WhatsApp">
               <div className="absolute bottom-0 left-0 right-[0.47%] top-0" data-name="Vector">
                 <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 20 20">
-                  <path d={svgPaths.p3190a280} fill="var(--fill-0, white)" id="Vector" />
+                  <path d={svgPaths.p3190a280} fill="var(--fill-0, #fa8232)" id="Vector" />
                 </svg>
               </div>
             </div>
-            <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+            <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
               Solicitar pedido por WhatsApp
             </p>
           </a>

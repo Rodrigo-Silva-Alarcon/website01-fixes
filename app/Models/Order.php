@@ -15,6 +15,13 @@ class Order extends Model
         'card_id',
         'user_id',
         'total',
+        'customer_name',
+        'customer_phone',
+        'customer_email',
+        'customer_address',
+        'notes',
+        'status',
+        'payment_method',
     ];
 
     protected $casts = [

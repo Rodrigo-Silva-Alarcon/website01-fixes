@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CheckoutController;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,10 @@ Route::get('/find', [WebController::class, 'storefind'])->name('storefind');
 Route::post('/addshop/{product}', [ShopController::class, 'add'])->name('addshop');
 Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('updateshop');
 Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');
+
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/exito/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Rutas del panel de administración con prefijo admin/
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {

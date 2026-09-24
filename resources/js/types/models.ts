@@ -199,3 +199,29 @@ export interface CartItem{
     product:Product;
     money:string;
 }
+
+export interface OrderItem {
+    id: number;
+    order_id: number;
+    product_id: number | null;
+    name: string;
+    image: string | null;
+    amount: number | string;
+    quantity: number;
+    unit_price: number | string | null;
+}
+
+export interface Order {
+    id: number;
+    card_id: number;
+    user_id: number;
+    total: number | string;
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string | null;
+    customer_address: string | null;
+    notes: string | null;
+    status: string;
+    payment_method: string | null;
+    order_items?: OrderItem[];
+}

@@ -16,10 +16,14 @@ class OrderItem extends Model
         'name',
         'image',
         'amount',
+        'quantity',
+        'unit_price',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'quantity' => 'integer',
+        'unit_price' => 'decimal:2',
     ];
 
     /**
