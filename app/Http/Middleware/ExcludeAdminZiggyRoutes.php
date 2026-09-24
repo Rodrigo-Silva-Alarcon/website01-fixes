@@ -24,12 +24,19 @@ class ExcludeAdminZiggyRoutes
 
         // Autenticados siempre necesitan rutas admin (navegación SPA desde /login
         // no recarga el HTML, el payload Ziggy del request inicial persiste).
+        // Páginas de auth (/login, /register, /password/*) también: el login es
+        // un POST Inertia que redirige al dashboard sin recargar el HTML, por lo
+        // que el Ziggy emitido en el GET de /login debe incluir rutas admin o
+        // route('products.index') falla al montar el dashboard (pantalla en blanco).
         // Anónimos en / solo reciben rutas públicas.
         $needsAdminRoutes = auth()->check()
             || $request->is('admin')
             || $request->is('admin/*')
             || $request->is('settings/*')
-            || $request->is('user/*');
+            || $request->is('user/*')
+            || $request->is('login')
+            || $request->is('register')
+            || $request->is('password/*');
 
         if ($needsAdminRoutes) {
             config()->offsetUnset('ziggy.except');

@@ -37,3 +37,14 @@ it('exposes admin ziggy routes to authenticated users on public pages for SPA na
 
     expect($html)->toContain('products.index');
 });
+
+it('exposes admin ziggy routes on login page for SPA redirect after auth', function () {
+    // Login es POST Inertia → 302 a /admin/dashboard sin recargar HTML.
+    // El Ziggy del GET /login (anónimo) debe incluir rutas admin o el
+    // dashboard queda en blanco al llamar route('products.index').
+    $html = $this->get('/login')->assertOk()->getContent();
+
+    expect($html)->toContain('admin.dashboard')
+        ->and($html)->toContain('products.index')
+        ->and($html)->toContain('const Ziggy=');
+});
