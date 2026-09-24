@@ -69,6 +69,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Catálogo: precio de oferta unificado con carrito v໚a isOnOffer/COALESCE (§5.3.6) (F4-54)
 - Carritos: prune diario de abandonados a 30 dias sin orden (§5.3.10) (F4-55)
 - Footer: iconos Instagram y X/Twitter configurables via CMS (§4.7.8) (F4-56)
+- Dependencias: npm audit fix redujo 26 vulnerabilidades a 2 (axios inertia, sin fix) (F4-57)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos
