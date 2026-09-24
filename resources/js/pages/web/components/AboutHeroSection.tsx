@@ -1,4 +1,4 @@
-import imgImagen from "@/pages/web/assets/0910ac1d5d324ffc5ab52eb69e64b2089e2e7466.png";
+const imgImagen = "/images/about-hero-smarthouse.jpg";
 
 function Texto20Px() {
   return (
