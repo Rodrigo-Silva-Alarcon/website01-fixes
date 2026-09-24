@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Mail;
-use App\Traits\WebTrail;
+use App\Traits\WebTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Mail\MessageReceived;
@@ -13,7 +13,7 @@ use App\Models\CartItem;
 use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller{
-    use WebTrail;     
+    use WebTrait;
 
     public function add(Request $request){
         

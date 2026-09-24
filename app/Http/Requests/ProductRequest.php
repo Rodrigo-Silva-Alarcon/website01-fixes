@@ -30,7 +30,7 @@ class ProductRequest extends FormRequest
             'summary' => 'nullable|string',
             'general_info' => 'nullable|string',
             'description' => 'nullable|string',
-            'tecnical_info' => 'nullable|string',
+            'technical_info' => 'nullable|string',
             'tecnical_image' => 'nullable|file',
             'video_type' => 'nullable|string',
             'video_file' =>  'nullable|file',

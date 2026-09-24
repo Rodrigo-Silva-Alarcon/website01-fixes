@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Mail;
-use App\Traits\WebTrail;
+use App\Traits\WebTrait;
 use App\Traits\ShopTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,7 +11,7 @@ use App\Models\Product;
 use App\Mail\MessageReceived;
 
 class WebController extends Controller{
-    use WebTrail;
+    use WebTrait;
     use ShopTrait;
 
     public function homepage(){  
@@ -21,7 +21,7 @@ class WebController extends Controller{
             'populares' => $this->get_populares(),
             'categorias' => $this->get_categories_home(),
             'categories' => $this->get_categories_home_all(),
-            'destacados' => $this->get_detacados(),
+            'destacados' => $this->get_destacados(),
             'marcas' => $this->get_marcas(),
         ]);
     }

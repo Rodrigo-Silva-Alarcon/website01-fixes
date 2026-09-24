@@ -52,7 +52,7 @@ class WebContentService
 
     public function destacados(): Collection
     {
-        return Cache::remember('web_detacados', 60, fn (): Collection => Product::with([
+        return Cache::remember('web_destacados', 60, fn (): Collection => Product::with([
             'inventory', 'category', 'subcategory', 'brand',
         ])->where('active', true)->where('featured', true)->limit(8)->get());
     }

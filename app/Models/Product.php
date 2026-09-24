@@ -22,7 +22,7 @@ class Product extends Model
         'summary',
         'general_info',
         'description',
-        'tecnical_info',
+        'technical_info',
         'tecnical_image',
         'video_type',
         'video_file',

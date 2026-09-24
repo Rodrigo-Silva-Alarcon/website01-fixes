@@ -265,7 +265,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
         image: null as File | null,
         summary: product.summary || '',
         description: product.description || '',
-        tecnical_info: product.tecnical_info || '',
+        technical_info: product.technical_info || '',
         tecnical_image: null as File | null,
         video_file: null as File | null,
         video_url: product.video_url || '',
@@ -361,7 +361,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
             image: data.image, // Inertia maneja archivos automáticamente
             summary: data.summary,
             description: data.description,
-            tecnical_info: data.tecnical_info,
+            technical_info: data.technical_info,
             tecnical_image: data.tecnical_image,
             video_file: data.video_file,
             video_url: data.video_url,
@@ -960,15 +960,15 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                                             </p>
                                         </div>
                                         <div className='mb-3'>
-                                            <Label htmlFor="tecnical_info">Caracteristicas Generales</Label>
+                                            <Label htmlFor="technical_info">Caracteristicas Generales</Label>
                                             <RichTextEditor
-                                                value={data.tecnical_info}
-                                                onChange={(tecnical_info) => setData('tecnical_info', tecnical_info)}
+                                                value={data.technical_info}
+                                                onChange={(technical_info) => setData('technical_info', technical_info)}
                                                 placeholder="Escribe el contenido del texto aquí..."
                                                 height={400}
                                             />
-                                            {errors.tecnical_info && (
-                                                <p className="text-sm text-red-500">{errors.tecnical_info}</p>
+                                            {errors.technical_info && (
+                                                <p className="text-sm text-red-500">{errors.technical_info}</p>
                                             )}
                                         </div>
                                     </CardContent>

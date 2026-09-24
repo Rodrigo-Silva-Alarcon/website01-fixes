@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use App\Traits\WebTrail;
+use App\Traits\WebTrait;
 use App\Traits\ShopTrait;
 
 class HandleInertiaRequests extends Middleware
@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
      * @return array<string, mixed>
      */
 
-    use WebTrail;
+    use WebTrait;
     use ShopTrait;
 
     public function share(Request $request): array

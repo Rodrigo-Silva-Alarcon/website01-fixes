@@ -212,7 +212,7 @@ class ProductSeeder extends Seeder
         }
 
         Cache::forget('web_populares');
-        Cache::forget('web_detacados');
+        Cache::forget('web_destacados');
         Cache::forget('web_menu');
     }
 }

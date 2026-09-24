@@ -84,7 +84,7 @@ export interface Product{
     summary: string; 
     general_info: string; 
     description: string;
-    tecnical_info: string;
+    technical_info: string;
     tecnical_image: string;
     video_type: number;
     video_file: string;

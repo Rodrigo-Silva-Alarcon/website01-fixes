@@ -6,9 +6,9 @@ use App\Services\WebContentService;
 
 /**
  * Backward-compatible facade over WebContentService.
- * Controllers/middleware keep `use WebTrail;` while logic lives in the service.
+ * Controllers/middleware keep `use WebTrait;` while logic lives in the service.
  */
-trait WebTrail
+trait WebTrait
 {
     private function webContent(): WebContentService
     {
@@ -25,7 +25,7 @@ trait WebTrail
         return $this->webContent()->populares();
     }
 
-    function get_detacados()
+    function get_destacados()
     {
         return $this->webContent()->destacados();
     }

@@ -434,7 +434,7 @@ function ProductInfo({
           </button>
 
           {/* Caracteristicas */}
-          { product.tecnical_info &&(
+          { product.technical_info &&(
             <button
             /* onClick={() =>
               setCaracteristicasOpen(!caracteristicasOpen)
@@ -482,7 +482,7 @@ function ProductInfo({
               </div>
               {caracteristicasOpen && (
                 <div className="text-left content_product w-full text-[#000]">
-                  <div  dangerouslySetInnerHTML={{ __html: product.tecnical_info }} />
+                  <div  dangerouslySetInnerHTML={{ __html: product.technical_info }} />
                 </div>
               )}
             </div>
@@ -690,7 +690,7 @@ export default function ProductDetailPage({menu, populares, product, categories,
   const [opent, setOpent] = useState(false);
   
   const charCount = countTextChars(product.description);
-  const charCountt = countTextChars(product.tecnical_info);
+  const charCountt = countTextChars(product.technical_info);
 
   const [modald, setModald] = useState((charCount  > 600 && !isMobile?true:false));
   const [modalt, setModalt] = useState((charCountt > 600 && !isMobile?true:false));
@@ -751,7 +751,7 @@ export default function ProductDetailPage({menu, populares, product, categories,
               className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
               style={{ fontVariationSettings: "'opsz' 14" }}
             >  
-              <div dangerouslySetInnerHTML={{ __html: product.tecnical_info }} />
+              <div dangerouslySetInnerHTML={{ __html: product.technical_info }} />
             </div>
             </>                      
         </Modal>        
