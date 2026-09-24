@@ -19,8 +19,8 @@ class WebContentService
         return Cache::remember('web_menu', 60, function (): array {
             $menu = [];
             $categories = Category::with([
-                'subcategories' => fn ($q) => $q->where('active', true),
-            ])->where('active', true)->get();
+                'subcategories' => fn ($q) => $q->where('active', true)->orderBy('order')->orderBy('id'),
+            ])->where('active', true)->orderBy('order')->orderBy('id')->get();
 
             foreach ($categories as $cate) {
                 $item = [
