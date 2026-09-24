@@ -165,3 +165,27 @@ it('rejects checkout when stock is insufficient', function () {
     expect(Order::count())->toBe(0);
     expect($product->inventory->fresh()->stock)->toBe(1);
 });
+
+it('falls back to amount when offer window is active but offer_amount is null', function () {
+    $category = Category::create(['name' => 'Null Offer', 'active' => true]);
+    $product = Product::create([
+        'name' => 'Null Offer Product',
+        'category_id' => $category->id,
+        'active' => true,
+    ]);
+    Inventory::create([
+        'product_id' => $product->id,
+        'amount' => 99,
+        'offer_amount' => null,
+        'ini' => now()->subDay()->toDateString(),
+        'fin' => now()->addDay()->toDateString(),
+        'stock' => 5,
+        'money' => 'BOB',
+    ]);
+
+    $this->post('/addshop/'.$product->id);
+
+    $item = CartItem::latest('id')->first();
+    expect($item)->not->toBeNull();
+    expect((float) $item->unit_price)->toBe(99.0);
+});

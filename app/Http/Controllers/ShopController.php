@@ -21,9 +21,9 @@ class ShopController extends Controller{
             $query->select('*', DB::raw("
                 CASE
                     WHEN ini IS NULL AND fin IS NULL THEN amount
-                    WHEN ini IS NOT NULL AND fin IS NULL AND ini <= CURRENT_TIMESTAMP THEN offer_amount
-                    WHEN ini IS NULL AND fin IS NOT NULL AND fin >= CURRENT_TIMESTAMP THEN offer_amount
-                    WHEN ini IS NOT NULL AND fin IS NOT NULL AND CURRENT_TIMESTAMP BETWEEN ini AND fin THEN offer_amount
+                    WHEN ini IS NOT NULL AND fin IS NULL AND ini <= CURRENT_TIMESTAMP THEN COALESCE(offer_amount, amount)
+                    WHEN ini IS NULL AND fin IS NOT NULL AND fin >= CURRENT_TIMESTAMP THEN COALESCE(offer_amount, amount)
+                    WHEN ini IS NOT NULL AND fin IS NOT NULL AND CURRENT_TIMESTAMP BETWEEN ini AND fin THEN COALESCE(offer_amount, amount)
                     ELSE amount
                 END AS price
             "));
