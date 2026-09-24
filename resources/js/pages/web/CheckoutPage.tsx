@@ -1,5 +1,5 @@
-import { Link, useForm, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { Link, router, useForm, usePage } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
@@ -18,6 +18,8 @@ export default function CheckoutPage() {
   const items: CartItem[] = cart?.cart_items ?? [];
   const totals = cartTotals(items);
   const [whatsappOnly, setWhatsappOnly] = useState(false);
+  const [qtyPending, setQtyPending] = useState(false);
+  const [mapQuery, setMapQuery] = useState("");
 
   const { data, setData, post, processing, errors } = useForm({
     customer_name: "",
@@ -27,6 +29,22 @@ export default function CheckoutPage() {
     notes: "",
     payment_method: "transfer",
   });
+
+  useEffect(() => {
+    const t = setTimeout(() => setMapQuery(data.customer_address), 600);
+    return () => clearTimeout(t);
+  }, [data.customer_address]);
+
+  const changeQty = (item: CartItem, amount: number) => {
+    if (qtyPending || amount < 1 || amount > 9999) return;
+    setQtyPending(true);
+    router.patch(`/Shop/${item.product_id}`, { amount }, {
+      preserveScroll: true,
+      preserveState: true,
+      onError: () => toast.error("No se pudo actualizar la cantidad. Inténtalo nuevamente."),
+      onFinish: () => setQtyPending(false),
+    });
+  };
 
   if (items.length === 0) {
     return (
@@ -60,12 +78,12 @@ export default function CheckoutPage() {
       <main className="flex-1">
         <section className="bg-gradient-to-r from-[#006696] to-[#0088cc] text-white py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-3xl font-bold">Finalizar pedido</h1>
+            <h1 className="text-3xl font-bold">Realizar pedido</h1>
             {flash?.status && <p className="mt-2 opacity-90">{flash.status}</p>}
           </div>
         </section>
 
-        <section className="py-12">
+        <section className="py-12 bg-white text-[#191c1f] [color-scheme:light]">
           <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <form onSubmit={submit} className="lg:col-span-2 space-y-4">
               <h2 className="text-xl font-semibold">Datos de entrega</h2>
@@ -126,7 +144,20 @@ export default function CheckoutPage() {
                   onChange={(e) => setData("customer_address", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   autoComplete="street-address"
+                  placeholder="Escribe la dirección y el mapa la mostrará"
                 />
+                <div className="mt-2 overflow-hidden rounded-lg border border-gray-300">
+                  <iframe
+                    title="Mapa de ubicación de entrega"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery.trim() || "La Paz, Bolivia")}&output=embed`}
+                    className="h-64 w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Escribe la dirección en el campo y el mapa mostrará la ubicación de entrega.
+                </p>
               </div>
 
               <div>
@@ -192,11 +223,32 @@ export default function CheckoutPage() {
                         src={item.image_url}
                       />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold truncate">{item.name}</p>
                       <p className="text-sm text-gray-600">
-                        {item.amount} × {item.money} {Number(item.unit_price).toFixed(2)}
+                        {item.money} {Number(item.unit_price).toFixed(2)}
                       </p>
+                      <div className="flex items-center gap-2 my-1">
+                        <button
+                          type="button"
+                          aria-label={`Disminuir cantidad de ${item.name}`}
+                          disabled={qtyPending || item.amount <= 1}
+                          onClick={() => changeQty(item, item.amount - 1)}
+                          className="size-7 shrink-0 rounded-full bg-[#fa8232] text-white text-lg leading-none disabled:opacity-50"
+                        >
+                          −
+                        </button>
+                        <span className="min-w-8 text-center text-sm font-semibold">{item.amount}</span>
+                        <button
+                          type="button"
+                          aria-label={`Aumentar cantidad de ${item.name}`}
+                          disabled={qtyPending || item.amount >= 9999}
+                          onClick={() => changeQty(item, item.amount + 1)}
+                          className="size-7 shrink-0 rounded-full bg-[#fa8232] text-white text-lg leading-none disabled:opacity-50"
+                        >
+                          +
+                        </button>
+                      </div>
                       <p className="text-sm">
                         Subtotal: {item.money} {(itemSubtotal(item) / 100).toFixed(2)}
                       </p>
@@ -205,8 +257,8 @@ export default function CheckoutPage() {
                 ))}
               </ul>
               {Object.entries(totals).map(([money, cents]) => (
-                <div key={money} className="bg-[#f2f4f5] rounded-xl p-4 font-bold">
-                  TOTAL: {money} {(cents / 100).toFixed(2)}
+                <div key={money} className="bg-[#f2f4f5] rounded-xl p-4 text-lg font-bold">
+                  TOTAL A PAGAR: {money} {(cents / 100).toFixed(2)}
                 </div>
               ))}
             </aside>

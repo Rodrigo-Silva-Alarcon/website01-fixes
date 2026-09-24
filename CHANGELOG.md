@@ -79,6 +79,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Precios: moneda normalizada a "Bs." (datos Bo->Bs. + currencyLabel en Price/Banner/Ofertas) (F4-64)
 - SEO: h1 en home, nosotros, productos, detalle de producto y busqueda (F4-65)
 - Home: destacados convertido en carrusel con autoplay (4s) + viewport carousel sin desborde horizontal (F4-66)
+- Home/UI: flechas de destacados sobre las cards (sin tapar Comprar), dropdown de categorias estable al mover el mouse, h1 Productos en #006696, WhatsApp del footer a +591 68210861 (F4-67)
+- Carrito: botones intercambiados (WhatsApp primero) y "Finalizar pedido" renombrado a "Realizar Pedido" (F4-68)
+- Checkout: fondo blanco fijo (modo oscuro incluido), titulo "Realizar pedido", cantidades +/- en el Resumen, TOTAL A PAGAR visible y mapa de Google embebido sincronizado con la direccion + CSP frame-src (F4-69)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked

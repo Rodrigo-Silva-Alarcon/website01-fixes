@@ -16,6 +16,7 @@ it('sets security headers on public HTML responses', function () {
     expect($csp)->not->toBeNull();
     expect($csp)->toContain("default-src 'self'");
     expect($csp)->toContain("object-src 'none'");
+    expect($csp)->toContain("frame-src 'self' https://www.google.com");
     expect($csp)->toContain('https://fonts.bunny.net');
 });
 

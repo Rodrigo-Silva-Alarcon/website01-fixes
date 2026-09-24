@@ -60,6 +60,7 @@ class SecurityHeaders
                 $fontSrc,
                 "img-src 'self' data: blob:",
                 "media-src 'self'",
+                "frame-src 'self' https://www.google.com https://maps.google.com https://maps.googleapis.com",
                 $connectSrc,
             ]);
 
