@@ -1,6 +1,6 @@
 @extends('emails.layout')
 
-@section('title', 'Contacto Red Agua')
+@section('title', 'Contacto Smart House')
 		
 @section('content')
 
@@ -10,7 +10,7 @@
 <p><strong>Empresa:</strong> {{ $msg['company'] ?? '' }}</p>	
 <p><strong>teléfono:</strong> {{ $msg['phone'] }}</p>	
 <p>{{ $msg['message'] ?? '' }}</p>			
-<p>E-mail enviado desde <a href="{{ env('APP_URL') }}" target="_blank">RedAgua</a></p>			
+<p>E-mail enviado desde <a href="{{ env('APP_URL') }}" target="_blank">Smart House</a></p>			
 <!-- Appointment End -->
 
 @endsection

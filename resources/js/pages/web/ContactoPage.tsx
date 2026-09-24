@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
+import { toast } from "sonner";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 
@@ -30,7 +31,16 @@ export default function ContactoPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/enviar', { preserveScroll: true, onSuccess: () => setData({ name: "", email: "", phone: "", company: "", message: "" }) });
+    post('/enviar', {
+      preserveScroll: true,
+      onSuccess: () => {
+        setData({ name: "", email: "", phone: "", company: "", message: "" });
+        toast.success('El mensaje fue enviado exitosamente.');
+      },
+      onError: () => {
+        toast.error('Revisa los campos del formulario e inténtalo de nuevo.');
+      },
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

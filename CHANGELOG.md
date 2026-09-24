@@ -75,6 +75,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - UI: home sin AOS (hueco blanco), contacto via cmsTexts, logo wordmark en login (F4-60)
 - Codigo: typos WebTrail->WebTrait, get_detacados->get_destacados, tecnical_info->technical_info + migracion (7.5) (F4-61)
 - DB: indices y foreign keys donde hay 0 huerfanos (2.7) (F4-62)
+- Contacto: email branding Smart House (era "Red Agua"), validacion de mensajes en espanol y toast de exito/error al enviar (F4-63)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked

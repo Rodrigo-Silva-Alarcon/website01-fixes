@@ -98,13 +98,14 @@ class WebController extends Controller{
             'company' => 'nullable|max:100',
             'email' => 'required|email|max:200',
             'message' => 'nullable',
-            //'g-recaptcha-response' => ['required', new ValidRecaptcha],
-            //'g-recaptcha-response' => ['required', 'string', new ValidRecaptcha3],
-        ],
-        //['g-recaptcha-response.required' => 'Verifique que no es un robot con ReCaptcha',]
-        ); 
-        Mail::to(config('contact.email'))->send(new MessageReceived($message));     
- 
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'phone.required' => 'El teléfono es obligatorio.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'El email no es válido.',
+        ]);
+        Mail::to(config('contact.email'))->send(new MessageReceived($message));
+
         return redirect()->route('contact')->with('status', 'El mensaje fue enviado exitosamente.');
         
     }
