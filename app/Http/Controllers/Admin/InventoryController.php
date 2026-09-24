@@ -53,7 +53,7 @@ class InventoryController extends Controller
 
 
     public function show(Inventory $inventory){
-        return Inertia::render('admin/inventories/show', [
+        return Inertia::render('admin/inventories/Show', [
             'inventory' => $inventory->load('product'),
         ]);
     }

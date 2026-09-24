@@ -49,7 +49,7 @@ class CategoryController extends Controller
 
     public function show(Category $category){
 
-        return Inertia::render('admin/categories/show', [
+        return Inertia::render('admin/categories/Show', [
             'category' => $category->append(['image_url']),
         ]);
 

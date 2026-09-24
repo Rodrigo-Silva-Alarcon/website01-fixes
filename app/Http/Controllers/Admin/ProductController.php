@@ -64,7 +64,7 @@ class ProductController extends Controller
 
     public function show(Product $product){
 
-        return Inertia::render('admin/products/show', [
+        return Inertia::render('admin/products/Show', [
             'product' => $product->append(['image_url', 'tecnical_image_url', 'video_file_url']),
         ]);
 

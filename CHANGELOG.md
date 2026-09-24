@@ -84,6 +84,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Checkout: fondo blanco fijo (modo oscuro incluido), titulo "Realizar pedido", cantidades +/- en el Resumen, TOTAL A PAGAR visible y mapa de Google embebido sincronizado con la direccion + CSP frame-src (F4-69)
 - Checkout: mensaje de confirmacion "Pedido registrado" legible en modo oscuro (texto oscuro sobre tarjeta + fondo blanco) (F4-70)
 - Dependencias: eliminado `@inertiajs/inertia` legacy (muerto, con axios 0.21.4 vulnerable sin fix); `npm audit` -> **0 vulnerabilidades** (F4-71)
+- Admin: Show.tsx de banners/marcas/categorias/productos/subcategorias reescritos con sus entidades reales (antes eran clones de texts y crasheaban) + render con case correcto `Show` para Linux + checklist deploy con `db:seed` (permisos view_* catálogo) (F4-72)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked
@@ -125,4 +126,3 @@ Ver `docs/fase1-*.md`:
 | §4.4.7 Checkout completo | Alcance por confirmar (12-20h) |
 | §4.8.2 Inventario faltante (16/75) | Datos desde admin |
 | §4.8.3 Rol de usuario `example@website01.com` | Cambio en BD/admin |
-| `Show.tsx` clonados de texts | Bug de plantilla; fix aparte |

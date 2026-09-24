@@ -24,6 +24,7 @@ También revisar:
 - `php artisan config:cache` y `php artisan route:cache` tras el deploy.
 - `storage/` y `bootstrap/cache/` con permisos de escritura para el usuario web.
 - `php artisan migrate --force` en el deploy.
+- `php artisan db:seed --force` en el deploy (obligatorio desde F4-23: sin `PermissionSeeder`/`RolePermissionSeeder` los permisos `view_*` de catálogo no existen y **todas** las rutas `/admin/{products,categories,…}` devuelven 403 — ver `docs/fase4-72-show-entidades.md`).
 
 ## Archivos
 

@@ -51,7 +51,7 @@ class BrandController extends Controller
     }
 
     public function show(Brand $brand){
-        return Inertia::render('admin/brands/show', [
+        return Inertia::render('admin/brands/Show', [
             'brand' => $brand->append(['image_url', 'image_url_thumbs']),
         ]);
     }

@@ -50,7 +50,7 @@ class SubcategoryController extends Controller
 
     
     public function show(Subcategory $subcategory){
-        return Inertia::render('admin/subcategories/show', [
+        return Inertia::render('admin/subcategories/Show', [
             'subcategory' => $subcategory->append(['category_label']),
         ]);
     }   
