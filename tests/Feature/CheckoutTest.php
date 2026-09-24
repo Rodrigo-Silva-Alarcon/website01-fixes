@@ -2,9 +2,12 @@
 
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Category;
+use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -88,4 +91,77 @@ it('shows the success page for a created order', function () {
     $this->get('/checkout/exito/'.$order->id)
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('web/CheckoutSuccessPage'));
+});
+
+it('decrements inventory stock when the order is created', function () {
+    $category = Category::create(['name' => 'Stock Cat', 'active' => true]);
+    $product = Product::create([
+        'name' => 'Stock Product',
+        'category_id' => $category->id,
+        'active' => true,
+    ]);
+    Inventory::create([
+        'product_id' => $product->id,
+        'amount' => 100,
+        'stock' => 5,
+        'money' => 'BOB',
+    ]);
+    $cart = Cart::create(['cart_session' => 'stock-cart']);
+    CartItem::create([
+        'cart_id' => $cart->id,
+        'product_id' => $product->id,
+        'name' => 'Stock Product',
+        'unit_price' => '10.00',
+        'amount' => 2,
+        'sub_total' => '20.00',
+        'money' => 'BOB',
+    ]);
+
+    $this->withSession(['shop' => 'stock-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'payment_method' => 'cash',
+        ])
+        ->assertRedirect();
+
+    expect($product->inventory->fresh()->stock)->toBe(3);
+});
+
+it('rejects checkout when stock is insufficient', function () {
+    $category = Category::create(['name' => 'Low Stock Cat', 'active' => true]);
+    $product = Product::create([
+        'name' => 'Low Stock Product',
+        'category_id' => $category->id,
+        'active' => true,
+    ]);
+    Inventory::create([
+        'product_id' => $product->id,
+        'amount' => 100,
+        'stock' => 1,
+        'money' => 'BOB',
+    ]);
+    $cart = Cart::create(['cart_session' => 'low-stock-cart']);
+    CartItem::create([
+        'cart_id' => $cart->id,
+        'product_id' => $product->id,
+        'name' => 'Low Stock Product',
+        'unit_price' => '10.00',
+        'amount' => 3,
+        'sub_total' => '30.00',
+        'money' => 'BOB',
+    ]);
+
+    $this->withSession(['shop' => 'low-stock-cart'])
+        ->from('/checkout')
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'payment_method' => 'cash',
+        ])
+        ->assertRedirect('/checkout')
+        ->assertSessionHas('status');
+
+    expect(Order::count())->toBe(0);
+    expect($product->inventory->fresh()->stock)->toBe(1);
 });

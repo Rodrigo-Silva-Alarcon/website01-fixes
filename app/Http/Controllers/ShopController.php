@@ -51,8 +51,14 @@ class ShopController extends Controller{
             }
             
             $cart = CartItem::where('cart_id', $car_id)->where('product_id', $product->id)->first();
+            $stock = (int) ($product->inventory->stock ?? 0);
+            $nextAmount = $cart ? $cart->amount + 1 : 1;
 
-            if($cart){
+            if ($stock < $nextAmount) {
+                return redirect()->back()->with('status', 'No hay stock suficiente para ese producto.');
+            }
+
+            if ($cart){
                 $amount = $cart->amount + 1;
                 $itemcard = CartItem::where('id', $cart->id)->update([
                     'amount' => $amount,
@@ -72,7 +78,7 @@ class ShopController extends Controller{
                 ]);
             }
         }
-                
+
         return redirect()->back()->with('status', 'El producto se agrego correctamente al carrito.');
 
     }
@@ -82,6 +88,12 @@ class ShopController extends Controller{
         $cart = Cart::where('cart_session', session('shop'))->firstOrFail();
         $item = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $request->route('product'))->firstOrFail();
+
+        $inventory = \App\Models\Inventory::where('product_id', $item->product_id)->first();
+        if ($inventory !== null && (int) $inventory->stock < $data['amount']) {
+            return redirect()->back()->with('status', 'No hay stock suficiente para esa cantidad.');
+        }
+
         $item->update([
             'amount' => $data['amount'],
             'sub_total' => (int) round((float) $item->unit_price * 100) * $data['amount'] / 100,

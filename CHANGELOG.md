@@ -62,6 +62,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Productos para Equipos de sonido y Consolas en home (10 items con imagen/precio) (F4-47)
 - Imagen del hero "Sobre nosotros" reemplazada (Unsplash, sirve desde public/) (F4-48)
 - Checkout: form de pedido, orden+items+payment y página de éxito (F4-49)
+- Stock: validación al agregar/cambiar cantidad y descuento al confirmar pedido (§5.3.1 / §5.3.5) (F4-50)
 
 ### Verified as already resolved
 - §4.7.1 Logo SmartHouse, §4.7.5 Copyright, §4.7.9 Contacto 404, §4.7.10 Carrito offcanvas, §4.7.12 Lorem Ipsum, §4.5.5 `cookies.txt`, §4.4.3 Paginación (`link.url`), §4.2.2 Inertia condicional, §4.3.5 alt texts en componentes activos

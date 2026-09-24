@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Cart as CartModel;
+use App\Models\Inventory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -47,48 +48,76 @@ class CheckoutController extends Controller
             return redirect()->route('home')->with('status', 'Tu carrito está vacío.');
         }
 
-        $order = DB::transaction(function () use ($data, $cart) {
-            $items = $cart->cartItems()->get();
-            $total = $items->sum(fn ($item) => (int) round(((float) $item->unit_price) * 100) * $item->amount) / 100;
+        try {
+            $order = DB::transaction(function () use ($data, $cart) {
+                $items = $cart->cartItems()->get();
+                $total = $items->sum(fn ($item) => (int) round(((float) $item->unit_price) * 100) * $item->amount) / 100;
 
-            $order = Order::create([
-                'card_id' => $cart->id,
-                'user_id' => auth()->id() ?? 0,
-                'total' => $total,
-                'customer_name' => $data['customer_name'],
-                'customer_phone' => $data['customer_phone'],
-                'customer_email' => $data['customer_email'] ?? null,
-                'customer_address' => $data['customer_address'] ?? null,
-                'notes' => $data['notes'] ?? null,
-                'payment_method' => $data['payment_method'],
-                'status' => 'pending',
-            ]);
+                $quantities = $items->groupBy('product_id')
+                    ->map(fn ($group) => (int) $group->sum('amount'));
 
-            foreach ($items as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product_id,
-                    'name' => $item->name,
-                    'image' => $item->image,
-                    'amount' => $item->sub_total,
-                    'quantity' => $item->amount,
-                    'unit_price' => $item->unit_price,
+                foreach ($quantities as $productId => $qty) {
+                    $inventory = Inventory::where('product_id', $productId)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($inventory !== null && (int) $inventory->stock < $qty) {
+                        throw new \RuntimeException('stock_insufficient');
+                    }
+                }
+
+                $order = Order::create([
+                    'card_id' => $cart->id,
+                    'user_id' => auth()->id() ?? 0,
+                    'total' => $total,
+                    'customer_name' => $data['customer_name'],
+                    'customer_phone' => $data['customer_phone'],
+                    'customer_email' => $data['customer_email'] ?? null,
+                    'customer_address' => $data['customer_address'] ?? null,
+                    'notes' => $data['notes'] ?? null,
+                    'payment_method' => $data['payment_method'],
+                    'status' => 'pending',
                 ]);
+
+                foreach ($items as $item) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'name' => $item->name,
+                        'image' => $item->image,
+                        'amount' => $item->sub_total,
+                        'quantity' => $item->amount,
+                        'unit_price' => $item->unit_price,
+                    ]);
+                }
+
+                foreach ($quantities as $productId => $qty) {
+                    Inventory::where('product_id', $productId)
+                        ->decrement('stock', $qty);
+                }
+
+                Payment::create([
+                    'user_id' => auth()->id() ?? 0,
+                    'order_id' => $order->id,
+                    'status' => 'init',
+                    'amount' => $total,
+                    'tipe_pay' => $data['payment_method'],
+                ]);
+
+                $items->each->delete();
+                $cart->delete();
+
+                return $order;
+            });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'stock_insufficient') {
+                return redirect()
+                    ->route('checkout')
+                    ->with('status', 'Stock insuficiente para uno o más productos. Ajusta las cantidades.');
             }
 
-            Payment::create([
-                'user_id' => auth()->id() ?? 0,
-                'order_id' => $order->id,
-                'status' => 'init',
-                'amount' => $total,
-                'tipe_pay' => $data['payment_method'],
-            ]);
-
-            $items->each->delete();
-            $cart->delete();
-
-            return $order;
-        });
+            throw $e;
+        }
 
         session()->forget('shop');
 
