@@ -33,49 +33,61 @@ class ShopController extends Controller{
         $car_id = NULL;
 
         if($product->id){
-            
-            if(session()->has('shop')){                
-                $cart = Cart::where('cart_session', session('shop'))->first();
-                if($cart){
-                    $car_id = $cart->id;
+            $added = DB::transaction(function () use ($product) {
+                $car_id = NULL;
+
+                if(session()->has('shop')){
+                    $cart = Cart::where('cart_session', session('shop'))->lockForUpdate()->first();
+                    if($cart){
+                        $car_id = $cart->id;
+                    }
                 }
-            }
 
-            if($car_id == NULL){
-                session()->put('shop', md5(date('YmdHisU')));
-                $card = Cart::create([
-                    'user_id' => auth()->id(),
-                    'cart_session' => session('shop')
-                ]);
-                $car_id = $card->id;                
-            }
-            
-            $cart = CartItem::where('cart_id', $car_id)->where('product_id', $product->id)->first();
-            $stock = (int) ($product->inventory->stock ?? 0);
-            $nextAmount = $cart ? $cart->amount + 1 : 1;
+                if($car_id == NULL){
+                    if(!session()->has('shop')){
+                        session()->put('shop', md5(uniqid((string) mt_rand(), true)));
+                    }
+                    $card = Cart::firstOrCreate([
+                        'cart_session' => session('shop'),
+                    ], [
+                        'user_id' => auth()->id(),
+                    ]);
+                    $car_id = $card->id;
+                }
 
-            if ($stock < $nextAmount) {
+                $cart = CartItem::where('cart_id', $car_id)->where('product_id', $product->id)->lockForUpdate()->first();
+                $stock = (int) ($product->inventory->stock ?? 0);
+                $nextAmount = $cart ? $cart->amount + 1 : 1;
+
+                if ($stock < $nextAmount) {
+                    return false;
+                }
+
+                if ($cart){
+                    $amount = $cart->amount + 1;
+                    CartItem::where('id', $cart->id)->update([
+                        'amount' => $amount,
+                        'sub_total' => $amount * $cart->unit_price,
+                    ]);
+                }
+                else{
+                    CartItem::create([
+                        'cart_id' => $car_id,
+                        'product_id' => $product->id,
+                        'name' => $product->name,
+                        'image' => $product->image,
+                        'unit_price' => $product->inventory->price,
+                        'amount' => 1,
+                        'money' => $product->inventory->money,
+                        'sub_total' => $product->inventory->price,
+                    ]);
+                }
+
+                return true;
+            });
+
+            if (!$added) {
                 return redirect()->back()->with('status', 'No hay stock suficiente para ese producto.');
-            }
-
-            if ($cart){
-                $amount = $cart->amount + 1;
-                $itemcard = CartItem::where('id', $cart->id)->update([
-                    'amount' => $amount,
-                    'sub_total' => $amount * $cart->unit_price,
-                ]);
-            }
-            else{
-                $itemcard = CartItem::create([
-                    'cart_id' => $car_id,
-                    'product_id' => $product->id,
-                    'name' => $product->name,
-                    'image' => $product->image,
-                    'unit_price' => $product->inventory->price,
-                    'amount' => 1,
-                    'money' => $product->inventory->money,
-                    'sub_total' => $product->inventory->price,
-                ]);
             }
         }
 

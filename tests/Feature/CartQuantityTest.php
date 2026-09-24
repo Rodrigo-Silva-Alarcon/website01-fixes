@@ -37,3 +37,30 @@ it('does not update another sessions cart', function () {
     $this->withSession(['shop' => 'other-cart'])->patch('/shop/123', ['amount' => 2])->assertNotFound();
     expect($this->item->fresh()->amount)->toBe(1);
 });
+
+it('rejects duplicate cart_session values', function () {
+    Cart::create(['cart_session' => 'my-cart']);
+})->throws(\Illuminate\Database\QueryException::class);
+
+it('reuses one cart when adding products without a prior session', function () {
+    $category = \App\Models\Category::create(['name' => 'Race Cat', 'active' => true]);
+    $product = \App\Models\Product::create([
+        'name' => 'Race Product',
+        'category_id' => $category->id,
+        'active' => true,
+    ]);
+    \App\Models\Inventory::create([
+        'product_id' => $product->id,
+        'amount' => 100,
+        'stock' => 10,
+        'money' => 'BOB',
+    ]);
+
+    $this->post('/addshop/'.$product->id);
+    $this->post('/addshop/'.$product->id);
+
+    expect(Cart::where('cart_session', 'my-cart')->count())->toBe(1);
+    expect(Cart::count())->toBe(2);
+    expect(CartItem::where('product_id', $product->id)->count())->toBe(1);
+    expect(CartItem::where('product_id', $product->id)->first()->amount)->toBe(2);
+});
