@@ -589,14 +589,14 @@ export default function FindProductsPage() {
                 {/* Header with Search Term */}
                 <div className="content-stretch flex flex-col gap-[16px] items-start justify-center relative shrink-0 w-full">
                   <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
-                    <p
+                    <h1
                       className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-foreground text-[32px] md:text-[40px] lg:text-[49px] w-full"
                       style={{
                         fontVariationSettings: "'opsz' 14",
                       }}
                     >
                       Resultados de búsqueda
-                    </p>
+                    </h1>
                   </div>
                   {searchTerm && (
                     <button

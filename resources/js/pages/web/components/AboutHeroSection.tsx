@@ -3,9 +3,9 @@ const imgImagen = "/images/about-hero-smarthouse.jpg";
 function Texto20Px() {
   return (
     <div className="basis-0 content-stretch flex flex-col gap-[20px] grow items-start min-h-px min-w-[300px] relative shrink-0 text-foreground" data-name="Texto20px">
-      <p data-aos="fade-right" className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[32px] md:text-[49px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <h1 data-aos="fade-right" className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[32px] md:text-[49px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
         Sobre Smart House Bolivia
-      </p>
+      </h1>
       <p data-aos="fade-right" data-aos-delay="100" className="font-poppins-regular leading-[1.4] not-italic relative shrink-0 text-[14px] md:text-[16px] w-full">Smart House es una empresa boliviana especializada en la venta de electrodomésticos, muebles y tecnología para el hogar. Ofrecemos una amplia gama de productos de marcas reconocidas, con atención personalizada y precios competitivos en todo el país. Nuestro compromiso es brindar soluciones prácticas y de calidad para que cada hogar cuente con lo mejor.</p>
     </div>
   );

@@ -184,12 +184,12 @@ function ProductInfo({
         )}
         {/* Title and Brand */}
         <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
-          <p
+          <h1
             className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#006696] text-[32px] md:text-[40px] lg:text-[49px] w-full"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
             {product.name}
-          </p>
+          </h1>
 
           <div className="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
             <p

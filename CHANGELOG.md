@@ -77,6 +77,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - DB: indices y foreign keys donde hay 0 huerfanos (2.7) (F4-62)
 - Contacto: email branding Smart House (era "Red Agua"), validacion de mensajes en espanol y toast de exito/error al enviar (F4-63)
 - Precios: moneda normalizada a "Bs." (datos Bo->Bs. + currencyLabel en Price/Banner/Ofertas) (F4-64)
+- SEO: h1 en home, nosotros, productos, detalle de producto y busqueda (F4-65)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked

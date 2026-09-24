@@ -25,7 +25,8 @@ export default function HomePage({populares, categorias, destacados, marcas, cat
         title="Inicio"
         description="SmartHouse - Tecnología y electrodomésticos para tu hogar. Encuentra productos de marcas líderes con los mejores precios."
       />
-      <HeroSlideshow/>      
+      <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
+      <HeroSlideshow/>
       <section className="max-w-[1440px] mx-auto">
         <Ofertas />
         <Categorias />          
