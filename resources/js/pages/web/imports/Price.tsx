@@ -1,6 +1,7 @@
 
 import { Inventory } from "@/types/models";
 import { isOnOffer } from "@/lib/product-enquiry";
+import { currencyLabel } from "@/lib/cart";
 
 export default function Price({inventory}:{inventory:Inventory}) {
   const mostrarOferta = isOnOffer(inventory);
@@ -14,13 +15,13 @@ export default function Price({inventory}:{inventory:Inventory}) {
                 className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#b45309]"
                 style={{ fontVariationSettings: "'opsz' 14" }}
             >
-                {inventory.money} {inventory.amount}
+                {currencyLabel(inventory.money)} {inventory.amount}
             </p>
             <p
             className="relative shrink-0 text-[#191c1f]"
             style={{ fontVariationSettings: "'opsz' 14" }}
             >
-            {inventory.money} {inventory.offer_amount}
+            {currencyLabel(inventory.money)} {inventory.offer_amount}
             </p>
         </>
       ):(
@@ -28,7 +29,7 @@ export default function Price({inventory}:{inventory:Inventory}) {
             className="relative shrink-0 text-[#191c1f]"
             style={{ fontVariationSettings: "'opsz' 14" }}
             >
-            {inventory.money} {inventory.amount}
+            {currencyLabel(inventory.money)} {inventory.amount}
             </p>
       )}
     </div>

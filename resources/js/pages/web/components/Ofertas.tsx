@@ -1,4 +1,5 @@
 import { isOnOffer, productPrice } from "@/lib/product-enquiry";
+import { currencyLabel } from "@/lib/cart";
 import svgPaths from "../imports/svg-o54k4pn05p";
 import { img as maskImg } from "../imports/svg-nochp";
 import { Inventory, Product } from "@/types/models";
@@ -62,13 +63,13 @@ function Precio({inventory}:{inventory:Inventory}){
             className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#b45309]"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
-            {inventory.money} {inventory.amount}
+            {currencyLabel(inventory.money)} {inventory.amount}
           </p>
           <p
             className="relative shrink-0 text-[#191c1f]"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
-            {inventory.money} {inventory.offer_amount}
+            {currencyLabel(inventory.money)} {inventory.offer_amount}
           </p>
         </>
       ) : (
@@ -76,7 +77,7 @@ function Precio({inventory}:{inventory:Inventory}){
           className="relative shrink-0 text-[#191c1f]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
-          {inventory.money} {inventory.amount}
+          {currencyLabel(inventory.money)} {inventory.amount}
         </p>
       )}
     </div>

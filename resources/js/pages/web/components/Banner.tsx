@@ -4,6 +4,7 @@ import { Product } from "@/types/models";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
+import { currencyLabel } from "@/lib/cart";
 
 function Banner({product}:{product:Product}) {
   return (
@@ -36,7 +37,7 @@ function Banner({product}:{product:Product}) {
               </div>
               { product.inventory?.amount &&(
                 <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#c45500] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
-                  {product.inventory.money} {product.inventory.amount}
+                  {currencyLabel(product.inventory.money)} {product.inventory.amount}
                 </p>
               )}
             </div>
@@ -113,7 +114,7 @@ function Banner1({product}:{product:Product}) {
               </div>
               { product.inventory?.amount &&(
               <p className="font-dm_sans font-bold leading-[25px] relative shrink-0 text-[#fa8232] text-[20px] w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
-                {product.inventory.money} {product.inventory.amount}
+                {currencyLabel(product.inventory.money)} {product.inventory.amount}
               </p>
               )}
             </div>
