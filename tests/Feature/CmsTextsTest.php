@@ -63,6 +63,8 @@ it('shares footer contact CMS keys for conditional footer buttons', function () 
         'footer_email' => 'contacto@smarthouse.test',
         'footer_maps' => 'https://maps.app.goo.gl/xyz',
         'footer_facebook' => 'https://facebook.com/smarthouse',
+        'footer_instagram' => 'https://instagram.com/smarthouse',
+        'footer_twitter' => 'https://x.com/smarthouse',
         'footer_address' => 'Av. Siempre Viva 742, La Paz',
     ];
 
@@ -85,5 +87,7 @@ it('shares footer contact CMS keys for conditional footer buttons', function () 
             ->where('cmsTexts.footer_email', 'contacto@smarthouse.test')
             ->where('cmsTexts.footer_maps', 'https://maps.app.goo.gl/xyz')
             ->where('cmsTexts.footer_facebook', 'https://facebook.com/smarthouse')
+            ->where('cmsTexts.footer_instagram', 'https://instagram.com/smarthouse')
+            ->where('cmsTexts.footer_twitter', 'https://x.com/smarthouse')
             ->where('cmsTexts.footer_address', 'Av. Siempre Viva 742, La Paz'));
 });

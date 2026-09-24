@@ -11,6 +11,8 @@ export default function Footer() {
   const emailHref = texts.footer_email ? `mailto:${texts.footer_email}` : "";
   const mapsHref = texts.footer_maps ?? "";
   const facebookHref = texts.footer_facebook ?? "";
+  const instagramHref = texts.footer_instagram ?? "";
+  const twitterHref = texts.footer_twitter ?? "";
   const address = texts.footer_address ?? "";
 
   return (
@@ -104,6 +106,43 @@ export default function Footer() {
                   </div>
                   <p className="font-dm_sans font-normal leading-[24px] text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
                     Facebook
+                  </p>
+                </a>
+              )}
+              {instagramHref && (
+                <a
+                  href={instagramHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
+                >
+                  <div className="relative shrink-0 size-[20px]" data-name="Instagram">
+                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="white" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="white" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="white" />
+                    </svg>
+                  </div>
+                  <p className="font-dm_sans font-normal leading-[24px] text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                    Instagram
+                  </p>
+                </a>
+              )}
+
+              {twitterHref && (
+                <a
+                  href={twitterHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
+                >
+                  <div className="relative shrink-0 size-[20px]" data-name="Twitter">
+                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24" fill="white">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+                    </svg>
+                  </div>
+                  <p className="font-dm_sans font-normal leading-[24px] text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                    X / Twitter
                   </p>
                 </a>
               )}
