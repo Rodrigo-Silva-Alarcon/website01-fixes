@@ -1,9 +1,29 @@
 import { Mail, Phone, MapPin, Send } from "lucide-react";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 
+function formatWhatsapp(raw?: string): string {
+  const digits = (raw ?? "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("591") && digits.length >= 11) {
+    const local = digits.slice(3, 11);
+    return `+591 ${local.slice(0, 4)} ${local.slice(4)}`;
+  }
+  if (digits.startsWith("591")) {
+    const local = digits.slice(3);
+    return `+591 ${local}`;
+  }
+  return `+${digits}`;
+}
+
 export default function ContactoPage() {
+  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
+  const texts = cmsTexts ?? {};
+  const contactEmail = texts.footer_email || "contacto@smarthouse.com.bo";
+  const contactWhatsapp = formatWhatsapp(texts.footer_whatsapp);
+  const contactAddress = texts.footer_address || "La Paz, Bolivia";
+
   const { data: formData, setData, post, processing, errors, recentlySuccessful } = useForm({
     name: "", email: "", phone: "", company: "", message: ""
   });
@@ -51,8 +71,7 @@ export default function ContactoPage() {
                   </div>
                   <div>
                     <h3 className="mb-1">Email</h3>
-                    <p className="text-gray-600">contacto@mitienda.com</p>
-                    <p className="text-gray-600">soporte@mitienda.com</p>
+                    <p className="text-gray-600">{contactEmail}</p>
                   </div>
                 </div>
 
@@ -61,9 +80,12 @@ export default function ContactoPage() {
                     <Phone className="size-6" />
                   </div>
                   <div>
-                    <h3 className="mb-1">Teléfono</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-gray-600">+1 (555) 987-6543</p>
+                    <h3 className="mb-1">WhatsApp</h3>
+                    {contactWhatsapp ? (
+                      <p className="text-gray-600">{contactWhatsapp}</p>
+                    ) : (
+                      <p className="text-gray-600">&mdash;</p>
+                    )}
                   </div>
                 </div>
 
@@ -73,11 +95,7 @@ export default function ContactoPage() {
                   </div>
                   <div>
                     <h3 className="mb-1">Dirección</h3>
-                    <p className="text-gray-600">
-                      Calle Principal 123<br />
-                      Ciudad, Estado 12345<br />
-                      País
-                    </p>
+                    <p className="text-gray-600">{contactAddress}</p>
                   </div>
                 </div>
 

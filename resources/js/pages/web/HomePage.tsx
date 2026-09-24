@@ -9,11 +9,6 @@ import HeroSlideshow from "@/pages/web/components/HeroSlideshow";
 import { Product, MenuItem, Category, Brand, Cart, Banner } from "@/types/models";
 import Seo from "@/components/Seo";
 
-import AOS from "aos";
-import "aos/dist/aos.css";
-
-import { useEffect }  from "react";
-
 interface FormProps {
   populares: Product[];
   categorias: Category[];
@@ -24,15 +19,6 @@ interface FormProps {
 
 export default function HomePage({populares, categorias, destacados, marcas, categories}:FormProps) {
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      easing: "ease-in-out",
-      once: true,
-      offset: 100,
-    });
-  }, []);
-  
   return (
     <Layout>      
       <Seo
