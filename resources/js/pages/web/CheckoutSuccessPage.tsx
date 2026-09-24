@@ -37,7 +37,7 @@ export default function CheckoutSuccessPage() {
           </div>
         </section>
 
-        <section className="py-16">
+        <section className="py-16 bg-white text-[#191c1f] [color-scheme:light]">
           <div className="container mx-auto px-4 max-w-2xl bg-[#f2f4f5] rounded-2xl p-8 space-y-4">
             <p>
               Número de pedido: <strong>#{order.id}</strong>
