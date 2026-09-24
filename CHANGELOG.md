@@ -119,12 +119,10 @@ Ver `docs/fase1-*.md`:
 | Ítem | Motivo |
 |---|---|
 | §4.7.4 Nombres de producto placeholder | Datos reales desde admin |
-| §4.7.6 Contraste blanco-naranja | Decisión de marca (WCAG parcial en Fase 2) |
 | §4.7.8 Redes sociales con URLs reales | Datos del cliente |
 | §4.4.4 Footer teléfono/dirección reales | Configurables vía CMS (F4-18); faltan valores |
 | §4.4.7 Checkout completo | Alcance por confirmar (12-20h) |
 | §4.8.2 Inventario faltante (16/75) | Datos desde admin |
 | §4.8.3 Rol de usuario `example@website01.com` | Cambio en BD/admin |
 | 26 vulnerabilidades npm | Triaje pendiente |
-| reCAPTCHA (5.1.8) | Requiere site/secret keys del cliente |
 | `Show.tsx` clonados de texts | Bug de plantilla; fix aparte |
