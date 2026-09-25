@@ -87,6 +87,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Admin: Show.tsx de banners/marcas/categorias/productos/subcategorias reescritos con sus entidades reales (antes eran clones de texts y crasheaban) + render con case correcto `Show` para Linux + checklist deploy con `db:seed` (permisos view_* catálogo) (F4-72)
 - Admin: DataTable/CRUD generico `EntityIndex` para los 6 Index de catalogo (products/categories/subcategories/brands/banners/inventories); elimina ~1900 lineas duplicadas y corrige bugs de la plantilla (reorder brands/banners enviaba `products` -> 422, tipos/toasts de "Banner" en marcas, borrador "el texto", typos) (§7.1, F4-73)
 - Admin: primitivas compartidas de formularios (`FormShell`, `Field`, `CheckboxField`, `ImageUploadField`, `useFormAlerts`) aplicadas a los _form de catalogo; corrige nombres de funcion y toasts "Texto"/"banner" mal copiados (§7.1, F4-74)
+- Backend: `PostTrait` (god trait, 618 lineas, 14 controladores) dividido en `ImageHandling`, `FileUpload`, `Searchable` y `Paginatable` compuestos via `use` (controladores sin cambios; 618 -> 370 lineas); hallazgo documentado: limpieza de archivos en `destroyRecord` no borra nada por path incompleto (bug preexistente, candidato fix aparte) (§7.2, F4-75)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked

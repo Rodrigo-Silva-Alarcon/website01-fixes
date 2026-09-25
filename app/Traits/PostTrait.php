@@ -6,46 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\File;
+use Inertia\Inertia;
 
 /**
  * Trait avanzado para simplificar operaciones CRUD
  * Maneja automáticamente: imágenes, archivos, hashes, búsquedas, ordenamiento, paginación
+ *
+ * La lógica especializada vive en los traits que compone: ImageHandling,
+ * FileUpload, Searchable y Paginatable.
  */
 trait PostTrait
 {
-    // Configuración de imágenes
-    public ?array $imageFields = null;
-    public ?string $imagePath = null;
-    public ?int $imageWidth = null;
-    public ?int $imageHeight = null;
-    public ?bool $imageThumbnail = false;
-    public ?int $thumbnailWidth = null;
-    public ?int $thumbnailHeight = null;
-    public array $appends = [];
+    use ImageHandling;
+    use FileUpload;
+    use Searchable;
+    use Paginatable;
 
-    // Configuración de archivos
-    public ?array $fileFields = null;
-    public ?string $filePath = null;
-    public ?array $allowedFileTypes = null;
-    public ?int $maxFileSize = null; // en MB
+    public array $appends = [];
 
     // Configuración de campos a hashear
     public ?array $hashFields = null;
-
-    // Configuración de búsqueda y ordenamiento
-    public ?array $searchableFields = null;
-    public ?array $sortableFields = null;
-    public ?string $defaultSortField = 'id';
-    public ?string $defaultSortOrder = 'asc';
-
-    // Configuración de paginación
-    public ?int $perPage = 20;
 
     // Configuración de relaciones
     public ?array $withRelations = null;
@@ -62,73 +43,11 @@ trait PostTrait
     public ?array $customValidationRules = null;
 
     /**
-     * Configurar campos de imagen con redimensionamiento automático
-     */
-    public function configureImages(
-        array $fields,
-        string $path,
-        int $width,
-        int $height = null,
-        bool $thumbnail = false,
-        ?int $thumbWidth = null,
-        ?int $thumbHeight = null
-    ): void {
-        $this->imageFields = $fields;
-        $this->imagePath = $path;
-        $this->imageWidth = $width;
-        $this->imageHeight = $height;
-        $this->imageThumbnail = $thumbnail;
-        $this->thumbnailWidth = $thumbWidth ?? $width;
-        $this->thumbnailHeight = $thumbHeight ?? $height;
-    }
-
-    /**
-     * Configurar campos de archivo con validación automática
-     */
-    public function configureFiles(
-        array $fields,
-        string $path,
-        ?array $allowedTypes = null,
-        ?int $maxSize = null
-    ): void {
-        $this->fileFields = $fields;
-        $this->filePath = $path;
-        $this->allowedFileTypes = $allowedTypes ?? ['pdf', 'doc', 'docx', 'txt', 'zip', 'rar', 'mp4', 'mov', 'avi'];
-        $this->maxFileSize = $maxSize ?? 10; // 10MB por defecto
-    }
-
-    /**
      * Configurar campos a hashear automáticamente
      */
     public function configureHashes(array $fields): void
     {
         $this->hashFields = $fields;
-    }
-
-    /**
-     * Configurar campos de búsqueda
-     */
-    public function configureSearchable(array $fields): void
-    {
-        $this->searchableFields = $fields;
-    }
-
-    /**
-     * Configurar campos ordenables
-     */
-    public function configureSortable(array $fields, ?string $defaultField = null, ?string $defaultOrder = null): void
-    {
-        $this->sortableFields = $fields;
-        $this->defaultSortField = $defaultField ?? 'id';
-        $this->defaultSortOrder = $defaultOrder ?? 'asc';
-    }
-
-    /**
-     * Configurar paginación
-     */
-    public function configurePagination(int $perPage): void
-    {
-        $this->perPage = $perPage;
     }
 
     /**
@@ -421,118 +340,6 @@ trait PostTrait
         $oldFiles = $this->getOldFiles($model);
         $model->delete();
         $this->deleteOldFiles($oldFiles);
-    }
-
-    /**
-     * Procesar imagen con redimensionamiento y thumbnail
-     */
-    private function processImage($file, string $field): string
-    {
-        try {
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $publicPath = $this->imagePath;
-            $fullPath = public_path($publicPath);
-            
-            // Crear directorio si no existe
-            if (!File::exists($fullPath)) {
-                if (!File::makeDirectory($fullPath, 0755, true)) {
-                    throw new \Exception("No se pudo crear el directorio para las imágenes");
-                }
-            }
-            
-            $filePath = $fullPath . $filename;
-
-            // Crear manager de imagen con driver GD
-            $manager = new ImageManager(new Driver());
-
-            // Verificar que el archivo sea una imagen válida
-            if (!$file->isValid()) {
-                throw new \Exception("El archivo de imagen no es válido");
-            }
-            
-            // Verificar que sea realmente una imagen
-            $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-            if (!in_array($file->getMimeType(), $allowedMimes)) {
-                throw new \Exception("El archivo debe ser una imagen válida (JPEG, PNG, JPG, GIF)");
-            }
-
-            // Redimensionar imagen principal
-            $image = $manager->read($file);
-            //$image->resize($this->imageWidth, $this->imageHeight);
-            $image->scale($this->imageWidth, $this->imageHeight);
-
-            // Guardar imagen redimensionada directamente en public/data
-            if (!$image->save($filePath)) {
-                throw new \Exception("No se pudo guardar la imagen");
-            }
-
-            // Variantes WebP (misma base de nombre, extensión .webp)
-            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $filePath);
-            try {
-                $image->toWebp(82)->save($webpPath);
-            } catch (\Throwable) {
-                // WebP es best-effort; la imagen original ya quedó guardada.
-            }
-
-            // Crear thumbnail si está configurado
-            if ($this->imageThumbnail) {
-                $thumbPath = $fullPath . config('variables.thumbs');
-                if (!File::exists($thumbPath)) {
-                    if (!File::makeDirectory($thumbPath, 0755, true)) {
-                        throw new \Exception("No se pudo crear el directorio para thumbnails");
-                    }
-                }
-                
-                $thumbnail = $manager->read($file);
-                //$thumbnail->resize($this->thumbnailWidth, $this->thumbnailHeight);
-                $thumbnail->scale($this->thumbnailWidth, $this->thumbnailHeight);
-                
-                if (!$thumbnail->save($thumbPath . $filename)) {
-                    throw new \Exception("No se pudo guardar el thumbnail");
-                }
-
-                $thumbWebp = preg_replace('/\.[^.]+$/', '.webp', $thumbPath . $filename);
-                try {
-                    $thumbnail->toWebp(82)->save($thumbWebp);
-                } catch (\Throwable) {
-                    // best-effort
-                }
-            }
-
-            return  $filename;
-            
-        } catch (\Exception $e) {
-            // Lanzar excepción con mensaje específico para que se muestre en el frontend
-            throw new \Exception("Error al procesar la imagen: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Procesar archivo con validación
-     */
-    private function processFile($file, string $field): string
-    {
-        // Validar tipo de archivo
-        $extension = $file->getClientOriginalExtension();
-        if (!in_array($extension, $this->allowedFileTypes)) {
-            throw new \Exception("Tipo de archivo no permitido: {$extension}");
-        }
-
-        // Validar tamaño
-        if ($file->getSize() > $this->maxFileSize * 1024 * 1024) {
-            throw new \Exception("El archivo excede el tamaño máximo de {$this->maxFileSize}MB");
-        }
-
-        $filename = Str::uuid().'.'.$extension;
-        $relativeDir = $this->filePath;
-        $absoluteDir = public_path($relativeDir);
-
-        if (!File::exists($absoluteDir)) {
-            File::makeDirectory($absoluteDir, 0755, true);
-        }
-
-        $file->move($absoluteDir, $filename);   // mueve el archivo subido a /public/...
-        return $filename; 
     }
 
     /**
