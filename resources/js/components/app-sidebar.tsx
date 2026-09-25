@@ -1,7 +1,7 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 /* import { dashboard } from '@/routes/admin'; */
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
@@ -13,6 +13,7 @@ import AppLogoIcon from '@/components/app-logo-icon';
 
 export function AppSidebar() {
     const { hasPermission } = usePermissions();
+    const { state } = useSidebar();
     
     const allNavItems: Array<NavItem & { permission?: string }> = [
         {
@@ -113,7 +114,11 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={route('admin.dashboard')} prefetch>
-                                <AppLogoIcon className="h-8 w-auto max-w-full shrink-0 group-data-[collapsible=icon]:h-5" />
+                                {state === 'collapsed' ? (
+                                    <AppLogoIcon variant="icon" className="size-4!" />
+                                ) : (
+                                    <AppLogoIcon className="h-8! w-auto! max-w-full shrink-0" />
+                                )}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
