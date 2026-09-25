@@ -6,11 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, Product, Category, Subcategory, Brand, Inventory } from '@/types';
-import { Head, useForm, router, Link } from '@inertiajs/react';
+import { useForm, router, Link } from '@inertiajs/react';
 import { FormEventHandler, useState, useEffect } from 'react';
-import { ArrowLeft, GalleryHorizontal, X, Upload, Trash2, Edit } from 'lucide-react';
+import { GalleryHorizontal, X, Upload, Trash2, Edit } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { TYPE_VIDEO } from "@/types/Data";
 import { toast } from 'sonner';
@@ -18,6 +17,7 @@ import { route } from 'ziggy-js';
 import axios from 'axios';
 import Modal  from "@/components/modal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { FormShell, useFormAlerts } from '@/components/admin/form-shell';
 
 interface FormProps {
     product: Product;
@@ -255,7 +255,7 @@ function ModalForm({ inventory, product, isEdit = false, title, description, bre
         </div>
     );
 }
-export default function TextForm({ product, categories, brands, isEdit = false, title, description, breadcrumbs, success, error }: FormProps) {
+export default function ProductForm({ product, categories, brands, isEdit = false, title, description, breadcrumbs, success, error }: FormProps) {
     
     const { data, setData, post, processing, errors } = useForm({
         name: product.name || '',
@@ -301,22 +301,8 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
     }, [data?.images]);
 
 
-    // Mostrar alertas de éxito y error
-    useEffect(() => {
-        if (success) {
-            toast.success(success);
-        }
-        if (error) {
-            toast.error(error);
-        }
-    }, [success, error]);
-
-    // Mostrar toast de error cuando hay errores de validación
-    useEffect(() => {
-        if (Object.keys(errors).length > 0) {
-            toast.error('Por favor corrige los errores en el formulario');
-        }
-    }, [errors]);
+    // Toasts de éxito/error y de validación
+    useFormAlerts(success, error, errors);
 
     // Inicializar preview de imagen cuando se está editando
     useEffect(() => {
@@ -380,11 +366,10 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                 ...submitData,
                 forceFormData: true, // Forzar FormData para archivos
                 onSuccess: () => {
-                    toast.success('Texto actualizado exitosamente');
+                    toast.success('Producto actualizado exitosamente');
                 },
-                onError: (errors: any) => {
-                    console.log('Errores de validación:', errors);
-                    toast.error('Error al actualizar el texto');
+                onError: () => {
+                    toast.error('Error al actualizar el producto');
                 }
             });
         } else {
@@ -392,11 +377,10 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                 ...submitData,
                 forceFormData: true, // Forzar FormData para archivos
                 onSuccess: () => {
-                    toast.success('Texto creado exitosamente');
+                    toast.success('Producto creado exitosamente');
                 },
-                onError: (errors: any) => {
-                    console.log('Errores de validación:', errors);
-                    toast.error('Error al crear el texto');
+                onError: () => {
+                    toast.error('Error al crear el producto');
                 }
             });
         }
@@ -588,26 +572,33 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={title} />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center gap-4">
-                            {/* Botón de regreso */}
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href={route('products.index')}>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </Link>
-                            </Button>
-                            <div className="grid">
-                                <CardTitle className='text-xl font-medium'>{title}</CardTitle>
-                                <CardDescription>{description}</CardDescription>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
+        <FormShell
+            breadcrumbs={breadcrumbs}
+            title={title}
+            description={description}
+            backHref={route('products.index')}
+            submitLabel={`${isEdit ? 'Actualizar' : 'Crear'} Producto`}
+            processing={processing}
+            onSubmit={submit}
+            after={
+                <Modal
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    title="Precio"
+                >
+                    {isEdit && (
+                        <ModalForm
+                            inventory={{} as any}
+                            product={product}
+                            isEdit={false}
+                            title="Invetario"
+                            description=""
+                            breadcrumbs={[]}
+                        />
+                    )}
+                </Modal>
+            }
+        >
                             {/* Campo Nombre */}
                             <div className="grid gap-2">
                                 <Label htmlFor="name">Producto</Label>
@@ -1205,35 +1196,7 @@ export default function TextForm({ product, categories, brands, isEdit = false, 
                         )}
                         
 
-                        <div className="flex items-center gap-4">
-                            <Button disabled={processing}>
-                                {isEdit ? 'Actualizar' : 'Crear'} Producto
-                            </Button>
-                        </div>
-                        </form>
-                        <Modal
-                            open={open}
-                            onClose={() => setOpen(false)}
-                            title="Precio"
-                        >    
-
-                            {isEdit && (
-                                <>
-                                <ModalForm 
-                                    inventory={{} as any}
-                                    product={product}
-                                    isEdit={false}
-                                    title="Invetario"
-                                    description=""
-                                    breadcrumbs={[]}
-                                    />
-                                </>
-                            )}
-                        </Modal>
-                    </CardContent>
-                </Card>
-            </div>
-        </AppLayout>
+        </FormShell>
     );
 }
 
