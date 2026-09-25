@@ -31,14 +31,16 @@ class CheckoutController extends Controller
     {
         $data = $request->validate([
             'customer_name' => 'required|string|max:120',
-            'customer_phone' => 'required|string|max:40',
+            'customer_phone' => ['required', 'string', 'max:40', 'regex:/^[0-9+\s\-()]{6,40}$/'],
             'customer_email' => 'nullable|email|max:200',
-            'customer_address' => 'nullable|string|max:250',
+            'customer_address' => ['required_unless:payment_method,whatsapp', 'string', 'max:250'],
             'notes' => 'nullable|string|max:1000',
             'payment_method' => 'required|string|in:transfer,cash,whatsapp',
         ], [
             'customer_name.required' => 'El nombre es obligatorio.',
             'customer_phone.required' => 'El teléfono es obligatorio.',
+            'customer_phone.regex' => 'El teléfono no tiene un formato válido.',
+            'customer_address.required_unless' => 'La dirección de entrega es obligatoria.',
             'payment_method.required' => 'Selecciona una forma de pago.',
         ]);
 

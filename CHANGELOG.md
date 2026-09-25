@@ -89,6 +89,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - Admin: primitivas compartidas de formularios (`FormShell`, `Field`, `CheckboxField`, `ImageUploadField`, `useFormAlerts`) aplicadas a los _form de catalogo; corrige nombres de funcion y toasts "Texto"/"banner" mal copiados (§7.1, F4-74)
 - Backend: `PostTrait` (god trait, 618 lineas, 14 controladores) dividido en `ImageHandling`, `FileUpload`, `Searchable` y `Paginatable` compuestos via `use` (controladores sin cambios; 618 -> 370 lineas); hallazgo documentado: limpieza de archivos en `destroyRecord` no borra nada por path incompleto (bug preexistente, candidato fix aparte) (§7.2, F4-75)
 - Backend: fix limpieza de archivos - `getOldFiles()` normaliza filename-only vs ruta completa (`resolveStoredPath`) y `deleteOldFile()` borra variantes `.webp`; destruir/reemplazar imagenes ya no deja huérfanos en `public/data/*` (+2 tests Pest) (F4-76)
+- Checkout: fix botones -/+ del resumen (`/Shop/` -> `/shop/`, antes 404); direccion obligatoria salvo pago por WhatsApp + formato de telefono validado + throttle 20/min por sesion en `POST /checkout`; error de direccion visible en el campo; pagina de exito lista los productos del pedido (+5 tests, 137 total) (4.4.7, F4-77)
 
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked

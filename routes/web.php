@@ -48,7 +48,7 @@ Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('update
 Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');
 
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');
 Route::get('/checkout/exito/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Rutas del panel de administración con prefijo admin/

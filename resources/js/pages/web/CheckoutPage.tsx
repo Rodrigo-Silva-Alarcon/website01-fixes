@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   const changeQty = (item: CartItem, amount: number) => {
     if (qtyPending || amount < 1 || amount > 9999) return;
     setQtyPending(true);
-    router.patch(`/Shop/${item.product_id}`, { amount }, {
+    router.patch(`/shop/${item.product_id}`, { amount }, {
       preserveScroll: true,
       preserveState: true,
       onError: () => toast.error("No se pudo actualizar la cantidad. Inténtalo nuevamente."),
@@ -146,6 +146,9 @@ export default function CheckoutPage() {
                   autoComplete="street-address"
                   placeholder="Escribe la dirección y el mapa la mostrará"
                 />
+                {errors.customer_address && (
+                  <p className="text-sm text-red-600 mt-1">{errors.customer_address}</p>
+                )}
                 <div className="mt-2 overflow-hidden rounded-lg border border-gray-300">
                   <iframe
                     title="Mapa de ubicación de entrega"

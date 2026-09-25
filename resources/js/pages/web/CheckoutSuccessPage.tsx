@@ -55,6 +55,22 @@ export default function CheckoutSuccessPage() {
               Cliente: {order.customer_name} · {order.customer_phone}
             </p>
 
+            {(order.order_items ?? []).length > 0 && (
+              <div className="border-t border-[#d7dade] pt-4">
+                <h2 className="font-semibold mb-3">Productos del pedido</h2>
+                <ul className="space-y-2 text-sm">
+                  {order.order_items!.map((item) => (
+                    <li key={item.id} className="flex justify-between gap-4">
+                      <span>
+                        {item.name} <span className="text-[#5f6c72]">× {item.quantity}</span>
+                      </span>
+                      <span className="font-medium">Bs. {Number(item.amount).toFixed(2)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-3 pt-4">
               <a
                 href={`https://wa.me/59168210861?text=${waText}`}

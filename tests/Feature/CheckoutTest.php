@@ -121,6 +121,7 @@ it('decrements inventory stock when the order is created', function () {
         ->post('/checkout', [
             'customer_name' => 'Ana Perez',
             'customer_phone' => '70000000',
+            'customer_address' => 'Av. Siempre Viva 742',
             'payment_method' => 'cash',
         ])
         ->assertRedirect();
@@ -157,6 +158,7 @@ it('rejects checkout when stock is insufficient', function () {
         ->post('/checkout', [
             'customer_name' => 'Ana Perez',
             'customer_phone' => '70000000',
+            'customer_address' => 'Av. Siempre Viva 742',
             'payment_method' => 'cash',
         ])
         ->assertRedirect('/checkout')
@@ -188,4 +190,79 @@ it('falls back to amount when offer window is active but offer_amount is null', 
     $item = CartItem::latest('id')->first();
     expect($item)->not->toBeNull();
     expect((float) $item->unit_price)->toBe(99.0);
+});
+
+it('rejects an invalid phone format', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => 'abc',
+            'customer_address' => 'Av. Siempre Viva 742',
+            'payment_method' => 'transfer',
+        ])
+        ->assertSessionHasErrors('customer_phone');
+
+    expect(Order::count())->toBe(0);
+});
+
+it('requires customer address unless payment method is whatsapp', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'payment_method' => 'cash',
+        ])
+        ->assertSessionHasErrors('customer_address');
+
+    expect(Order::count())->toBe(0);
+});
+
+it('creates an order without address when payment method is whatsapp', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'payment_method' => 'whatsapp',
+        ])
+        ->assertRedirect();
+
+    expect(Order::count())->toBe(1);
+});
+
+it('updates quantities from the checkout summary through the shop route', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->from('/checkout')
+        ->patch('/shop/42', ['amount' => 3])
+        ->assertRedirect('/checkout');
+
+    expect(CartItem::first()->amount)->toBe(3);
+});
+
+it('shows ordered items on the success page', function () {
+    $order = Order::create([
+        'card_id' => $this->cart->id,
+        'user_id' => 0,
+        'total' => '200.00',
+        'customer_name' => 'Ana Perez',
+        'customer_phone' => '70000000',
+        'customer_address' => 'Av. Siempre Viva 742',
+        'status' => 'pending',
+        'payment_method' => 'transfer',
+    ]);
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => null,
+        'name' => 'Refrigeradora Samsung 400L',
+        'image' => null,
+        'amount' => '200.00',
+        'quantity' => 2,
+        'unit_price' => '100.00',
+    ]);
+
+    $this->get('/checkout/exito/'.$order->id)
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('web/CheckoutSuccessPage')
+            ->where('order.order_items.0.name', 'Refrigeradora Samsung 400L')
+            ->where('order.order_items.0.quantity', 2));
 });

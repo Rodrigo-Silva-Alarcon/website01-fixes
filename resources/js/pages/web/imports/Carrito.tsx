@@ -180,7 +180,7 @@ function ListaCart({cart}:{cart:Cart}) {
   const onQuantityChange = (item: CartItem, amount: number) => {
     if (pending || amount < 1 || amount > 9999) return;
     setPending(true);
-    router.patch(`/Shop/${item.product_id}`, { amount }, {
+    router.patch(`/shop/${item.product_id}`, { amount }, {
       preserveScroll: true,
       preserveState: true,
       onError: () => toast.error('No se pudo actualizar la cantidad. Inténtalo nuevamente.'),
