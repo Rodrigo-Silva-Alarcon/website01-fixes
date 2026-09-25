@@ -70,39 +70,29 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
     const { cates } = usePage<{ cates: number[] }>().props;
     const { marcas } = usePage<{ marcas: number[] }>().props;
 
-    // para el envio de formulario
+    // los params de la URL llegan como strings ("1") pero los ids de BD son números
+    const initialCates = (cates ?? []).map(Number);
+    const initialMarcas = (marcas ?? []).map(Number);
+
+    // para el envio de formulario (también es la fuente de verdad de la UI)
     const { data, setData, processing, errors } = useForm({
-        cs: [] as number[],
-        ms: [] as number[],
-        page:0,
+        cs: initialCates,
+        ms: initialMarcas,
+        page: 0,
     });
-    
-    const [selectedCategories, setSelectedCategories] = useState<number[]>(cates);
-    const [selectedBrands, setSelectedBrands] = useState<number[]>(marcas);
-
-    const toggleCategory = (id: number) => { 
-      setSelectedCategories(prev => {
-        const newCats = prev.includes(id) 
-          ? prev.filter(catId => catId !== id) 
-          : [...prev, id];
-
-        setData('cs', newCats); // actualizar también data
-        return newCats;   // actualizar selectedCategories
-      });
-    };
 
     const [showAll, setShowAll] = useState(false);
 
+    const toggleCategory = (id: number) => {
+      setData('cs', data.cs.includes(id)
+        ? data.cs.filter(catId => catId !== id)
+        : [...data.cs, id]);
+    };
+
     const toggleBrand = (id: number) => {
-      setSelectedBrands(prev => {
-        const newBrs = prev.includes(id) 
-          ? prev.filter(catId => catId !== id) 
-          : [...prev, id];
-
-        setData('ms', newBrs); // actualizar también data
-        return newBrs;   // actualizar selectedCategories
-      });
-
+      setData('ms', data.ms.includes(id)
+        ? data.ms.filter(marcaId => marcaId !== id)
+        : [...data.ms, id]);
     };
 
     const displayedBrands = showAll ? brands : brands.slice(0, 5);
@@ -112,13 +102,13 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
         const params: { cs?: number[]; ms?: number[] } = {};
         if (data.cs.length) params.cs = data.cs;
         if (data.ms.length) params.ms = data.ms;
-        router.get(route('products'), params, { preserveScroll: true });
+        router.get(route('products'), params, { preserveScroll: true, preserveState: true });
     };
 
   return (
     <div 
       data-aos="fade-right"
-      className={`${showFilters ? "block" : "hidden"} lg:block bg-white box-border content-stretch flex flex-col gap-[24px] items-start p-[24px] shrink-0 lg:sticky lg:top-0 w-full lg:w-[269px] h-fit`}
+      className={`bg-white box-border content-stretch ${showFilters ? "flex" : "hidden"} flex-col gap-[24px] items-start p-[24px] shrink-0 lg:sticky lg:top-0 ${showFilters ? "w-full lg:w-[269px]" : "w-full lg:w-auto"} ${showFilters ? "" : "lg:block"} h-fit`}
     >
       <div
         aria-hidden="true"
@@ -127,8 +117,9 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
       <form onSubmit={submit} >
 
         <button
+          type="button"
           onClick={onToggleFilters}
-          className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0 lg:flex"
+          className="bg-white box-border content-stretch cursor-pointer hidden lg:flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
         >
           <div className="relative shrink-0 size-[20px]">
             <div
@@ -156,6 +147,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
           </p>
         </button>
 
+        <div className={showFilters ? "" : "hidden"}>
         <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
           <p
             className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]"
@@ -168,15 +160,14 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
             {categories.map((categoria) => (
               <button
                 key={categoria.id}
+                type="button"
                 onClick={() => toggleCategory(categoria.id)}
-                className={`${selectedCategories.includes(categoria.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
+                className={`${data.cs.includes(categoria.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
               >
                 <div className="flex flex-row items-center size-full">
                   <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
                     <CheckboxIcon
-                      checked={selectedCategories.includes(
-                        categoria.id,
-                      )}
+                      checked={data.cs.includes(categoria.id)}
                     />
                     <p
                       className="basis-0 font-dm_sans font-normal leading-[24px] min-h-px min-w-px relative shrink-0 text-[#191c1f] text-[16px]"
@@ -250,16 +241,17 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
           </p>
           <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
             <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-              {brands.map((marca) => (
+              {displayedBrands.map((marca) => (
                 <button
                   key={marca.id}
+                  type="button"
                   onClick={() => toggleBrand(marca.id)}
-                  className={`${selectedBrands.includes(marca.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
+                  className={`${data.ms.includes(marca.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
                 >
                   <div className="flex flex-row items-center size-full">
                     <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
                       <CheckboxIcon
-                        checked={selectedBrands.includes(marca.id)}
+                        checked={data.ms.includes(marca.id)}
                       />
                       <p
                         className="basis-0 font-dm_sans font-normal leading-[24px] min-h-px min-w-px relative shrink-0 text-[#191c1f] text-[16px]"
@@ -273,9 +265,10 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
               ))}
             </div>
 
-          {!showAll && (
+          {brands.length > 5 && (
               <button
-                onClick={() => setShowAll(true)}
+                type="button"
+                onClick={() => setShowAll((v) => !v)}
                 className="box-border content-stretch flex flex-col gap-[4px] items-center justify-center px-0 py-[4px] relative shrink-0"
               >
                 <div className="content-stretch flex gap-[4px] items-center relative shrink-0">
@@ -283,9 +276,9 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
                     className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre"
                     style={{ fontVariationSettings: "'opsz' 14" }}
                   >
-                    Cargar más
+                    {showAll ? "Mostrar menos" : "Cargar más"}
                   </p>
-                  <div className="relative shrink-0 size-[20px]">
+                  <div className={`relative shrink-0 size-[20px] ${showAll ? "rotate-180" : ""}`}>
                     <div
                       className="absolute inset-[10%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2px] mask-size-[20px_20px]"
                       style={{ maskImage: `url('${img}')` }}
@@ -373,6 +366,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
         >
           1,379 productos encontrados
         </p> */}
+        </div>
       </form>
     </div>
   );
@@ -500,7 +494,10 @@ function Productos() {
 
 
 export default function ProductosPage({categories, brands}:FormProps) {
-  const [showFilters, setShowFilters] = useState(false);
+  // en escritorio el sidebar arranca visible; en móvil, oculto
+  const [showFilters, setShowFilters] = useState(
+    () => typeof window !== "undefined" && window.innerWidth >= 1024,
+  );
   
   return (
     <Layout>
