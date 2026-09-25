@@ -351,17 +351,35 @@ trait PostTrait
 
         if ($this->imageFields) {
             foreach ($this->imageFields as $field) {
-                $oldFiles[$field] = $model->{$field};
+                $oldFiles[$field] = $this->resolveStoredPath($model->{$field}, $this->imagePath);
             }
         }
 
         if ($this->fileFields) {
             foreach ($this->fileFields as $field) {
-                $oldFiles[$field] = $model->{$field};
+                $oldFiles[$field] = $this->resolveStoredPath($model->{$field}, $this->filePath);
             }
         }
 
         return $oldFiles;
+    }
+
+    /**
+     * Normalizar la ruta de un archivo almacenado. Algunos modelos guardan solo
+     * el filename (banners, categorías, marcas...) y otros la ruta completa
+     * (productos); sin este paso la limpieza de archivos nunca borraba nada.
+     */
+    private function resolveStoredPath(?string $path, ?string $dir): ?string
+    {
+        if ($path === null || $path === '') {
+            return $path;
+        }
+
+        if (str_contains($path, '/') || str_contains($path, '\\')) {
+            return $path;
+        }
+
+        return $dir ? rtrim($dir, '/') . '/' . $path : $path;
     }
 
     /**
@@ -373,12 +391,21 @@ trait PostTrait
             $fullPath = public_path($filePath);
             if (File::exists($fullPath)) {
                 File::delete($fullPath);
-            }            
+            }
+            // Variante WebP de la imagen original (best-effort)
+            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $fullPath);
+            if ($webpPath !== $fullPath && File::exists($webpPath)) {
+                File::delete($webpPath);
+            }
             // Eliminar thumbnail si existe
             if ($this->imageThumbnail) {
                 $thumbPath = str_replace(basename($filePath), config('variables.thumbs') . basename($filePath), $fullPath);
                 if (File::exists($thumbPath)) {
                     File::delete($thumbPath);
+                }
+                $thumbWebp = preg_replace('/\.[^.]+$/', '.webp', $thumbPath);
+                if ($thumbWebp !== $thumbPath && File::exists($thumbWebp)) {
+                    File::delete($thumbWebp);
                 }
             }
         }
