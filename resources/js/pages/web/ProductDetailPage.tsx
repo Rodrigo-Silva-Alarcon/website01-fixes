@@ -100,7 +100,7 @@ function ImageGallery({ images }: { images: { image: string}[] }) {
                   onClick={() => setSelectedImage(index)}
                   className={`relative rounded-[20px] w-full aspect-square shadow-md ${
                     selectedImage === index
-                      ? "ring-2 ring-[#006696]"
+                      ? "ring-2 ring-[#c2410c]"
                       : ""
                   }`}
                 >
@@ -135,10 +135,10 @@ function StockBadge() {
     >
       <div
         aria-hidden="true"
-        className="absolute border border-[#e0eef3] border-solid inset-0 pointer-events-none rounded-[40px]"
+        className="absolute border border-[#ffedd5] border-solid inset-0 pointer-events-none rounded-[40px]"
       />
       <p
-        className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#e0eef3] text-[16px] text-nowrap whitespace-pre"
+        className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#ffedd5] text-[16px] text-nowrap whitespace-pre"
         style={{ fontVariationSettings: "'opsz' 14" }}
       >
         ¡Pocos en stock!
@@ -185,7 +185,7 @@ function ProductInfo({
         {/* Title and Brand */}
         <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
           <h1
-            className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#006696] text-[32px] md:text-[40px] lg:text-[49px] w-full"
+            className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#c2410c] text-[32px] md:text-[40px] lg:text-[49px] w-full"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
             {product.name}

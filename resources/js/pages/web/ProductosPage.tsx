@@ -150,7 +150,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
         <div className={showFilters ? "" : "hidden"}>
         <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
           <p
-            className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]"
+            className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
             Categorías
@@ -162,7 +162,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
                 key={categoria.id}
                 type="button"
                 onClick={() => toggleCategory(categoria.id)}
-                className={`${data.cs.includes(categoria.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
+                className={`${data.cs.includes(categoria.id) ? "bg-[#fff7ed]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
               >
                 <div className="flex flex-row items-center size-full">
                   <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
@@ -234,7 +234,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
 
         <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
           <p
-            className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]"
+            className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]"
             style={{ fontVariationSettings: "'opsz' 14" }}
           >
             Marcas
@@ -246,7 +246,7 @@ function Sidebar({ showFilters, onToggleFilters, categories, brands}: {
                   key={marca.id}
                   type="button"
                   onClick={() => toggleBrand(marca.id)}
-                  className={`${data.ms.includes(marca.id) ? "bg-[#f0faff]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
+                  className={`${data.ms.includes(marca.id) ? "bg-[#fff7ed]" : ""} cursor-pointer relative rounded-[16px] shrink-0 w-full`}
                 >
                   <div className="flex flex-row items-center size-full">
                     <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
@@ -480,10 +480,20 @@ function Productos() {
                   product={product}
                 />
               ))}
+              {(products?.data || []).length === 0 && (
+                <div className="flex flex-col items-center gap-2 py-16 text-center w-full">
+                  <p className="font-dm_sans font-bold text-[20px] text-[#191c1f]">
+                    No se encontraron productos
+                  </p>
+                  <p className="font-dm_sans text-[16px] text-[#5f6c72]">
+                    Prueba con otros filtros o palabras de búsqueda.
+                  </p>
+                </div>
+              )}
             </div>
             {/* Pagination */}
             <div data-aos="fade-up">
-              <Pagination products={products}/>
+              {(products?.data || []).length > 0 && <Pagination products={products}/>}
             </div>
           </div>
         </div>
@@ -506,7 +516,7 @@ export default function ProductosPage({categories, brands}:FormProps) {
           description="Explora nuestro catálogo de productos de tecnología y electrodomésticos. Encuentra lo que necesitas al mejor precio."
         />
         <div className="max-w-[1440px] mx-auto w-full mt-4">
-          <h1 className="text-[24px] md:text-[32px] font-bold text-[#006696] px-4 pt-4">Productos</h1>
+          <h1 className="text-[24px] md:text-[32px] font-bold text-[#c2410c] px-4 pt-4">Productos</h1>
           {/* Main Content */}
           <div className="content-start flex flex-col lg:flex-row gap-0 items-start justify-center relative w-full">
             {/* Mobile Filter Toggle */}

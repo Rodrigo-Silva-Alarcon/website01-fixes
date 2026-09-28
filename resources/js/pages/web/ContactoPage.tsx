@@ -56,7 +56,7 @@ export default function ContactoPage() {
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-[#006696] to-[#0088cc] text-white py-20">
+        <section className="bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="mb-6">Contáctanos</h1>
@@ -76,7 +76,7 @@ export default function ContactoPage() {
                 <h2 className="mb-8">Información de Contacto</h2>
                 
                 <div className="flex gap-4">
-                  <div className="bg-[#006696] text-white size-12 rounded-full flex items-center justify-center shrink-0">
+                  <div className="bg-[#c2410c] text-white size-12 rounded-full flex items-center justify-center shrink-0">
                     <Mail className="size-6" />
                   </div>
                   <div>
@@ -86,7 +86,7 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="bg-[#006696] text-white size-12 rounded-full flex items-center justify-center shrink-0">
+                  <div className="bg-[#c2410c] text-white size-12 rounded-full flex items-center justify-center shrink-0">
                     <Phone className="size-6" />
                   </div>
                   <div>
@@ -100,7 +100,7 @@ export default function ContactoPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="bg-[#006696] text-white size-12 rounded-full flex items-center justify-center shrink-0">
+                  <div className="bg-[#c2410c] text-white size-12 rounded-full flex items-center justify-center shrink-0">
                     <MapPin className="size-6" />
                   </div>
                   <div>
@@ -138,7 +138,7 @@ export default function ContactoPage() {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006696]"
+                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c2410c]"
                         placeholder="Tu nombre"
                       />
                     </div>
@@ -154,7 +154,7 @@ export default function ContactoPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006696]"
+                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c2410c]"
                         placeholder="tu@email.com"
                       />
                     </div>
@@ -170,7 +170,7 @@ export default function ContactoPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006696]"
+                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c2410c]"
                         placeholder="Tu teléfono"
                       />
                     </div>
@@ -186,7 +186,7 @@ export default function ContactoPage() {
                         onChange={handleChange}
                         required
                         rows={6}
-                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006696] resize-none"
+                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c2410c] resize-none"
                         placeholder="Escribe tu mensaje aquí..."
                       />
                     </div>
@@ -194,7 +194,7 @@ export default function ContactoPage() {
                     <button
                       type="submit"
                       disabled={processing}
-                      className="w-full bg-[#006696] text-white px-6 py-3 rounded-lg hover:bg-[#005580] transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-[#c2410c] text-white px-6 py-3 rounded-lg hover:bg-[#9a3412] transition-colors flex items-center justify-center gap-2"
                     >
                       <Send className="size-5" />
                       Enviar Mensaje

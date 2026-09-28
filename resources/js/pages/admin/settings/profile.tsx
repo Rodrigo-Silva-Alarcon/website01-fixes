@@ -38,7 +38,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
         if (!hasPermission('view_profile')) {
             console.log('❌ Usuario sin permisos para ver perfil - redirigiendo');
             toast.error('No tienes permisos para ver el perfil');
-            router.visit('/admin/dashboard');
+            router.visit('/');
         }
     }, [hasPermission]);
 

@@ -50,8 +50,8 @@ function Frame10124069() {
 function Boton() {
   return (
     <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
-      <div aria-hidden="true" className="absolute border border-[#e0eef3] border-solid inset-0 pointer-events-none rounded-[40px]" />
-      <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#e0eef3] text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <div aria-hidden="true" className="absolute border border-[#ffedd5] border-solid inset-0 pointer-events-none rounded-[40px]" />
+      <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#ffedd5] text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
         ¡Pocos en stock!
       </p>
     </div>

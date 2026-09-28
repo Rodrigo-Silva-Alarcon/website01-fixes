@@ -54,33 +54,33 @@ export default function Dashboard() {
             <div className="flex  h-full flex-1 flex-col gap-4  overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">                        
-                        <Link href={route('products.index')} className='flex flex-col items-center justify-center h-full hover:text-blue-600'>
+                        <Link href={route('products.index')} className='flex flex-col items-center justify-center h-full hover:text-orange-600'>
                             <h1 className='text-5xl font-bold text-green-600'>{String(products)}</h1>
                             <h1 className='flex'><Wrench className='me-2' /> Productos</h1>
 
                         </Link>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <Link href={route('categories.index')} className="flex flex-col items-center justify-center h-full hover:text-blue-600">
+                        <Link href={route('categories.index')} className="flex flex-col items-center justify-center h-full hover:text-orange-600">
                             <h1 className='text-5xl font-bold text-green-600'>{String(categories)}</h1>
                             <h1 className='flex'><FolderClosed className='me-2 ' /> Categorías</h1>
                         </Link>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <Link href={route('subcategories.index')} className='flex flex-col items-center justify-center h-full hover:text-blue-600'>
+                        <Link href={route('subcategories.index')} className='flex flex-col items-center justify-center h-full hover:text-orange-600'>
                             <h1 className='text-5xl font-bold text-green-600'>{String(subcategorieds)}</h1>
                             <h1 className='flex'><Folders className='me-2' /> Subcategorías</h1>
                         </Link>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <Link href={route('banners.index')} className='flex flex-col items-center justify-center h-full hover:text-blue-600'>
+                        <Link href={route('banners.index')} className='flex flex-col items-center justify-center h-full hover:text-orange-600'>
                             <h1 className='text-5xl font-bold text-green-600'>{String(banners)}</h1>
                             <h1 className='flex'><Folders className='me-2' /> Banners</h1>
                         </Link>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <div className='flex flex-col items-center justify-center h-full'>
-                            <h1 className='text-5xl font-bold text-blue-600'>{ordersMonth}</h1>
+                            <h1 className='text-5xl font-bold text-orange-600'>{ordersMonth}</h1>
                             <h1 className='flex'><ShoppingCart className='me-2' /> Pedidos (mes)</h1>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function Dashboard() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-blue-500" /> Pedidos recientes</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-orange-500" /> Pedidos recientes</CardTitle>
                             <CardDescription>Últimos pedidos del sistema</CardDescription>
                         </CardHeader>
                         <CardContent>

@@ -13,11 +13,11 @@ interface FormProps {
   populares: Product[];
   categorias: Category[];
   destacados: Product[];
-  marcas:Brand[];                                
-  categories: Category[];  
+  brands:Brand[];
+  categories: Category[];
 }
 
-export default function HomePage({populares, categorias, destacados, marcas, categories}:FormProps) {
+export default function HomePage({populares, categorias, destacados, brands, categories}:FormProps) {
 
   return (
     <Layout>      

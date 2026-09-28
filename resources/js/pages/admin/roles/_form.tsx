@@ -157,7 +157,7 @@ export default function RoleForm({ role, permissions, sectors, isEdit = false, t
                                     <div key={sectorKey} className="space-y-3">
                                         {/* Header del Sector */}
                                         <div className="flex items-center gap-2">
-                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                                                 {sectors[sectorKey] || sectorKey}
                                             </Badge>
                                             <span className="text-sm text-muted-foreground">

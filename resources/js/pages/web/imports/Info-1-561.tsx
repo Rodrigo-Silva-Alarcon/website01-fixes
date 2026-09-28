@@ -20,7 +20,7 @@ function Texto() {
 
 export default function Info() {
   return (
-    <div className="bg-[#006696] relative size-full" data-name="Info">
+    <div className="bg-[#c2410c] relative size-full" data-name="Info">
       <div className="flex flex-row items-center size-full">
         <div className="box-border content-stretch flex gap-[80px] items-center px-[32px] py-[8px] relative size-full">
           <div className="relative shrink-0 size-[20px]" data-name="chevron_backward">

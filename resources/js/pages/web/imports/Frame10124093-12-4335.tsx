@@ -92,7 +92,7 @@ function Frame10124081() {
 function Frame10123741() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
         Categorías
       </p>
       <Frame10124081 />
@@ -142,7 +142,7 @@ function Frame10124082() {
 function Frame10123757() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
         Marcas
       </p>
       <Frame10124082 />
@@ -164,7 +164,7 @@ function Frame48095439() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start justify-center relative shrink-0 w-full">
       <Texto />
-      <div className="bg-[#f0faff] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
+      <div className="bg-[#fff7ed] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
         <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
           Azul
         </p>

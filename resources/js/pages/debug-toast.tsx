@@ -48,7 +48,7 @@ export default function DebugToast() {
                         console.log('🔍 DebugToast: Botón info clickeado');
                         toast.info('Toast manual de información');
                     }}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                    className="px-4 py-2 bg-orange-500 text-white rounded"
                 >
                     Test Info Toast
                 </button>

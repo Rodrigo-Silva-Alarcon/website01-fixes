@@ -28,7 +28,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 <Label htmlFor="email">Correo electrónico</Label>
                                 <Input
                                     id="email"
-                                    className="h-11 bg-white dark:border-slate-600 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus-visible:border-sky-400 dark:focus-visible:ring-sky-400/25"
+                                    className="h-11 bg-white dark:border-slate-600 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus-visible:border-orange-400 dark:focus-visible:ring-orange-400/25"
                                     aria-invalid={!!errors.email}
                                     aria-describedby={errors.email ? 'email-error' : undefined}
                                     type="email"
@@ -46,14 +46,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <Label htmlFor="password">Contraseña</Label>
                                     {canResetPassword && (
-                                        <TextLink href={request()} className="text-sm text-sky-700 decoration-sky-700/40 hover:text-sky-800 dark:text-sky-300 dark:decoration-sky-300/40 dark:hover:text-sky-200" tabIndex={5}>
+                                        <TextLink href={request()} className="text-sm text-orange-700 decoration-orange-700/40 hover:text-orange-800 dark:text-orange-300 dark:decoration-orange-300/40 dark:hover:text-orange-200" tabIndex={5}>
                                             ¿Olvidaste tu contraseña?
                                         </TextLink>
                                     )}
                                 </div>
                                 <Input
                                     id="password"
-                                    className="h-11 bg-white dark:border-slate-600 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus-visible:border-sky-400 dark:focus-visible:ring-sky-400/25"
+                                    className="h-11 bg-white dark:border-slate-600 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-400 dark:focus-visible:border-orange-400 dark:focus-visible:ring-orange-400/25"
                                     aria-invalid={!!errors.password}
                                     aria-describedby={errors.password ? 'password-error' : undefined}
                                     type="password"
@@ -66,10 +66,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 <InputError id="password-error" message={errors.password} />
                             </div>
                             <div className="flex items-center space-x-3">
-                                <Checkbox className="dark:border-slate-500 dark:data-[state=checked]:border-sky-400 dark:data-[state=checked]:bg-sky-400 dark:data-[state=checked]:text-slate-950" id="remember" name="remember" tabIndex={3} />
+                                <Checkbox className="dark:border-slate-500 dark:data-[state=checked]:border-orange-400 dark:data-[state=checked]:bg-orange-400 dark:data-[state=checked]:text-slate-950" id="remember" name="remember" tabIndex={3} />
                                 <Label htmlFor="remember">Recuérdame</Label>
                             </div>
-                            <Button type="submit" className="mt-2 h-11 w-full bg-sky-700 font-semibold text-white hover:bg-sky-800 focus-visible:ring-sky-500/50 dark:bg-sky-400 dark:text-slate-950 dark:hover:bg-sky-300 dark:focus-visible:ring-sky-300/50" tabIndex={4} disabled={processing}>
+                            <Button type="submit" className="mt-2 h-11 w-full bg-orange-700 font-semibold text-white hover:bg-orange-800 focus-visible:ring-orange-500/50 dark:bg-orange-400 dark:text-slate-950 dark:hover:bg-orange-300 dark:focus-visible:ring-orange-300/50" tabIndex={4} disabled={processing}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Ingresar
                             </Button>

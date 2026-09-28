@@ -11,7 +11,7 @@ import { useRef } from "react";
 
 function Banner({product}:{product:Product}) {
   return (
-    <div className="basis-0 h-full bg-[#e0eef3] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
+    <div className="basis-0 h-full bg-[#ffedd5] flex flex-col grow w-full lg:min-w-[300px] relative rounded-[20px] shrink-0 overflow-hidden" data-name="Banner">
       <div className="flex flex-1 flex-row items-start justify-center min-w-inherit overflow-clip rounded-[inherit]">
         <div className="box-border content-stretch flex flex-col sm:flex-row sm:flex-wrap gap-[20px] sm:gap-[40px] items-start justify-center min-w-inherit p-[20px] relative w-full">
           <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-[306px] min-w-[160px] relative shrink-0" data-name="Content">
@@ -21,11 +21,11 @@ function Banner({product}:{product:Product}) {
                   <div className="relative shrink-0 size-[24px]" data-name="sports_esports">
                     <div className="absolute inset-[22.92%_10.43%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.504px_-5.5px] mask-size-[24px_24px]" data-name="sports_esports" style={{ maskImage: `url('${img}')` }}>
                       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19 13">
-                        <path d={svgPaths.p16a7ea00} fill="var(--fill-0, #008ECC)" id="sports_esports" />
+                        <path d={svgPaths.p16a7ea00} fill="var(--fill-0, #ea580c)" id="sports_esports" />
                       </svg>
                     </div>
                   </div>
-                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#006696] text-[14px] text-nowrap whitespace-pre max-w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
+                  <Link href={route('category', {category:product.category_slug})} className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#c2410c] text-[14px] text-nowrap whitespace-pre max-w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>
                 </div>
@@ -95,13 +95,13 @@ function Banner1({product}:{product:Product}) {
                   <div className="relative shrink-0 size-[24px]" data-name="sports_esports">
                     <div className="absolute inset-[22.92%_10.43%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2.504px_-5.5px] mask-size-[24px_24px]" data-name="sports_esports" style={{ maskImage: `url('${img}')` }}>
                       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19 13">
-                        <path d={svgPaths.p16a7ea00} fill="var(--fill-0, #008ECC)" id="sports_esports" />
+                        <path d={svgPaths.p16a7ea00} fill="var(--fill-0, #ea580c)" id="sports_esports" />
                       </svg>
                     </div>
                   </div>
                   <Link
                     href={route('category', {category:product.category_slug})}
-                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#008ecc] text-[14px] text-nowrap whitespace-pre max-w-full"
+                    className="font-dm_sans font-normal leading-[20px] relative shrink-0 overflow-ellipsis overflow-hidden text-[#ea580c] text-[14px] text-nowrap whitespace-pre max-w-full"
                     style={{ fontVariationSettings: "'opsz' 14" }}>
                     {product.category_label}
                   </Link>

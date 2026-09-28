@@ -285,7 +285,7 @@ export default function Index({ records, filters, sectors, success, error }: Pro
                                         </TableCell>
                                         <TableCell>{permission.description}</TableCell>
                                         <TableCell>
-                                            <Badge variant="default" className="bg-blue-100 text-blue-800">
+                                            <Badge variant="default" className="bg-orange-100 text-orange-800">
                                                 {permission.sector_label || permission.sector}
                                             </Badge>
                                         </TableCell>

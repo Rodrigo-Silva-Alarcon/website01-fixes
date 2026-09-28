@@ -59,7 +59,7 @@ function Frame10124020({marcas}:{marcas:Brand[]}) {
 
 export default function Marcas() {  
 
-  const { marcas } = usePage<{ marcas: Brand[] }>().props;
+  const { brands } = usePage<{ brands?: Brand[] }>().props;
 
   return (
     <div data-aos="fade-up" data-aos-delay="100">
@@ -75,8 +75,8 @@ export default function Marcas() {
             >
               Marcas con las que trabajamos
             </p>
-            <Frame10124020 
-              marcas={marcas}
+            <Frame10124020
+              marcas={brands ?? []}
               />
           </div>
         </div>

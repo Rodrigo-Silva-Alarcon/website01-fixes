@@ -7,13 +7,13 @@ function ItemCategory({category}:{category:Category}) {
   return (
     <Link 
       href={ route('category', {category:category.slug}) } 
-      className="interactive-card basis-0 bg-[#e0eef3] hover:bg-[#cae6f0] grow min-h-px min-w-[100px] relative rounded-[20px] shrink-0" 
+      className="interactive-card basis-0 bg-[#ffedd5] hover:bg-[#fed7aa] grow min-h-px min-w-[100px] relative rounded-[20px] shrink-0" 
       data-name="Category">
 
       <div className="flex flex-col items-center justify-center min-w-inherit size-full">
         <div className="box-border content-stretch flex flex-col gap-[20px] items-center justify-center min-w-inherit p-[20px] relative w-full">
-          <div className="aspect-[148/148] relative shrink-0 w-full" data-name="Image">
-            <ResponsiveImg alt={category.name} loading="lazy" className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full" src={category.image_url} webpSrc={category.image_webp_url} />
+          <div className="aspect-[148/148] bg-white rounded-[12px] relative shrink-0 w-full" data-name="Image">
+            <ResponsiveImg alt={category.name} loading="lazy" className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full" src={category.image_url} webpSrc={category.image_webp_url} />
           </div>
           <p className="[white-space-collapse:collapse] font-dm_sans font-normal leading-[24px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[16px] text-center text-nowrap w-full" style={{ fontVariationSettings: "'opsz' 14" }}>
             {category.name}

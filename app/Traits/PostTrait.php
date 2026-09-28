@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 /**
@@ -170,6 +171,19 @@ trait PostTrait
     }
 
     /**
+     * Convierte fallos de procesamiento de subidas (incluidos \Error como
+     * GD sin soporte WebP) en un error de validación en vez de HTTP 500.
+     */
+    private function uploadError(string $field, \Throwable $e): ValidationException
+    {
+        $message = str_contains($e->getMessage(), 'imagecreatefromwebp')
+            ? 'El servidor no admite imágenes WebP; sube la imagen en PNG o JPG.'
+            : $e->getMessage();
+
+        return ValidationException::withMessages([$field => $message]);
+    }
+
+    /**
      * Crear registro con procesamiento automático
      */
     public function createRecord(FormRequest $request, Model $model, array $extraData = []): Model
@@ -182,7 +196,11 @@ trait PostTrait
         if ($this->imageFields) {
             foreach ($this->imageFields as $field) {
                 if ($request->hasFile($field)) {
-                    $record->{$field} = $this->processImage($request->file($field), $field);
+                    try {
+                        $record->{$field} = $this->processImage($request->file($field), $field);
+                    } catch (\Throwable $e) {
+                        throw $this->uploadError($field, $e);
+                    }
                 }
             }
         }
@@ -191,7 +209,11 @@ trait PostTrait
         if ($this->fileFields) {
             foreach ($this->fileFields as $field) {
                 if ($request->hasFile($field)) {
-                    $record->{$field} = $this->processFile($request->file($field), $field);
+                    try {
+                        $record->{$field} = $this->processFile($request->file($field), $field);
+                    } catch (\Throwable $e) {
+                        throw $this->uploadError($field, $e);
+                    }
                 }
             }
         }
@@ -270,7 +292,11 @@ trait PostTrait
                     $this->deleteOldFile($oldFiles[$field] ?? null);
                 } elseif ($request->hasFile($field)) {
                     // Solo procesar si se subió una nueva imagen
-                    $model->{$field} = $this->processImage($request->file($field), $field);
+                    try {
+                        $model->{$field} = $this->processImage($request->file($field), $field);
+                    } catch (\Throwable $e) {
+                        throw $this->uploadError($field, $e);
+                    }
                     $this->deleteOldFile($oldFiles[$field] ?? null);
                 }
                 // Si no hay archivo nuevo ni se quiere eliminar, mantener el valor original del modelo (no modificar)
@@ -281,7 +307,11 @@ trait PostTrait
         if ($this->fileFields) {
             foreach ($this->fileFields as $field) {
                 if ($request->hasFile($field)) {
-                    $model->{$field} = $this->processFile($request->file($field), $field);
+                    try {
+                        $model->{$field} = $this->processFile($request->file($field), $field);
+                    } catch (\Throwable $e) {
+                        throw $this->uploadError($field, $e);
+                    }
                     $this->deleteOldFile($oldFiles[$field] ?? null);
                 }
             }

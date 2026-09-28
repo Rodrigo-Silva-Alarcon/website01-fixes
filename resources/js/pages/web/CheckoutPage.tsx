@@ -76,7 +76,7 @@ export default function CheckoutPage() {
     <Layout>
       <Seo title="Checkout" description="Finaliza tu pedido en Smart House." />
       <main className="flex-1">
-        <section className="bg-gradient-to-r from-[#006696] to-[#0088cc] text-white py-12">
+        <section className="bg-gradient-to-r from-[#c2410c] to-[#ea580c] text-white py-12">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl font-bold">Realizar pedido</h1>
             {flash?.status && <p className="mt-2 opacity-90">{flash.status}</p>}

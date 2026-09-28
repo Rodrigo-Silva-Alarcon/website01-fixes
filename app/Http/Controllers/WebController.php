@@ -22,7 +22,7 @@ class WebController extends Controller{
             'categorias' => $this->get_categories_home(),
             'categories' => $this->get_categories_home_all(),
             'destacados' => $this->get_destacados(),
-            'marcas' => $this->get_marcas(),
+            'brands' => $this->get_marcas(),
         ]);
     }
 

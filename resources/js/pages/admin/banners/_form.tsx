@@ -181,7 +181,7 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
                                         {category.products.length > 0 && (
                                             <>
                                                 <SelectLabel>
-                                                    <small className="text-blue-500">{category.name}</small>
+                                                    <small className="text-orange-500">{category.name}</small>
                                                 </SelectLabel>
                                                 {category.products.map((product) => (
                                                     <SelectItem key={product.id} value={String(product.id)} className="ps-2">

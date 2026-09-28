@@ -22,17 +22,17 @@
 
         a {
             text-decoration: none;
-            color: #0e436f;
+            color: #c2410c;
         }
 
         .button {
             font-size: 14px;
             line-height: 100%;
             font-weight: 700;
-            color: #0e436f;
+            color: #ffffff;
             padding: 5px 10px;
-            background-color: #FFDE59;
-            border: #FFB40B solid 1px;
+            background-color: #c2410c;
+            border: #9a3412 solid 1px;
             border-radius: 6px !important;
         }
     </style>

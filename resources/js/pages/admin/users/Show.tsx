@@ -136,7 +136,7 @@ export default function Show({ user }: Props) {
                                     <div className="grid gap-2">
                                         <h4 className="text-sm font-medium text-gray-500">Alias</h4>
                                         <p className="text-lg">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                                 {user.alias}
                                             </span>
                                         </p>

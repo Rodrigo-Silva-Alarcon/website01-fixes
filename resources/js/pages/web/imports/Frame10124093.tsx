@@ -8,7 +8,7 @@ import { img } from "./svg-2rv8o";
 function Frame10124081() {
   return (
     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-      <button className="bg-[#f0faff] cursor-pointer relative rounded-[16px] shrink-0 w-full">
+      <button className="bg-[#fff7ed] cursor-pointer relative rounded-[16px] shrink-0 w-full">
         <div className="flex flex-row items-center size-full">
           <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
             <div className="relative shrink-0 size-[20px]" data-name="Component 2">
@@ -112,7 +112,7 @@ function Frame10124095() {
 function Frame10123741() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
         Categorías
       </p>
       <Frame10124081 />
@@ -126,7 +126,7 @@ function Frame10123741() {
 function Frame10124082() {
   return (
     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-      <button className="bg-[#f0faff] cursor-pointer relative rounded-[16px] shrink-0 w-full">
+      <button className="bg-[#fff7ed] cursor-pointer relative rounded-[16px] shrink-0 w-full">
         <div className="flex flex-row items-center size-full">
           <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-[4px] relative w-full">
             <div className="relative shrink-0 size-[20px]" data-name="Component 2">
@@ -310,7 +310,7 @@ function Frame10124096() {
 function Frame10123757() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
+      <p className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]" style={{ fontVariationSettings: "'opsz' 14" }}>
         Marcas
       </p>
       <Frame10124082 />

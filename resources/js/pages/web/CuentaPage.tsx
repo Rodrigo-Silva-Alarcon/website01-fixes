@@ -35,7 +35,7 @@ export default function CuentaPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex flex-col items-center mb-6">
-                  <div className="bg-[#006696] text-white size-20 rounded-full flex items-center justify-center mb-4">
+                  <div className="bg-[#c2410c] text-white size-20 rounded-full flex items-center justify-center mb-4">
                     <User className="size-10" />
                   </div>
                   <h3>Juan Pérez</h3>
@@ -43,7 +43,7 @@ export default function CuentaPage() {
                 </div>
 
                 <nav className="space-y-2">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#006696] text-white rounded-lg">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#c2410c] text-white rounded-lg">
                     <Package className="size-5" />
                     Mis Pedidos
                   </button>
@@ -69,12 +69,12 @@ export default function CuentaPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="bg-blue-100 text-[#006696] size-12 rounded-lg flex items-center justify-center">
+                    <div className="bg-orange-100 text-[#c2410c] size-12 rounded-lg flex items-center justify-center">
                       <Package className="size-6" />
                     </div>
                     <div>
                       <p className="text-gray-600 text-sm">Total Pedidos</p>
-                      <p className="text-[#006696]">12</p>
+                      <p className="text-[#c2410c]">12</p>
                     </div>
                   </div>
                 </div>
@@ -88,7 +88,7 @@ export default function CuentaPage() {
                     </div>
                     <div>
                       <p className="text-gray-600 text-sm">Completados</p>
-                      <p className="text-[#006696]">10</p>
+                      <p className="text-[#c2410c]">10</p>
                     </div>
                   </div>
                 </div>
@@ -102,7 +102,7 @@ export default function CuentaPage() {
                     </div>
                     <div>
                       <p className="text-gray-600 text-sm">En Proceso</p>
-                      <p className="text-[#006696]">2</p>
+                      <p className="text-[#c2410c]">2</p>
                     </div>
                   </div>
                 </div>
@@ -125,7 +125,7 @@ export default function CuentaPage() {
 
                         <div className="text-right">
                           <p className="text-gray-600 mb-1">Total</p>
-                          <p className="text-[#006696]">${pedido.total}</p>
+                          <p className="text-[#c2410c]">${pedido.total}</p>
                         </div>
 
                         <div>
@@ -138,7 +138,7 @@ export default function CuentaPage() {
                           </span>
                         </div>
 
-                        <button className="px-6 py-2 border border-[#006696] text-[#006696] rounded-lg hover:bg-[#006696] hover:text-white transition-colors">
+                        <button className="px-6 py-2 border border-[#c2410c] text-[#c2410c] rounded-lg hover:bg-[#c2410c] hover:text-white transition-colors">
                           Ver Detalles
                         </button>
                       </div>
@@ -147,7 +147,7 @@ export default function CuentaPage() {
                 </div>
 
                 <div className="p-6 border-t bg-gray-50">
-                  <button className="text-[#006696] hover:underline">
+                  <button className="text-[#c2410c] hover:underline">
                     Ver todos los pedidos →
                   </button>
                 </div>

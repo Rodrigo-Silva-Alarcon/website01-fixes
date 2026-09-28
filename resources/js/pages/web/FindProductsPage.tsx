@@ -181,7 +181,7 @@ function FilterCheckbox({
                   }
                   fill={
                     checked
-                      ? "var(--fill-0, #006696)"
+                      ? "var(--fill-0, #c2410c)"
                       : "var(--fill-0, #191C1F)"
                   }
                   id="check_box_outline_blank"
@@ -270,7 +270,7 @@ function FilterSidebar({
       {/* Categorías */}
       <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
         <p
-          className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]"
+          className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
           Categorías
@@ -310,7 +310,7 @@ function FilterSidebar({
       {/* Marcas */}
       <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
         <p
-          className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#006696] text-[20px] w-[min-content]"
+          className="font-dm_sans font-bold leading-[25px] min-w-full relative shrink-0 text-[#c2410c] text-[20px] w-[min-content]"
           style={{ fontVariationSettings: "'opsz' 14" }}
         >
           Marcas
@@ -601,7 +601,7 @@ export default function FindProductsPage() {
                   {searchTerm && (
                     <button
                       onClick={handleRemoveSearchTerm}
-                      className="bg-[#f0faff] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
+                      className="bg-[#fff7ed] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
                     >
                       <p
                         className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre"

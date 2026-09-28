@@ -71,9 +71,9 @@ trait ImageHandling
             }
 
             // Verificar que sea realmente una imagen
-            $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
             if (!in_array($file->getMimeType(), $allowedMimes)) {
-                throw new \Exception("El archivo debe ser una imagen válida (JPEG, PNG, JPG, GIF)");
+                throw new \Exception("El archivo debe ser una imagen válida (JPEG, PNG, JPG, GIF, WEBP)");
             }
 
             // Redimensionar imagen principal

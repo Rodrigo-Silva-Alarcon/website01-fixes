@@ -106,7 +106,7 @@ export default function Show({ permission }: Props) {
                                     <div className="grid gap-2">
                                         <h4 className="text-sm font-medium text-gray-500">Guard Name</h4>
                                         <p className="text-lg">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                                 {permission.guard_name || 'web'}
                                             </span>
                                         </p>
