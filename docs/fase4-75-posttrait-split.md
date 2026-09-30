@@ -33,7 +33,7 @@ misma clase). Se corrigió de paso el deprecation PHP 8.4 heredado
 
 - `php -l` en los 5 archivos: sin errores de sintaxis.
 - `php artisan test --compact` → **130 passed (699 assertions)**.
-- **Smoke one-shot (login admin `mjuchani`)**: 10 rutas admin con `h1` correcto
+- **Smoke one-shot (login admin)**: 10 rutas admin con `h1` correcto
   (`/admin/products`, `categories`, `subcategories`, `brands`, `banners`,
   `inventories`, `users`, `roles`, `permissions`, `texts`) y **0 console/page
   errors**. Los 404 de `/admin` y `/admin/posts` son rutas inexistentes

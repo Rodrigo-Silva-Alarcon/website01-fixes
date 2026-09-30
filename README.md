@@ -46,6 +46,20 @@ php artisan serve             # http://127.0.0.1:8000
 En desarrollo puedes correr `npm run dev` y `php artisan serve` en paralelo
 (este sirve la app, aquel los assets con hot-reload).
 
+## Usuarios creados por el seed
+
+El seed crea 3 usuarios con roles: **admin**, **editor_textos** y
+**viewer_textos** (emails neutros `*@example.com`).
+
+**No hay credenciales en el repositorio.** Para fijar la contraseña de los
+usuarios que crea el seed, define una variable de entorno antes de sembrar:
+
+```bash
+SEED_PASSWORD=... php artisan db:seed
+```
+
+Si no se define, cada usuario nuevo recibe una contraseña aleatoria que puedes
+restablecer con `php artisan tinker`. Panel: `/login` → `/admin/dashboard`.
 
 ## Base de datos incluida
 

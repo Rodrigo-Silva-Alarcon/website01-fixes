@@ -30,7 +30,7 @@ marcas), y `console.log` de debug en los `onError`.
 Los `forceFormData: true` se conservaron donde ya estaban (codificación de
 `_method`/archivos sin cambios de comportamiento).
 
-## Verificación (QA browser, modo one-shot, login admin `mjuchani`)
+## Verificación (QA browser, modo one-shot, login admin)
 
 - **6 páginas `/create`**: título, botón de envío correcto (`Crear Producto`,
   `Crear Categoría`, `Crear Subcategoría`, `Crear Marca`, `Crear Banner`,

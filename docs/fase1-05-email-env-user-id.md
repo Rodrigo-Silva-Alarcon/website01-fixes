@@ -4,7 +4,7 @@
 
 1. **Email duro-codeado** en `app/Http/Controllers/WebController.php:106`:
    ```php
-   Mail::to('mjuchani@megalink.com')->send(new ContactForm(...));
+   Mail::to('destino@example.com')->send(new ContactForm(...));
    ```
    El email del destinatario estaba fijo en el código fuente. No se podía cambiar por entorno (dev/staging/prod) sin editar código, y rompe la práctica de no tener configuración sensible/de despliegue en el repositorio.
 
@@ -39,8 +39,9 @@
 ## Verificación (sin composer local)
 
 - `php -l` OK en `WebController.php`, `ShopController.php`, `config/contact.php`.
-- Grep: ya no hay `mjuchani@megalink.com` ni `'user_id' => 0` en `app/`.
-- `DatabaseSeeder.php:32,35` aún contiene el email hardcodeado pero es solo de seeders (no crítico; se documenta aquí).
+- Grep: no queda ningún email hardcodeado en `app/` ni `'user_id' => 0`.
+- `DatabaseSeeder.php` ya no contiene emails ni contraseñas en texto plano
+  (`SEED_ADMIN_EMAIL`/`SEED_PASSWORD` por entorno; aleatorias si no se definen).
 
 ## Archivos
 

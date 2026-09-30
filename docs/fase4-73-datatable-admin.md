@@ -30,7 +30,7 @@ fix aparte.
 
 - `npm run build` OK; `npm run lint` → **0 errors / 272 warnings** (antes 330);
   `php artisan test --compact` → **130 passed (699 assertions)**.
-- QA browser (login admin `mjuchani`, one-shot): las **6 páginas** con h1 correcto,
+- QA browser (login admin, one-shot): las **6 páginas** con h1 correcto,
   cabeceras propias, filas 18/4/16/10/3/18, botón Crear, **0 console errors**.
 - Click real: búsqueda `search=Samsung` → URL con parámetros → **3 filas** filtradas.
 - Click real: switch de marcas → `PATCH toggle-publish` **303** en ambas direcciones.

@@ -41,7 +41,7 @@ php artisan db:seed --class=RolePermissionSeeder --force
 sin `db:seed` en el deploy, el middleware `permission:view_*` de F4-23 bloquearía el
 admin de catálogo entero (ahora documentado en el checklist F1-16).
 
-## Verificación (QA browser, login admin `mjuchani`)
+## Verificación (QA browser, login admin)
 
 - `/admin/products/1` → `Producto: Refrigeradora Samsung 400L`, card "Detalles del Producto"
 - `/admin/categories/1` → `Categoría: Electrodomésticos`; subcategories → `Subcategoría: Refrigeradoras`

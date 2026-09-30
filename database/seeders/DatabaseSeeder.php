@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,13 +30,18 @@ class DatabaseSeeder extends Seeder
 
     private function createTestUsers(): void
     {
+        // Credenciales por entorno: nunca texto plano en el repositorio.
+        // Sin SEED_PASSWORD cada usuario nuevo nace con contraseña aleatoria.
+        $password = Hash::make(env('SEED_PASSWORD') ?: Str::random(16));
+        $adminEmail = env('SEED_ADMIN_EMAIL', 'admin@example.com');
+
         // Usuario administrador
         $adminUser = User::firstOrCreate(
-            ['email' => 'mjuchani@megalink.com'],
+            ['email' => $adminEmail],
             [
                 'name' => 'Administrador',
-                'email' => 'mjuchani@megalink.com',
-                'password' => Hash::make('moi123'),
+                'email' => $adminEmail,
+                'password' => $password,
                 'email_verified_at' => now(),
             ]
         );
@@ -47,7 +53,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Editor de Textos',
                 'email' => 'editor@example.com',
-                'password' => Hash::make('password'),
+                'password' => $password,
                 'email_verified_at' => now(),
             ]
         );
@@ -59,7 +65,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Visualizador de Textos',
                 'email' => 'viewer@example.com',
-                'password' => Hash::make('password'),
+                'password' => $password,
                 'email_verified_at' => now(),
             ]
         );

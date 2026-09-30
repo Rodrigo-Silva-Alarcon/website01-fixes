@@ -108,6 +108,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/).
 - QA como usuario (E2E): recorridos reproducibles de invitado (busqueda, filtro, detalle, carrito, drawer, checkout completo hasta `/checkout/exito/5`, contacto) y de auth (registro, sesion, logout, login admin, RBAC, credenciales invalidas en espanol) pasan con 0 console errors / 0 HTTP500; datos QA revertidos al baseline exacto (users3, orders2, carts20, stock identico); detalle en `docs/fase4-83-qa-usuario-e2e.md` (F4-83)
 - Categorias del home: imagenes teñidas de naranja — las tarjetas usan `mix-blend-multiply` y el fondo crema de F4-80 multiplicaba los pixeles de las fotos (antes `#e0eef3` casi blanco); ahora sin multiply + tile blanco `rounded-[12px]` tras la imagen (color real uniforme en las4 tarjetas, las2 con fondo blanco opaco quedan seamless); detalle en `docs/fase4-84-categorias-tint.md` (F4-84)
 
+- Credenciales fuera del repositorio: tabla de usuarios/contraseñas eliminada del README, login explicito borrado de `docs/fase4-82`, emails personales anonimizados en informes de fase, y `DatabaseSeeder` sin texto plano — contraseña via `SEED_PASSWORD` (aleatoria si no se define) y admin via `SEED_ADMIN_EMAIL` (default `admin@example.com`) (F4-88)
+
 ### Verified as already resolved (analisis-mejoras)
 - 1.4 throttle POST /enviar ya existia; 8.3 CONTACT_EMAIL via config/contact.php; 7.6 ShopTrait si se usa (get_shop_cart); .DS_Store no tracked
 

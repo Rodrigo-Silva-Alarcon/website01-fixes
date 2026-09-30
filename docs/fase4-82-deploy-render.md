@@ -37,8 +37,8 @@ completar la prueba, sin migrar de motor de BD ni tocar arquitectura:
 4. **Subir la BD actual**: Dashboard → servicio → **Disks → File Browser** →
    subir `database/database.sqlite` (744 KB, la de pruebas con 18 productos)
    a `/persist/database.sqlite` → **Restart deploy**.
-5. Verificar: `/`, `/productos`, `/admin` (login `mjuchani@megalink.com` /
-   `moi123`), imágenes de `public/data`.
+5. Verificar: `/`, `/productos`, `/admin` (login con el usuario admin de la
+   BD subida — las credenciales no van en el repo), imágenes de `public/data`.
 6. PageSpeed Insights sobre `https://<tu-app>.onrender.com`.
 
 ### BD actual vs. seed

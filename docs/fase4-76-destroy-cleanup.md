@@ -34,7 +34,7 @@ para el borrado en disco).
 ## Verificación
 
 - `php artisan test --compact` → **132 passed (706 assertions)** (+2 tests nuevos).
-- **QA browser (one-shot, login admin `mjuchani`)**: mismo ciclo de F4-75
+- **QA browser (one-shot, login admin)**: mismo ciclo de F4-75
   (crear banner *"QA F4-75 split"* con PNG real → fila aparece → diálogo →
   *Eliminar* → fila fuera): `phase=done`, `found=true`, `stillThere=false`,
   **0 console errors / 0 requests fallidos** y `public/data/banners` **118 → 118**
