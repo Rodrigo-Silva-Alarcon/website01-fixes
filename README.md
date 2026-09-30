@@ -46,17 +46,6 @@ php artisan serve             # http://127.0.0.1:8000
 En desarrollo puedes correr `npm run dev` y `php artisan serve` en paralelo
 (este sirve la app, aquel los assets con hot-reload).
 
-## Usuarios creados por el seed
-
-| Email | Password | Rol |
-|---|---|---|
-| `mjuchani@megalink.com` | `moi123` | admin |
-| `editor@example.com` | `password` | editor_textos |
-| `viewer@example.com` | `password` | viewer_textos |
-
-Admin en `/login` → `/admin/dashboard`.
-
-> ⚠️ **Cambia estas credenciales antes de cualquier despliegue real.**
 
 ## Base de datos incluida
 
