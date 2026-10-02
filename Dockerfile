@@ -1,16 +1,20 @@
-FROM node:20-alpine AS assets
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install     --no-dev --no-interaction --no-progress --prefer-dist     --no-scripts --ignore-platform-reqs
+
+# Assets: wayfinder (plugin de vite) ejecuta `php artisan wayfinder:generate`,
+# asi que este stage necesita PHP + vendor ademas de node.
+FROM php:8.3-cli-bookworm AS assets
+COPY --from=node:20-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:20-bookworm-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
-
-FROM composer:2 AS vendor
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev --no-interaction --no-progress --prefer-dist \
-    --no-scripts --ignore-platform-reqs
+COPY --from=vendor /app/vendor ./vendor
+RUN cp -n .env.example .env && php artisan key:generate --force --no-interaction     && npm run build
 
 FROM php:8.3-fpm-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
