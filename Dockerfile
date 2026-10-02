@@ -14,7 +14,9 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 COPY --from=vendor /app/vendor ./vendor
-RUN cp -n .env.example .env && php artisan key:generate --force --no-interaction     && npm run build
+# .dockerignore excluye .env*, asi que se usan variables de entorno de build
+ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=     APP_ENV=production CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync
+RUN npm run build
 
 FROM php:8.3-fpm-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
