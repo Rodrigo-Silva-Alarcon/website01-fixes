@@ -10,6 +10,8 @@ services:
     envVars:
       - key: APP_ENV
         value: production
+      - key: LOG_CHANNEL
+        value: stderr
       - key: APP_DEBUG
         value: "false"
       - key: APP_KEY
