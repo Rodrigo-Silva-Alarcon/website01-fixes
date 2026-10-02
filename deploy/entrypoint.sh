@@ -27,7 +27,9 @@ if [ ! -f "$DB" ]; then
     FRESH=1
 fi
 
-chown www-data:www-data "$DB" 2>/dev/null || true
+# SQLite necesita escribir tambien en la carpeta (journal/wal), no solo en el archivo
+chown -R www-data:www-data "$(dirname "$DB")" 2>/dev/null || true
+chown -R www-data:www-data public/data 2>/dev/null || true
 chown -R www-data:www-data /persist 2>/dev/null || true
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
