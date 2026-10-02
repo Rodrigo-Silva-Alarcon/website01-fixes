@@ -1,45 +1,77 @@
-import Ofertas from "@/pages/web/components/Ofertas";
+import HeroCarousel from "@/pages/web/components/HeroCarousel";
+import Reveal from "@/pages/web/components/Reveal";
+import FeaturesBar from "@/pages/web/components/FeaturesBar";
 import Categorias from "@/pages/web/components/Categorias";
-import MarcasLogos from "@/pages/web/components/Marcas";
-import BlockCategory from "@/pages/web/imports/BlockCategory";
-import Layout from "@/pages/web/layouts/Layout";
-import FeaturesSection from "@/pages/web/imports/Frame1";
+import Ofertas from "@/pages/web/components/Ofertas";
 import Destacados from "@/pages/web/components/Banner";
-import HeroSlideshow from "@/pages/web/components/HeroSlideshow";
-import { Product, MenuItem, Category, Brand, Cart, Banner } from "@/types/models";
+import BlockCategory from "@/pages/web/imports/BlockCategory";
+import MarcasLogos from "@/pages/web/components/Marcas";
+import ShowroomSection from "@/pages/web/components/ShowroomSection";
+import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
+import { Product, Category, Brand } from "@/types/models";
 
 interface FormProps {
   populares: Product[];
   categorias: Category[];
   destacados: Product[];
-  brands:Brand[];
+  brands: Brand[];
   categories: Category[];
 }
 
-export default function HomePage({populares, categorias, destacados, brands, categories}:FormProps) {
-
+export default function HomePage({
+  populares,
+  categorias,
+  destacados,
+  brands,
+  categories,
+}: FormProps) {
   return (
-    <Layout>      
+    <Layout>
       <Seo
         title="Inicio"
         description="SmartHouse - Tecnología y electrodomésticos para tu hogar. Encuentra productos de marcas líderes con los mejores precios."
       />
       <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
-      <HeroSlideshow/>
-      <section className="max-w-[1440px] mx-auto">
+
+      {/* 1. Carrusel principal (cambia cada 15 s, flechas/puntos/arrastre) */}
+      <Reveal y={16}>
+        <HeroCarousel />
+      </Reveal>
+
+      {/* 2. Barra de Beneficios y Garantías */}
+      <Reveal delay={0.15} y={20}>
+        <FeaturesBar />
+      </Reveal>
+
+      {/* 3. Cuadrícula de Categorías */}
+      <Reveal>
+        <Categorias />
+      </Reveal>
+
+      {/* 4. Carrusel de Productos Populares con Descuento */}
+      <Reveal>
         <Ofertas />
-        <Categorias />          
-        <Destacados />     
-      </section>
-      <MarcasLogos  />
-      <section className="max-w-[1440px] mx-auto">
-        <BlockCategory  />
-        {/* Características y Beneficios */}
-        <div data-aos="fade-up" data-aos-delay="100">
-          <FeaturesSection />
-        </div>
-      </section>
+      </Reveal>
+
+      {/* 5-6. Bloques de Productos por Categoría, con los banners destacados entre Consolas y Equipos de sonido */}
+      <BlockCategory
+        promo={
+          <Reveal>
+            <Destacados />
+          </Reveal>
+        }
+      />
+
+      {/* 7. Marquee Infinito de Marcas Aliadas */}
+      <Reveal>
+        <MarcasLogos />
+      </Reveal>
+
+      {/* 8. Showroom Físico en La Paz con WhatsApp y Mapa */}
+      <Reveal>
+        <ShowroomSection />
+      </Reveal>
     </Layout>
   );
 }

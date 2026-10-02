@@ -43,6 +43,7 @@ Route::redirect('/Find', '/find', 301);
 Route::post('/enviar', [WebController::class, 'store'])->middleware('throttle:5,1')->name('store');
 Route::get('/find', [WebController::class, 'storefind'])->name('storefind');
 
+Route::get('/carrito', [WebController::class, 'cart'])->name('cart');
 Route::post('/addshop/{product}', [ShopController::class, 'add'])->name('addshop');
 Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('updateshop');
 Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');

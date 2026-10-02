@@ -5,6 +5,28 @@ import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export default function AddToCartButton({ product }: { product: Product }) {
+  const stock = product.inventory?.stock ?? 0;
+  const isOutOfStock = stock <= 0;
+
+  if (isOutOfStock) {
+    return (
+      <div
+        className="content-stretch flex gap-[6px] items-center relative shrink-0 w-full py-[4px] select-none"
+        aria-label="Producto agotado"
+      >
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-700">
+          Agotado
+        </span>
+        <span
+          className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#71767b] text-[13px] text-nowrap whitespace-pre"
+          style={{ fontVariationSettings: "'opsz' 14" }}
+        >
+          Sin stock disponible
+        </span>
+      </div>
+    );
+  }
+
   return (
     <button
       type="button"

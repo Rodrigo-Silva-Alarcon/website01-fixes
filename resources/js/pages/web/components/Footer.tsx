@@ -1,5 +1,4 @@
 import svgPaths from "@/pages/web/imports/svg-3m2zodg2fw";
-import AppLogoIcon from '@/components/app-logo-icon';
 import { img } from "@/pages/web/imports/svg-ksqrv";
 import { usePage } from "@inertiajs/react";
 
@@ -16,18 +15,18 @@ export default function Footer() {
   const address = texts.footer_address ?? "";
 
   return (
-    <footer className="bg-[#191c1f] relative w-full" data-name="Footer">
+    <footer className="bg-[#f6f7f8] border-t border-[#eceef0] relative w-full" data-name="Footer">
       <div className="flex flex-col items-center w-full">
         <div className="box-border content-stretch flex flex-col gap-[32px] md:gap-[64px] items-center pb-0 pt-[32px] md:pt-[64px] px-[16px] sm:px-[32px] md:px-[64px] relative w-full">
           {/* Logo y Botones */}
           <div className="content-center flex flex-col md:flex-row flex-wrap gap-[32px] md:gap-[80px] items-center justify-between relative w-full">
             {/* Logo */}
-            <div className="h-[60px] md:h-[80px] relative shrink-0 w-[177.744px] md:w-[236.992px]" data-name="Logo" style={{ color: "white" }}>
-              <div className="absolute inset-0" data-name="image 9">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <AppLogoIcon className="h-full w-full" />
-                </div>
-              </div>
+            <div className="bg-white border border-[#eceef0] rounded-[12px] px-[14px] py-[10px] shrink-0" data-name="Logo">
+              <img
+                src="/images/logo-smarthouse.png"
+                alt="Smart House Importaciones SRL"
+                className="block h-[56px] md:h-[72px] w-auto object-contain"
+              />
             </div>
 
             {/* Botones de Contacto */}
@@ -137,7 +136,7 @@ export default function Footer() {
                   className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
                 >
                   <div className="relative shrink-0 size-[20px]" data-name="Twitter">
-                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24" fill="white">
+                    <svg className="block size-full" preserveAspectRatio="none" viewBox="0 0 24 24" fill="white">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
                     </svg>
                   </div>
@@ -150,16 +149,16 @@ export default function Footer() {
           </div>
 
           {/* Copyright */}
-          <div className="box-border content-start flex flex-col md:flex-row flex-wrap gap-[12px] md:gap-[20px] items-start md:items-center justify-between px-0 py-[20px] relative w-full border-t border-[#cacccd]">
-            <p className="font-dm_sans font-normal leading-[20px] text-[#cacccd] text-[14px] text-center md:text-left w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
+          <div className="box-border content-start flex flex-col md:flex-row flex-wrap gap-[12px] md:gap-[20px] items-start md:items-center justify-between px-0 py-[20px] relative w-full border-t border-[#dfe2e6]">
+            <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center md:text-left w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
               © Smart House, {new Date().getFullYear()}. Todos los derechos reservados.
             </p>
             {address && (
-              <p className="font-dm_sans font-normal leading-[20px] text-[#cacccd] text-[14px] text-center w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
+              <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
                 {address}
               </p>
             )}
-            <p className="font-dm_sans font-normal leading-[20px] text-[#cacccd] text-[14px] text-center md:text-right w-full md:w-auto whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+            <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center md:text-right w-full md:w-auto whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
               Desarrollado por MegaLink S.R.L.
             </p>
           </div>

@@ -1,207 +1,69 @@
-import { isOnOffer, productPrice } from "@/lib/product-enquiry";
-import { currencyLabel } from "@/lib/cart";
-import svgPaths from "../imports/svg-o54k4pn05p";
-import { img as maskImg } from "../imports/svg-nochp";
-import { Inventory, Product } from "@/types/models";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/pages/web/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import { Link, router, usePage } from "@inertiajs/react";
-import { route } from "ziggy-js";
-import ResponsiveImg from "@/components/ResponsiveImg";
-
-
-function LinkCarrito({product}:{product:Product}) {
-  return (
-    <button 
-      type="button"
-      onClick={() => router.post(route('addshop', {product:product.id}), {}, { preserveScroll: true })}
-      className="content-stretch flex gap-[4px] items-center relative shrink-0 cursor-pointer">
-      <div
-        className="relative shrink-0 size-[20px] hover:text-orange-600"
-        data-name="shopping_cart"
-      >
-        <div
-          className="absolute inset-[9.38%_15.53%_10.18%_6.25%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-1.5px_-2.25px] mask-size-[24px_24px]"
-          data-name="shopping_cart"
-          style={{ maskImage: `url('${maskImg}')` }}
-        >
-          <svg
-            className="block size-full"
-            fill="none"
-            preserveAspectRatio="none"
-            viewBox="0 0 16 17"
-          >
-            <path
-              d={svgPaths.p3d5d4700}
-              fill="var(--fill-0, #191C1F)"
-              id="shopping_cart"
-            />
-          </svg>
-        </div>
-      </div>
-      <div
-        className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-[#191c1f] text-[14px] text-nowrap whitespace-pre hover:text-orange-600"
-        style={{ fontVariationSettings: "'opsz' 14" }}
-      >
-        Añadir al carrito
-      </div>
-    </button>
-  );
-}
-function Precio({inventory}:{inventory:Inventory}){
-  const mostrarOferta = isOnOffer(inventory);
-
-  return (
-    <div className="content-start flex flex-wrap font-dm_sans font-normal gap-[8px] items-start leading-[24px] relative shrink-0 text-[16px] text-nowrap w-full whitespace-pre">
-      {mostrarOferta ? (
-        <>
-          <p
-            className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid line-through relative shrink-0 text-[#b45309]"
-            style={{ fontVariationSettings: "'opsz' 14" }}
-          >
-            {currencyLabel(inventory.money)} {inventory.amount}
-          </p>
-          <p
-            className="relative shrink-0 text-[#191c1f]"
-            style={{ fontVariationSettings: "'opsz' 14" }}
-          >
-            {currencyLabel(inventory.money)} {inventory.offer_amount}
-          </p>
-        </>
-      ) : (
-        <p
-          className="relative shrink-0 text-[#191c1f]"
-          style={{ fontVariationSettings: "'opsz' 14" }}
-        >
-          {currencyLabel(inventory.money)} {inventory.amount}
-        </p>
-      )}
-    </div>
-  );
-}
-function Cards({populares}:{populares:Product[]}) {
-  
-  return (
-    <Carousel
-      opts={{
-        align: "start",
-        loop: true,
-        slidesToScroll: 1,
-      }}
-      plugins={[
-        Autoplay({
-          delay: 3000,
-          stopOnInteraction: false,
-        }),
-      ]}
-      className="w-full h-[450px]"
-      
-    >
-      <CarouselContent className="-ml-3 md:-ml-4">
-        {populares.map((product, index) => (          
-
-          <CarouselItem
-            key={index}
-            className="pl-3 md:pl-4 basis-1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 mb-5 min-w-[300px]"
-          >
-            <div
-              className="interactive-card bg-[#f2f4f5] relative rounded-[16px] shrink-0 group cursor-pointer h-full"
-              data-name="Card"
-            >
-              <div className="overflow-clip rounded-[inherit] size-full">
-                <div className="box-border content-stretch flex flex-col gap-[20px] items-start p-[20px] relative w-full">
-                  <Link 
-                    href={route('product', {product:product.slug,category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})} className="w-full">
-                    <div
-                      className="aspect-[1/1] relative shrink-0 w-full mb-2"
-                      data-name="image 10"
-                    >
-                      <ResponsiveImg
-                        alt={product.name}
-                        loading="lazy"
-                        className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain aspect-[1/1] pointer-events-none size-full w-full"
-                        src={product.image_url}
-                        webpSrc={product.image_webp_url}
-                      />
-                    </div>
-                    <div className="h-0 relative shrink-0 w-full mb-4">
-                      <div className="absolute bottom-0 left-0 right-0 top-[-0.5px] ">
-                        <svg
-                          className="block size-full"
-                          fill="none"
-                          preserveAspectRatio="none"
-                          viewBox="0 0 276 1"
-                        >
-                          <line
-                            id="Line 6"
-                            stroke="var(--stroke-0, #191C1F)"
-                            strokeWidth="0.5"
-                            x2="276"
-                            y1="0.25"
-                            y2="0.25"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-                      <p
-                        className="-webkit-box font-dm_sans font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[20px] w-full"
-                        style={{ fontVariationSettings: "'opsz' 14" }}
-                      >
-                        {product.name}
-                      </p>
-
-                      { productPrice(product.inventory) !== null &&(                      
-                        <Precio inventory={product.inventory} />
-                      )}                    
-                    </div>
-                  </Link>
-
-                  {productPrice(product.inventory) !== null && (
-                    <div
-                    className="box-border content-stretch flex-col gap-[4px] items-center justify-center px-0 py-[4px] relative shrink-0 w-full flex"
-                    data-name="Botón1"
-                  >
-                    <LinkCarrito
-                      product={product} />
-                  </div>
-                    )}
-                </div>
-              </div>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
-  );
-}
+import { useRef } from "react";
+import { Product } from "@/types/models";
+import { usePage } from "@inertiajs/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import ProductCard from "@/pages/web/components/ProductCard";
 
 export default function Ofertas() {
-  
   const { populares } = usePage<{ populares: Product[] }>().props;
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  if (!populares || populares.length === 0) return null;
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollerRef.current) return;
+    // Avanza exactamente una tarjeta (ancho + separación de 16px)
+    const card = scrollerRef.current.firstElementChild as HTMLElement | null;
+    const step = (card?.offsetWidth ?? 296) + 16;
+    const amount = direction === "left" ? -step : step;
+    scrollerRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
 
   return (
+    <section className="w-full max-w-[1440px] mx-auto pt-12 md:pt-16 flex flex-col gap-5">
+      {/* Cabecera de la sección con Flechas de Navegación */}
+      <div className="flex items-end justify-between gap-4 px-4 sm:px-8 lg:px-16 flex-wrap">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191c1f]">
+          Productos populares
+        </h2>
 
-    <div data-aos="fade-up" data-aos-delay="100">
-      <div data-aos="fade-up" data-aos-delay="100">
-        <div className="relative size-full" data-name="Ofertas">
-          <div className="flex flex-col items-center size-full">
-            <div className="box-border content-stretch flex flex-col gap-[20px] lg:gap-[64px] items-center px-[20px] lg:px-[64px] py-[80px] relative size-full max-w-[100vw]">
-              <p
-                className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-foreground text-[39px] text-center w-full"
-                style={{ fontVariationSettings: "'opsz' 14" }}
-              >
-                Productos populares
-              </p>
-              <Cards populares={populares} />
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scroll("left")}
+            aria-label="Anterior"
+            className="size-10 sm:size-11 rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] flex items-center justify-center transition-colors hover:bg-[#191c1f] hover:border-[#191c1f] hover:text-white cursor-pointer"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll("right")}
+            aria-label="Siguiente"
+            className="size-10 sm:size-11 rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] flex items-center justify-center transition-colors hover:bg-[#191c1f] hover:border-[#191c1f] hover:text-white cursor-pointer"
+          >
+            <ChevronRight className="size-5" />
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Contenedor Carrusel Desplazable: mismo ancho que los bloques por categoría.
+          El -mx-2/px-2 deja 8px para que el borde de hover no se recorte. */}
+      <div className="px-4 sm:px-8 lg:px-16">
+        <div
+          ref={scrollerRef}
+          className="-mx-2 px-2 scroll-px-2 flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
+        >
+          {populares.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+              className="w-[260px] sm:w-[296px] lg:w-[calc((100%-48px)/4)] shrink-0 snap-start"
+            />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

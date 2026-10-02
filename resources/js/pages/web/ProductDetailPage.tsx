@@ -1,760 +1,450 @@
-import { useEffect, useRef, useState, Dispatch, SetStateAction }  from "react";
-import svgPaths from "@/pages/web/imports/svg-mrtftqmkvx";
-import svgPathsRelated from "@/pages/web/imports/svg-howirk98bg";
-import { img } from "@/pages/web/imports/svg-742ld";
-import { img as imgArrow } from "@/pages/web/imports/svg-fpqd7";
-import { Product, MenuItem, Category, Brand, Cart } from "@/types/models";
-import { productEnquiryUrl, productPrice } from "@/lib/product-enquiry";
-import Price from "@/pages/web/imports/Price";
-import { Link, router } from "@inertiajs/react";
+import { useRef, useState } from "react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import Modal from "@/components/modal-web";
+import {
+  ArrowLeft, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, Landmark, MessageCircle,
+  Minus, Package, Plus, ShoppingCart, Store, Truck, type LucideIcon,
+} from "lucide-react";
+import { Product } from "@/types/models";
+import { isOnOffer, productEnquiryUrl, productPrice } from "@/lib/product-enquiry";
+import { currencyLabel } from "@/lib/cart";
 import Layout from "@/pages/web/layouts/Layout";
-import { usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
 import ProductJsonLd from "@/components/ProductJsonLd";
-import AddToCartButton from "@/pages/web/components/AddToCartButton";
+import ProductCard from "@/pages/web/components/ProductCard";
 import ResponsiveImg from "@/components/ResponsiveImg";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  type CarouselApi,
-} from "@/pages/web/components/ui/carousel";
+import { useSmoothRail } from "@/hooks/use-smooth-rail";
 
-type Nl2brProps = {
-  text: string;
-};
+const MAX_QTY = 9;
 
-function Nl2br({ text }: Nl2brProps) {
-  return (
-    <>
-     {text.split("\n").map((line: string, index: number) => (
-        <div key={index}>
-          {line}
-          <br />
-        </div>
-      ))}
-    </>
-  );
+const PERKS: { icon: LucideIcon; title: string; text: string }[] = [
+  { icon: Truck, title: "Delivery gratuito", text: "Entrega en 24 h" },
+  { icon: Landmark, title: "Pago seguro", text: "Transferencia, QR o efectivo contra entrega" },
+  { icon: Store, title: "Retira en tienda", text: "Av. 20 de Octubre esq. Rosendo Gutierrez" },
+];
+
+function formatAmount(value: number): string {
+  return value.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function ImageGallery({ images }: { images: { image: string}[] }) {
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
-
-  useEffect(() => {
-    if (!api) return;
-
-    // Sincronizar el estado cuando el carousel cambia
-    api.on("select", () => {
-      setSelectedImage(api.selectedScrollSnap());
-    });
-  }, [api]);
-
-  useEffect(() => {
-    if (!api) return;
-    
-    // Cuando se hace clic en una miniatura, mover el carousel
-    api.scrollTo(selectedImage);
-  }, [selectedImage, api]);
-
-  return (
-    <div className="basis-0 content-stretch flex flex-col gap-[16px] grow items-start min-h-px min-w-[280px] md:min-w-[300px] relative shrink-0">
-      {/* Main Image Carousel */}
-      <div className="aspect-square md:aspect-[264/264] relative rounded-[20px] shrink-0 w-full">
-        <Carousel setApi={setApi} className="w-full h-full">
-          <CarouselContent className="h-full">
-            {images.map((image, index) => (
-              <CarouselItem key={index} className="h-full">
-                <div className="aspect-square md:aspect-[264/264] relative rounded-[20px] h-full bg-white">
-                  <ResponsiveImg
-                    alt={`Imagen ${index + 1} del producto`}
-                    className="absolute inset-0 max-w-none object-contain pointer-events-none rounded-[20px] size-full"
-                    src={image.image}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
-        </Carousel>
-      </div>
-
-      {/* Thumbnail Gallery */}
-      <div className="relative w-full">
-        <Carousel
-          opts={{
-            align: "start",
-            slidesToScroll: 1,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {images.map((image, index) => (
-              <CarouselItem key={index} className="pl-4 basis-1/3 sm:basis-1/4 md:basis-1/4 lg:basis-1/5">
-                <button
-                  onClick={() => setSelectedImage(index)}
-                  className={`relative rounded-[20px] w-full aspect-square shadow-md ${
-                    selectedImage === index
-                      ? "ring-2 ring-[#c2410c]"
-                      : ""
-                  }`}
-                >
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 pointer-events-none rounded-[20px]"
-                  >
-                    <div className="absolute bg-white inset-0 rounded-[20px]" />
-                    <ResponsiveImg
-                      alt={`Miniatura ${index + 1}`}
-                      className="absolute max-w-none object-contain rounded-[20px] size-full"
-                      src={image.image}
-                    />
-                  </div>
-                </button>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-0 -translate-x-0" />
-          <CarouselNext className="right-0 translate-x-0" />
-        </Carousel>
-      </div>
-    </div>
-  );
+function hasText(html?: string | null): boolean {
+  return !!html && html.replace(/<[^>]*>|&nbsp;/g, "").trim().length > 0;
 }
 
-function StockBadge() {
+/** Miniatura de 84px + 12px de separación: el paso de encaje de la fila. */
+const THUMB_STEP = 96;
+
+/**
+ * Galería del producto: imagen principal (A) y debajo las miniaturas A, B, C…
+ * Click en una miniatura → se ve en grande con un fundido cruzado.
+ * Si las miniaturas no caben, la fila se desplaza con el mismo movimiento suave del carrito.
+ */
+function Gallery({ images, name, badge }: { images: string[]; name: string; badge: string | null }) {
+  const [index, setIndex] = useState(0);
+  const multi = images.length > 1;
+  const railRef = useRef<HTMLDivElement>(null);
+  const { edges, page, reveal, handlers } = useSmoothRail(railRef, THUMB_STEP, [images.length]);
+  const overflow = !(edges.start && edges.end);
+
+  const go = (next: number) => {
+    const target = (next + images.length) % images.length;
+    if (target === index) return;
+    setIndex(target);
+    const thumb = railRef.current?.children[target] as HTMLElement | undefined;
+    if (thumb) reveal(thumb.offsetLeft, thumb.offsetWidth);
+  };
+
   return (
-    <div
-      className="box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
-      data-name="Botón"
-    >
+    <div className="flex flex-col gap-3.5 lg:sticky lg:top-6">
       <div
-        aria-hidden="true"
-        className="absolute border border-[#ffedd5] border-solid inset-0 pointer-events-none rounded-[40px]"
-      />
-      <p
-        className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#ffedd5] text-[16px] text-nowrap whitespace-pre"
-        style={{ fontVariationSettings: "'opsz' 14" }}
+        className="relative aspect-square overflow-hidden rounded-[28px] bg-[#f6f7f8]"
+        tabIndex={multi ? 0 : undefined}
+        aria-roledescription={multi ? "galería" : undefined}
+        aria-label={multi ? `Imagen ${index + 1} de ${images.length} de ${name}` : undefined}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") go(index - 1);
+          if (e.key === "ArrowRight") go(index + 1);
+        }}
       >
-        ¡Pocos en stock!
-      </p>
-    </div>
-  );
-}
-
-function ProductInfo({
-  product,
-   open, 
-   setOpen,
-   opent, 
-   setOpent,
-   modald,
-    modalt,
-}: {
-  product: Product;
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  opent: boolean;
-  setOpent: Dispatch<SetStateAction<boolean>>;
-  modald: boolean;
-  modalt:boolean;
-}) {
-  const hasPrice = productPrice(product.inventory) !== null;
-  const whatsappUrl = productEnquiryUrl(product, route('product', {
-    category: product.category_slug,
-    subcategory: product.subcategory_slug || 'All',
-    product: product.slug,
-  }));
-  const [descriptionOpen, setDescriptionOpen] = useState(false);
-  const [caracteristicasOpen, setCaracteristicasOpen] =
-    useState(false);
-  
-  
-  return (
-    <div className="basis-0 content-stretch flex flex-col gap-[40px] grow items-start min-h-px min-w-[280px] md:min-w-[300px] relative shrink-0 max-w-[1440px] mx-auto">
-      {/* Product Header */}
-      <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full">
-        { product?.inventory?.amount < 3 && (
-        <StockBadge />
-        )}
-        {/* Title and Brand */}
-        <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
-          <h1
-            className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#c2410c] text-[32px] md:text-[40px] lg:text-[49px] w-full"
-            style={{ fontVariationSettings: "'opsz' 14" }}
-          >
-            {product.name}
-          </h1>
-
-          <div className="content-stretch flex gap-[4px] items-center relative shrink-0 w-full">
-            <p
-              className="font-dm_sans font-bold leading-[20px] relative shrink-0 text-foreground text-[14px] text-nowrap whitespace-pre"
-              style={{ fontVariationSettings: "'opsz' 14" }}
-            >
-              Marca: 
-            </p>
+        {images.length ? (
+          // todas apiladas: la activa aparece con fundido cruzado, sin parpadeo entre fotos
+          images.map((src, i) => (
             <div
-              className="box-border content-stretch flex flex-col gap-[4px] items-center justify-center px-0 py-[4px] relative shrink-0"
-              data-name="Botón"
+              key={src + i}
+              aria-hidden={i !== index}
+              className={`absolute inset-[11%] transition-[opacity,scale] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${
+                i === index ? "scale-100 opacity-100" : "pointer-events-none scale-[.97] opacity-0"
+              }`}
             >
-              <div className="content-stretch flex gap-[4px] items-center relative shrink-0">
-                <p
-                  className="font-dm_sans font-normal leading-[20px] relative shrink-0 text-foreground text-[14px] text-nowrap whitespace-pre"
-                  style={{ fontVariationSettings: "'opsz' 14" }}
-                >
-                  {product.brand_label}
-                </p>
-              </div>
+              <ResponsiveImg
+                src={src}
+                alt={i === index ? name : ""}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="size-full object-contain mix-blend-multiply"
+              />
             </div>
+          ))
+        ) : (
+          <div className="absolute inset-[11%] flex flex-col items-center justify-center gap-2.5 text-[#b4b9bf]">
+            <Package className="size-32" strokeWidth={0.8} aria-hidden="true" />
+            <span className="text-sm">Imagen referencial</span>
           </div>
-        </div>
-        <div>
-          {product.summary && (            
-              <Nl2br text={product.summary} />            
-          )}
-        </div>
-
-        {/* Price */}
-        {hasPrice && (
-            <>
-              <Price 
-                inventory={product.inventory}/>
-            </>
         )}
 
-              {/* Action Buttons */}
-      <div className="content-center flex flex-wrap gap-[16px] items-center relative shrink-0 w-full">
-        {hasPrice && (
-        <button
-          type="button"
-          onClick={() => router.post(route('addshop', { product: product.id }), {}, { preserveScroll: true })}
-          className="bg-white box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0 cursor-pointer"
-          data-name="Botón1"
-        >
-          <div
-            className="relative shrink-0 size-[20px]"
-            data-name="local_mall"
-          >
-            <div
-              className="absolute inset-[5%_15%_10%_15%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-3px_-1px] mask-size-[20px_20px]"
-              data-name="local_mall"
-              style={{ maskImage: `url('${img}')` }}
-            >
-              <svg
-                className="block size-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 14 17"
-              >
-                <path
-                  d={svgPaths.p290c6380}
-                  fill="var(--fill-0, #191C1F)"
-                  id="local_mall"
-                />
-              </svg>
-            </div>
-          </div>
-          <p
-            className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[#191c1f] text-[16px] text-nowrap whitespace-pre"
-            style={{ fontVariationSettings: "'opsz' 14" }}
-          >
-            Añadir al carrito
-          </p>
-        </button>
+        {badge && (
+          <span className="absolute left-[18px] top-[18px] rounded-full bg-[#fa8232] px-3 py-1.5 text-[13px] font-bold text-white">{badge}</span>
         )}
 
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
-          data-name="Botón3"
-        >
-          <div
-            className="relative shrink-0 size-[20px]"
-            data-name="WhatsApp"
-          >
-            <div
-              className="absolute bottom-0 left-0 right-[0.47%] top-0"
-              data-name="Vector"
-            >
-              <svg
-                className="block size-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d={svgPaths.p3190a280}
-                  fill="var(--fill-0, white)"
-                  id="Vector"
-                />
-              </svg>
-            </div>
-          </div>
-          <p
-            className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre"
-            style={{ fontVariationSettings: "'opsz' 14" }}
-          >
-            Comprar por WhatsApp
-          </p>
-        </a>
-      </div>
-
-        <style>{`
-        .content_product p{
-          margin-top: 1em;
-          margin-bottom: 1em;
-        }
-        .content_product h1, .content_product h2, .content_product h3, .content_product h4, .content_product h5 {
-          margin: 0;
-          padding: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        .content_product h1 { font-size: 1.8rem;    margin-bottom: 10px; }
-        .content_product h2 { font-size: 1.6rem;    margin-bottom: 10px; }
-        .content_product h3 { font-size: 1.4rem;    margin-bottom: 10px; }
-        .content_product h4 { font-size: 1.2rem;    margin-bottom: 10px; }
-        .content_product h5 { font-size: 1rem;     margin-bottom: 10px;}
-        .content_product ul, .content_product li {
-          margin: revert; padding: revert; list-style: revert;
-        }
-        .content_product table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          font-family: system-ui, -apple-system, sans-serif;
-          font-size: 14px;
-          background-color: #fff;
-          border: 1px solid #dee2e6;
-          border-radius: 6px;
-          overflow: hidden;
-          padding:30px;
-          margin-bottom: 10px;
-        }
-
-        .content_product table th,
-        .content_product table td {
-          padding: 12px 16px;
-          text-align: left;
-          border-bottom: 1px solid #dee2e6;
-        }
-
-        .content_product table thead th {
-          font-weight: 600;
-          color: #000;
-          background-color: #fff;
-        }
-
-        .content_product table tbody tr:last-child td {
-          border-bottom: none;
-        }
-
-        .content_product table tbody tr:hover {
-          background-color: #f8f9fa;
-        }
-
-        .content_product table th:first-child,
-        .content_product table td:first-child {
-          width: 50px;
-          font-weight: 600;
-        }
-        .content_product img {
-          max-width:100%;
-          margin-bottom: 15px;
-        }
-      `}</style>
-
-        {/* Collapsible Sections */}
-        <div className="box-border content-stretch cursor-pointer flex flex-col items-start pb-[0.5px] pt-0 px-0 relative shrink-0 w-full">
-          {/* Description */}
-          <button
-            
-            className="mb-[-0.5px] relative shrink-0 w-full"
-            data-name="Colapsable"
-          >
-            <div className="box-border content-stretch flex flex-col gap-[16px] items-end overflow-clip px-0 py-[16px] relative rounded-[inherit] w-full">
-              <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full">
-                <div
-                  /* onClick={() => setDescriptionOpen(!descriptionOpen)} */
-                  onClick={() => (modald?setOpen(true):setDescriptionOpen(!descriptionOpen))}
-                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#c45500] text-[22px] text-left hover:underline cursor-pointer"
-                  style={{ fontVariationSettings: "'opsz' 14" }}
-                >
-                  Descripción del Producto
-                </div>
-                <div
-                  className="relative shrink-0 size-[20px]"
-                  data-name="add_2"
-                >
-                  <div
-                    className="absolute inset-[15%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-3px] mask-size-[20px_20px]"
-                    data-name="add_2"
-                    style={{ maskImage: `url('${img}')` }}
-                  >
-                    <svg
-                      className="block size-full"
-                      fill="none"
-                      preserveAspectRatio="none"
-                      viewBox="0 0 14 14"
-                    >
-                      <path
-                        d={
-                          descriptionOpen
-                            ? svgPaths.p280580
-                            : svgPaths.p280580
-                        }
-                        fill="var(--fill-0, #191C1F)"
-                        id="add_2"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              
-              {descriptionOpen && (
-                <div
-                  className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
-                  style={{ fontVariationSettings: "'opsz' 14" }}
-                >       
-                  <div  dangerouslySetInnerHTML={{ __html: product.description }} />
-                </div>
-              )}
-            </div>
-            <div
-              aria-hidden="true"
-              className="absolute border-border border-[0.5px_0px] border-solid inset-0 pointer-events-none"
-            />
-          </button>
-
-          {/* Caracteristicas */}
-          { product.technical_info &&(
+        {multi && (
+          <>
             <button
-            /* onClick={() =>
-              setCaracteristicasOpen(!caracteristicasOpen)
-            } */
-            className="mb-[-0.5px] relative shrink-0 w-full"
-            data-name="Colapsable"
-          >
-            <div className="box-border content-stretch flex flex-col gap-[16px] items-end overflow-clip px-0 py-[16px] relative rounded-[inherit] w-full">
-              <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full">
-                <div
-                  
-                  onClick={() => (modalt?setOpent(true):setCaracteristicasOpen(!caracteristicasOpen))}
-                  className="basis-0 font-dm_sans font-bold grow h-full leading-[25px] min-h-px min-w-px relative shrink-0 text-[#c45500] text-[22px] text-left hover:underline cursor-pointer"
-                  style={{ fontVariationSettings: "'opsz' 14" }}
-                >
-                  Caracteristicas Generales
-                </div>
-                <div
-                  className="relative shrink-0 size-[20px]"
-                  data-name="add_2"
-                >
-                  <div
-                    className="absolute inset-[15%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-3px] mask-size-[20px_20px]"
-                    data-name="add_2"
-                    style={{ maskImage: `url('${img}')` }}
-                  >
-                    <svg
-                      className="block size-full"
-                      fill="none"
-                      preserveAspectRatio="none"
-                      viewBox="0 0 14 14"
-                    >
-                      <path
-                        d={
-                          caracteristicasOpen
-                            ? svgPaths.p280580
-                            : svgPaths.p280580
-                        }
-                        fill="var(--fill-0, #191C1F)"
-                        id="add_2"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              {caracteristicasOpen && (
-                <div className="text-left content_product w-full text-[#000]">
-                  <div  dangerouslySetInnerHTML={{ __html: product.technical_info }} />
-                </div>
-              )}
-            </div>
-            <div
-              aria-hidden="true"
-              className="absolute border-border border-[0.5px_0px] border-solid inset-0 pointer-events-none"
-            />
-          </button>
-          )}
-          
-        </div>
+              type="button"
+              onClick={() => go(index - 1)}
+              aria-label="Imagen anterior"
+              className="absolute left-3.5 top-1/2 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] transition-colors hover:border-[#191c1f]"
+            >
+              <ArrowLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => go(index + 1)}
+              aria-label="Imagen siguiente"
+              className="absolute right-3.5 top-1/2 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] transition-colors hover:border-[#191c1f]"
+            >
+              <ArrowRight className="size-5" />
+            </button>
+            <span className="absolute bottom-4 right-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold tabular-nums text-[#3d4247]">
+              {index + 1} / {images.length}
+            </span>
+          </>
+        )}
       </div>
 
+      {multi && (
+        <div className="flex items-center gap-2">
+          {overflow && (
+            <button
+              type="button"
+              onClick={() => page(-1)}
+              disabled={edges.start}
+              aria-label="Miniaturas anteriores"
+              className="flex size-8 flex-none cursor-pointer items-center justify-center rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] transition-colors hover:border-[#fa8232] hover:text-[#c2410c] disabled:cursor-default disabled:opacity-35 disabled:hover:border-[#dfe2e6] disabled:hover:text-[#191c1f]"
+            >
+              <ChevronLeft className="size-[18px]" />
+            </button>
+          )}
+          <div
+            ref={railRef}
+            {...handlers}
+            onPointerCancel={handlers.onPointerUp}
+            role="tablist"
+            aria-label="Imágenes del producto"
+            className={`cart-rail flex min-w-0 flex-1 gap-3 overflow-x-auto overscroll-x-contain p-0.5 pb-2 select-none ${overflow ? "cursor-grab" : ""}`}
+          >
+            {images.map((src, i) => (
+              <button
+                key={src + i}
+                type="button"
+                role="tab"
+                onClick={() => go(i)}
+                aria-label={`Ver imagen ${i + 1} de ${images.length}`}
+                aria-selected={i === index}
+                className={`relative aspect-square w-[84px] flex-none cursor-pointer overflow-hidden rounded-[18px] border-2 bg-[#f6f7f8] p-2 transition-[border-color,opacity] duration-300 ${
+                  i === index ? "border-[#fa8232]" : "border-transparent opacity-70 hover:border-[#dfe2e6] hover:opacity-100"
+                }`}
+              >
+                <ResponsiveImg src={src} alt="" loading="lazy" draggable={false} className="size-full object-contain mix-blend-multiply" />
+              </button>
+            ))}
+          </div>
+          {overflow && (
+            <button
+              type="button"
+              onClick={() => page(1)}
+              disabled={edges.end}
+              aria-label="Más miniaturas"
+              className="flex size-8 flex-none cursor-pointer items-center justify-center rounded-full border border-[#dfe2e6] bg-white text-[#191c1f] transition-colors hover:border-[#fa8232] hover:text-[#c2410c] disabled:cursor-default disabled:opacity-35 disabled:hover:border-[#dfe2e6] disabled:hover:text-[#191c1f]"
+            >
+              <ChevronRight className="size-[18px]" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-function RelatedProductCard({product}:{product: Product;}) {
-    const hasPrice = productPrice(product.inventory) !== null;
-    return (
-      <div
-        data-aos="fade-up"
-        className="interactive-card basis-0 bg-[#f2f4f5] grow min-h-px min-w-[240px] sm:min-w-[260px] md:min-w-[280px] lg:min-w-[300px] relative rounded-[16px] shrink-0"
+function Accordion({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <div className="border-b border-[#eceef0]">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full cursor-pointer items-center justify-between py-5 text-left text-lg font-bold text-[#191c1f]"
       >
-        <div className="min-w-inherit overflow-clip rounded-[inherit] size-full">
-          <div className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit p-[16px] md:p-[20px] relative w-full">
-            <Link
-              href={route('product', {product:product.slug,category:product.category_slug, subcategory:(product.subcategory_slug?product.subcategory_slug:'All')})}
-              className="box-border content-stretch flex flex-col gap-[20px] items-start min-w-inherit w-full cursor-pointer hover:opacity-90 transition-opacity"
-            >
-              <div className="aspect-square relative shrink-0 w-full">
-                <ResponsiveImg
-                  alt={product.name}
-                  loading="lazy"
-                  className="absolute inset-0 max-w-none mix-blend-multiply object-50%-50% object-contain pointer-events-none size-full"
-                  src={product.image_url}
-                  webpSrc={product.image_webp_url}
-                />
-              </div>
-              <div className="h-0 relative shrink-0 w-full">
-                <div className="absolute bottom-0 left-0 right-0 top-[-0.5px]">
-                  <svg
-                    className="block size-full"
-                    fill="none"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 276 1"
-                  >
-                    <line
-                      stroke="var(--stroke-0, #191C1F)"
-                      strokeWidth="0.5"
-                      x2="276"
-                      y1="0.25"
-                      y2="0.25"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full text-left">
-                <p
-                  className="-webkit-box font-['DM_Sans:Bold',sans-serif] font-bold leading-[25px] overflow-ellipsis overflow-hidden relative shrink-0 text-[#191c1f] text-[18px] md:text-[20px] w-full"
-                  style={{ fontVariationSettings: "'opsz' 14" }}
-                >
-                  {product.name}
-                </p>
-                {hasPrice && <Price inventory={product.inventory} />}
-              </div>
-            </Link>
-            {hasPrice && <AddToCartButton product={product} />}
-          </div>
+        {title}
+        <ChevronDown className={`size-6 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+      </button>
+      <div className={`grid transition-[grid-template-rows] duration-[350ms] ease-[cubic-bezier(.2,.8,.2,1)] ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="pb-5">{children}</div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-function RelatedProducts() {
-  
-  const { products } = usePage<{ products: Product[] }>().props;
+function Spec({ k, v }: { k: string; v: string }) {
   return (
-    <div className="relative w-full bg-white">
-      <div className="flex flex-col items-center size-full">
-        <div className="box-border content-stretch flex flex-col gap-[32px] md:gap-[48px] lg:gap-[64px] items-center px-[20px] md:px-[40px] lg:px-[64px] py-[40px] md:py-[60px] lg:py-[80px] relative w-full">
-          {/* Header */}
-          <div className="content-center flex flex-wrap gap-[16px] md:gap-[20px] items-center relative shrink-0 w-full">
-            <p
-              className="basis-0 font-dm_sans font-bold grow leading-[1.1] min-h-px min-w-px relative shrink-0 text-[#191c1f] text-[28px] md:text-[34px] lg:text-[39px]"
-              style={{ fontVariationSettings: "'opsz' 14" }}
-            >
-              Productos relacionados
-            </p>
-            {/* <button              
-              className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
-            >
-              <p
-                className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre"
-                style={{ fontVariationSettings: "'opsz' 14" }}
-              >
-                Ver todos
-              </p> 
-              <div
-                className="relative shrink-0 size-[20px]"
-                data-name="arrow_right_alt"
-              >
-                <div
-                  className="absolute inset-[30%_20%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-4px_-6px] mask-size-[20px_20px]"
-                  data-name="arrow_right_alt"
-                  style={{ maskImage: `url('${imgArrow}')` }}
-                >
-                  <svg
-                    className="block size-full"
-                    fill="none"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 12 8"
-                  >
-                    <path
-                      d={svgPathsRelated.p21d64500}
-                      fill="var(--fill-0, white)"
-                      id="arrow_right_alt"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </button> */}
-          </div>
+    <div className="flex justify-between gap-4 pb-3 text-[15px] leading-[1.55] text-[#3d4247]">
+      <span className="flex-none text-[#6b7076]">{k}</span>
+      <span className="text-right">{v}</span>
+    </div>
+  );
+}
 
-          {/* Products Grid */}
-          <div className="content-start flex gap-[12px] md:gap-[16px] justify-center items-start relative shrink-0 w-full overflow-x-auto pb-4 max-w-[1440px] mx-auto">
-            <div className="flex gap-[14px] md:gap-[16px] min-w-full lg:grid lg:grid-cols-4 ">
-              {products.map((product) => (
-                <RelatedProductCard
-                  key={product.id}
-                  product={product}
-                />
+export default function ProductDetailPage({ product }: { product: Product }) {
+  const { products: related = [] } = usePage<{ products: Product[] }>().props;
+
+  const images = [product.image_url, ...(product.images ?? []).map((i) => i.image_url)].filter(Boolean) as string[];
+
+  const stock = product.inventory?.stock ?? 0;
+  const isOutOfStock = stock <= 0;
+  const lowStock = !isOutOfStock && stock < 3;
+  const price = productPrice(product.inventory);
+  const onOffer = isOnOffer(product.inventory);
+  const base = Number(product.inventory?.amount || 0);
+  const money = currencyLabel(product.inventory?.money || "Bs.");
+  const discounted = onOffer && price !== null && base > price;
+  const badge = discounted ? `-${Math.round((1 - price! / base) * 100)}%` : null;
+
+  const brand = product.brand_label || product.brand?.name || "";
+  const categorySlug = product.category_slug || product.category?.slug;
+  const categoryName = product.category_label || product.category?.name || "";
+  const subcategoryName = product.subcategory_label || product.subcategory?.name || "";
+  const categoryHref = categorySlug ? route("category", { category: categorySlug }) : route("products");
+  const subcategoryHref = categorySlug && product.subcategory_slug
+    ? route("subcategory", { category: categorySlug, subcategory: product.subcategory_slug })
+    : null;
+  const productUrl = route("product", {
+    category: categorySlug,
+    subcategory: product.subcategory_slug || "All",
+    product: product.slug,
+  });
+  const whatsappUrl = productEnquiryUrl(product, productUrl);
+
+  const [qty, setQty] = useState(1);
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [open, setOpen] = useState({ desc: true, feat: false });
+  const maxQty = Math.max(1, Math.min(MAX_QTY, stock));
+
+  const addToCart = () => {
+    if (isOutOfStock || adding) return;
+    setAdding(true);
+    router.post(route("addshop", { product: product.id }), { amount: qty }, {
+      preserveScroll: true,
+      onSuccess: (page) => {
+        const status = (page.props as { flash?: { status?: string } }).flash?.status ?? "";
+        if (!/no hay stock/i.test(status)) {
+          setAdded(true);
+          setTimeout(() => setAdded(false), 2200);
+        }
+      },
+      onFinish: () => setAdding(false),
+    });
+  };
+
+  const hasDescription = hasText(product.description) || !!product.summary;
+  const hasFeatures = hasText(product.technical_info);
+
+  return (
+    <Layout>
+      <Seo
+        title={product.name}
+        description={product.summary || product.description?.replace(/<[^>]*>/g, "").slice(0, 160) || "Producto SmartHouse"}
+        image={product.image_url || undefined}
+        type="product"
+      />
+      <ProductJsonLd product={product} />
+
+      <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-[clamp(18px,2.4vw,28px)] px-[clamp(16px,4.4vw,64px)] pt-[clamp(18px,3vw,28px)] font-dm_sans text-[#191c1f]">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-sm text-[#6b7076]">
+          <Link href={route("home")} className="hover:text-[#c2410c]">Inicio</Link>
+          {categoryName && (
+            <>
+              <ChevronRight className="size-4" />
+              <Link href={categoryHref} className="hover:text-[#c2410c]">{categoryName}</Link>
+            </>
+          )}
+          {subcategoryName && subcategoryHref && (
+            <>
+              <ChevronRight className="size-4" />
+              <Link href={subcategoryHref} className="hover:text-[#c2410c]">{subcategoryName}</Link>
+            </>
+          )}
+          <ChevronRight className="size-4" />
+          <span className="text-[#191c1f] line-clamp-1">{product.name}</span>
+        </nav>
+
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-start gap-[clamp(28px,4vw,56px)]">
+          <Gallery images={images} name={product.name} badge={isOutOfStock ? null : badge} />
+
+          <div className="pdp-rise flex max-w-[580px] flex-col gap-[26px]">
+            <div className="flex flex-col gap-3.5">
+              <div className="flex flex-wrap items-center gap-2.5 text-sm text-[#6b7076]">
+                {isOutOfStock ? (
+                  <span className="flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-[13px] font-semibold text-red-700">
+                    <span className="size-[7px] rounded-full bg-red-500" />Agotado
+                  </span>
+                ) : lowStock && (
+                  <span className="flex items-center gap-1.5 rounded-full border border-[#fed7aa] bg-[#fff4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c2410c]">
+                    <span className="size-[7px] rounded-full bg-[#fa8232]" />¡Pocos en stock!
+                  </span>
+                )}
+                {brand && (
+                  <span>
+                    Marca:{" "}
+                    <Link href={route("brand", { brand })} className="font-semibold text-[#155eef] hover:text-[#c2410c]">{brand}</Link>
+                  </span>
+                )}
+                {brand && categoryName && <span>·</span>}
+                {categoryName && (
+                  <Link href={subcategoryHref ?? categoryHref} className="hover:text-[#c2410c]">
+                    {subcategoryName ? `${categoryName} · ${subcategoryName}` : categoryName}
+                  </Link>
+                )}
+              </div>
+              <h1 className="m-0 text-[clamp(30px,3.6vw,48px)] font-bold leading-[1.05] tracking-[-.035em] [text-wrap:balance]">{product.name}</h1>
+              {product.summary && (
+                <p className="m-0 whitespace-pre-line text-[17px] leading-[1.55] text-[#5b6066] [text-wrap:pretty]">{product.summary}</p>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-baseline gap-3">
+              {price !== null ? (
+                <>
+                  <span className="text-[clamp(30px,3vw,36px)] font-bold tracking-[-.02em]">{money} {formatAmount(price)}</span>
+                  {discounted && (
+                    <>
+                      <span className="text-lg text-[#8a8f94] line-through">{money} {formatAmount(base)}</span>
+                      <span className="text-sm font-semibold text-[#c2410c]">Ahorras {money} {formatAmount(base - price)}</span>
+                    </>
+                  )}
+                </>
+              ) : (
+                <span className="text-[clamp(24px,2.4vw,30px)] font-bold text-[#c2410c]">Consultar precio</span>
+              )}
+            </div>
+
+            {isOutOfStock && (
+              <p className="m-0 rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm leading-[1.5] text-red-700">
+                Este producto no tiene existencias por ahora. Escríbenos por WhatsApp para consultar reabastecimiento o modelos similares.
+              </p>
+            )}
+
+            {!isOutOfStock && price !== null && (
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center rounded-full border border-[#dfe2e6] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    disabled={qty <= 1}
+                    aria-label="Menos"
+                    className="flex size-11 cursor-pointer items-center justify-center rounded-full text-[#191c1f] transition-colors hover:bg-[#f4f5f6] disabled:cursor-not-allowed disabled:text-[#b4b9bf] disabled:hover:bg-transparent"
+                  >
+                    <Minus className="size-5" />
+                  </button>
+                  <span className="min-w-8 text-center text-[17px] font-semibold" aria-live="polite">{qty}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                    disabled={qty >= maxQty}
+                    aria-label="Más"
+                    className="flex size-11 cursor-pointer items-center justify-center rounded-full text-[#191c1f] transition-colors hover:bg-[#f4f5f6] disabled:cursor-not-allowed disabled:text-[#b4b9bf] disabled:hover:bg-transparent"
+                  >
+                    <Plus className="size-5" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={addToCart}
+                  disabled={adding}
+                  className={`flex min-w-[200px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-semibold text-white transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(250,130,50,.3)] disabled:cursor-progress ${added ? "bg-[#155eef]" : "bg-[#fa8232]"}`}
+                >
+                  {added ? <Check className="size-5" /> : <ShoppingCart className="size-5" />}
+                  {added ? "Añadido al carrito" : "Añadir al carrito"}
+                </button>
+              </div>
+            )}
+
+            {/* Boton (no enlace) para que el navegador no muestre la URL larga de WhatsApp al pasar el cursor */}
+            <button
+              type="button"
+              onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-[#191c1f] px-6 py-3.5 text-base font-semibold text-[#191c1f] transition-colors hover:bg-[#191c1f] hover:text-white"
+            >
+              <MessageCircle className="size-5" />
+              {isOutOfStock ? "Consultar disponibilidad" : "Consultar por WhatsApp"} · 682-10861
+            </button>
+
+            <div className="flex flex-col rounded-[22px] border border-[#eceef0]">
+              {PERKS.map(({ icon: Icon, title, text }, i) => (
+                <div key={title} className={`flex items-center gap-3.5 px-[18px] py-4 ${i ? "border-t border-[#eceef0]" : ""}`}>
+                  <span className="flex size-10 flex-none items-center justify-center rounded-full bg-[#eef3ff] text-[#155eef]">
+                    <Icon className="size-5" />
+                  </span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[15px] font-semibold">{title}</span>
+                    <span className="text-sm text-[#6b7076]">{text}</span>
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-interface FormProps {
-  menu: MenuItem[];
-  populares: Product[];
-  product: Product;
-  categories: Category[];
-  brands:Brand[];
-  cart:Cart;
-}
-
-function countTextChars(html: string): number {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  return div.textContent?.length ?? 0;
-}
-
-function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(
-    window.innerWidth < breakpoint
-  );
-
-  useEffect(() => {
-    const onResize = () => {
-      setIsMobile(window.innerWidth < breakpoint);
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [breakpoint]);
-
-  return isMobile;
-}
-
-export default function ProductDetailPage({menu, populares, product, categories, brands, cart}:FormProps) {
-
-  const images: { image: string}[] = [];
-
-  if (product.image_url) {
-    images.push({ image: product.image_url });
-  }
-
-  product.images?.forEach((img) => {
-    images.push({ image: img.image_url });
-  });
-
-  const ref = useRef<HTMLDivElement | null>(null);
-  
-  const [height, setHeight] = useState(0);
-
-  useEffect(() => {
-    const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        setHeight(entry.contentRect.height);
-      }
-    });
-
-    if (ref.current) observer.observe(ref.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  const isMobile = useIsMobile();
-
-  const [open, setOpen] = useState(false);
-  const [opent, setOpent] = useState(false);
-  
-  const charCount = countTextChars(product.description);
-  const charCountt = countTextChars(product.technical_info);
-
-  const [modald, setModald] = useState((charCount  > 600 && !isMobile?true:false));
-  const [modalt, setModalt] = useState((charCountt > 600 && !isMobile?true:false));
-
-  return (
-    <Layout>    
-        <Seo
-          title={product.name}
-          description={product.summary || product.description?.replace(/<[^>]*>/g, "").slice(0, 160) || "Producto SmartHouse"}
-          image={product.image_url || undefined}
-          type="product"
-        />
-        <ProductJsonLd product={product} />
-        <div className="bg-[#f2f4f5]">
-          <div className="box-border content-stretch flex flex-col gap-[40px] md:gap-[60px] lg:gap-[80px] items-center  px-[20px] md:px-[40px] lg:px-[64px] py-[40px] md:py-[60px] lg:py-[80px] relative w-full">
-            {/* Product Detail Section */}
-            <div className={`content-start flex flex-wrap gap-[32px] md:gap-[48px] lg:gap-[64px] items-start relative shrink-0 w-full`}>
-              <div data-aos="fade-right" className="w-full lg:w-xl lg:flex-1">
-                <ImageGallery images={images} />
-              </div>
-              <div data-aos="fade-left" className=" lg:flex-1 max-w-[1440px]" ref={ref}>
-                <ProductInfo 
-                  product={product} 
-                  modald={modald}
-                  modalt={modalt}
-                  open={open} setOpen={setOpen}
-                  opent={opent} setOpent={setOpent}
-                  />
-              </div>
+            <div className="flex flex-col">
+              <Accordion title="Descripción" open={open.desc} onToggle={() => setOpen((o) => ({ ...o, desc: !o.desc }))}>
+                {hasDescription && hasText(product.description) ? (
+                  <div className="content_product text-[15px] leading-[1.6] text-[#3d4247]" dangerouslySetInnerHTML={{ __html: product.description }} />
+                ) : (
+                  <>
+                    {brand && <Spec k="Marca" v={brand} />}
+                    {categoryName && <Spec k="Categoría" v={subcategoryName ? `${categoryName} › ${subcategoryName}` : categoryName} />}
+                    <Spec k="Condición" v="Producto original con garantía oficial" />
+                  </>
+                )}
+              </Accordion>
+              <Accordion title="Características" open={open.feat} onToggle={() => setOpen((o) => ({ ...o, feat: !o.feat }))}>
+                {hasFeatures ? (
+                  <div className="content_product text-[15px] leading-[1.6] text-[#3d4247]" dangerouslySetInnerHTML={{ __html: product.technical_info }} />
+                ) : (
+                  <>
+                    <Spec k="Garantía" v="Oficial del fabricante" />
+                    <Spec k="Condición" v="Nuevo, sellado" />
+                  </>
+                )}
+              </Accordion>
             </div>
           </div>
         </div>
-        {/* Related Products Section */}
-        <div data-aos="fade-up">
-          <RelatedProducts />
-        </div>
-        <Modal
-            open={open}
-            onClose={() => setOpen(false)}
-            title={product.name}
-        >                          
-            <>
-            <div
-              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
-              style={{ fontVariationSettings: "'opsz' 14" }}
-            >  
-              <div dangerouslySetInnerHTML={{ __html: product.description }} />
+
+        {related.length > 0 && (
+          <section className="flex flex-col gap-7 pb-[clamp(64px,8vw,96px)] pt-[clamp(56px,7vw,88px)]">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 className="m-0 text-[clamp(28px,3vw,36px)] font-bold leading-[1.05] tracking-[-.03em]">También te puede interesar</h2>
+              <Link href={categoryHref} className="flex items-center gap-1 text-[15px] font-semibold text-[#c2410c]">
+                Ver más<ArrowRight className="size-5" />
+              </Link>
             </div>
-            </>                      
-        </Modal>  
-        <Modal
-            open={opent}
-            onClose={() => setOpent(false)}
-            title={product.name}
-        >                          
-            <>
-            <div
-              className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-foreground text-[16px] w-full text-left content_product"
-              style={{ fontVariationSettings: "'opsz' 14" }}
-            >  
-              <div dangerouslySetInnerHTML={{ __html: product.technical_info }} />
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,150px),1fr))] gap-[clamp(10px,1.2vw,16px)] sm:grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))]">
+              {related.map((p, i) => (
+                <ProductCard key={p.id} product={p} index={i} compact />
+              ))}
             </div>
-            </>                      
-        </Modal>        
+          </section>
+        )}
+      </main>
     </Layout>
   );
 }

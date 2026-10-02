@@ -19,8 +19,11 @@ const setCookie = (name: string, value: string, days = 365) => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
+// El sitio se fuerza siempre a modo claro: se ignora la preferencia del sistema y la guardada.
+const FORCE_LIGHT = true;
+
 const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
+    const isDark = !FORCE_LIGHT && (appearance === 'dark' || (appearance === 'system' && prefersDark()));
 
     document.documentElement.classList.toggle('dark', isDark);
     document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';

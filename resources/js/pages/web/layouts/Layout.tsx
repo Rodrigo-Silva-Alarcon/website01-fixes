@@ -4,6 +4,7 @@ import "@/pages/web/styles/globals.css";
 import Info from "@/pages/web/imports/Info";
 import Header from "@/pages/web/components/Header";
 import Footer from "@/pages/web/components/Footer";
+import CartDrawer from "@/pages/web/components/CartDrawer";
 
 import CategoriasMenuImport from "@/pages/web/imports/CategoriasMenu";
 
@@ -37,6 +38,9 @@ export default function Layout({ children }: LayoutProps) {
       
       {/* Footer */}
       <Footer />
+
+      {/* Carrito v1: botón flotante + panel lateral (amplía a /carrito) */}
+      <CartDrawer />
     </div>
   );
 }

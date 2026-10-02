@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './interactions.css';
+@import './storefront-dark.css';
 
 @plugin 'tailwindcss-animate';
 

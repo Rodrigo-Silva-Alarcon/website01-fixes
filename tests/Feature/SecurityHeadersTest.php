@@ -22,17 +22,17 @@ it('sets security headers on public HTML responses', function () {
 
 it('allows Vite HMR origin in CSP when hot file exists', function () {
     $hot = public_path('hot');
-    $hadHot = is_file($hot);
-    if (!$hadHot) {
-        file_put_contents($hot, 'http://127.0.0.1:5173');
-    }
+    $originalContent = is_file($hot) ? file_get_contents($hot) : null;
+    file_put_contents($hot, 'http://127.0.0.1:5173');
 
     try {
         $response = $this->get('/');
         $csp = $response->headers->get('Content-Security-Policy');
         expect($csp)->toContain('http://127.0.0.1:5173');
     } finally {
-        if (!$hadHot && is_file($hot)) {
+        if ($originalContent !== null) {
+            file_put_contents($hot, $originalContent);
+        } elseif (is_file($hot)) {
             unlink($hot);
         }
     }

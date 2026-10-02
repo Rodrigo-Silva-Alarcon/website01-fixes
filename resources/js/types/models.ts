@@ -53,6 +53,7 @@ export interface Category{
     updated_at: string;
     subcategories: Subcategory[];
     products: Product[];
+    products_count?: number;
 }
 
 export interface Subcategory{

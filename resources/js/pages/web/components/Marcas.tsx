@@ -1,86 +1,84 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/pages/web/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { Brand } from "@/types/models";
-import { usePage, Link } from "@inertiajs/react";
-import { route } from 'ziggy-js';
+import { Link, usePage } from "@inertiajs/react";
+import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
 
-function Frame10124020({marcas}:{marcas:Brand[]}) {
-
-  return (
-    <Carousel
-      opts={{
-        align: "start",
-        loop: true,
-        slidesToScroll: 1,
-      }}
-      plugins={[
-        Autoplay({
-          delay: 3000,
-          stopOnInteraction: false,
-        }),
-      ]}
-      className="w-full"
-    >
-      <CarouselContent className="-ml-3 md:-ml-4">
-        {marcas.map((brand) => (
-          <CarouselItem
-            key={brand.id}
-            className="pl-3 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
-          >
-            <Link
-              href={route('brand', brand.id)}
-              className="interactive-card bg-white box-border content-stretch flex flex-col items-start p-[20px] relative rounded-[16px] shrink-0 h-full"
-              data-name="Marcas"
-            >
-              <div
-                className="h-[100px] relative shrink-0 w-full"
-                data-name="image 4"
-              >
-                <ResponsiveImg
-                  alt={brand.name}
-                  loading="lazy"
-                  className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full"
-                  src={brand.image_url}
-                  webpSrc={brand.image_webp_url}
-                />
-              </div>
-            </Link>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
-  );
-}
-
-export default function Marcas() {  
-
+export default function MarcasLogos() {
   const { brands } = usePage<{ brands?: Brand[] }>().props;
 
+  // Fallback de marcas si el backend no tiene o vienen vacías
+  const defaultBrandNames = [
+    "PHILIPS",
+    "SAMSUNG",
+    "LG",
+    "SONY",
+    "APPLE",
+    "XIAOMI",
+    "TCL",
+    "XBOX",
+  ];
+
+  const brandList =
+    brands && brands.length > 0
+      ? brands
+      : defaultBrandNames.map((name, i) => ({
+          id: i + 1,
+          name,
+          slug: name.toLowerCase(),
+          image_url: "",
+          image_webp_url: null,
+          active: true,
+          products: [],
+        }));
+
+  // Duplicar para efecto continuo infinito en el marquee (la animación avanza -50%)
+  const marqueeItems = [...brandList, ...brandList];
+
   return (
-    <div data-aos="fade-up" data-aos-delay="100">
-      <div
-        className="bg-[#f2f4f5] relative size-full"
-        data-name="Marcas"
-      >
-        <div className="max-w-[1440px] mx-auto">
-          <div className="box-border content-stretch flex flex-col gap-[32px] md:gap-[64px] items-start px-[16px] sm:px-[32px] md:px-[64px] py-[40px] md:py-[80px] relative size-full">
-            <p
-              className="font-dm_sans font-bold leading-[1.1] relative shrink-0 text-[#191c1f] text-[28px] sm:text-[32px] md:text-[39px] text-center w-full"
-              style={{ fontVariationSettings: "'opsz' 14" }}
+    <section className="w-full pt-12 md:pt-16 flex flex-col gap-7 overflow-hidden">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col gap-1">
+        <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#fa8232]">Aliados</span>
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191c1f]">
+          Marcas con las que trabajamos
+        </h2>
+      </div>
+
+      {/* Mismo ancho que "Productos populares" (contenido de 1440px con 64px a cada lado) */}
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16">
+      <div className="w-full overflow-hidden border-y border-[#eceef0] py-8 sm:py-10 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
+        {/* pr-6 = separación final, para que el -50% del bucle quede exacto y no salte */}
+        <div
+          className="flex w-max items-center gap-6 pr-6 hover:[animation-play-state:paused]"
+          style={{ animation: "sh-marquee 28s linear infinite" }}
+        >
+          {marqueeItems.map((brand, idx) => (
+            // Caja idéntica para cada marca: el logo se centra dentro sin deformarse
+            <div
+              key={`${brand.id}-${idx}`}
+              className="brand-logo flex items-center justify-center shrink-0 w-[200px] sm:w-[260px] h-24 sm:h-28 opacity-80 hover:opacity-100 transition-opacity"
             >
-              Marcas con las que trabajamos
-            </p>
-            <Frame10124020
-              marcas={brands ?? []}
-              />
-          </div>
+              {brand.image_url ? (
+                <Link
+                  href={route("brand", { brand: brand.id })}
+                  className="flex items-center justify-center size-full [&_picture]:contents"
+                >
+                  <ResponsiveImg
+                    alt={brand.name}
+                    className="h-full w-full object-contain mix-blend-multiply"
+                    src={brand.image_url}
+                    webpSrc={brand.image_webp_url}
+                  />
+                </Link>
+              ) : (
+                <span className="text-2xl sm:text-4xl font-black tracking-wider text-[#191c1f]/80 select-none">
+                  {brand.name}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+      </div>
+    </section>
   );
 }

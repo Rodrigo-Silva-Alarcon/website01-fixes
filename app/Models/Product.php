@@ -93,7 +93,7 @@ class Product extends Model
 
     public function images()
     {
-        return $this->morphMany(Image::class, 'imagetable');
+        return $this->morphMany(Image::class, 'imagetable')->orderBy('order')->orderBy('id');
     }
 
     public function files()

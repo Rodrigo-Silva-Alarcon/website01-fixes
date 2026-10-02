@@ -1,0 +1,287 @@
+/*
+ * Modo oscuro de la tienda (solo páginas públicas: .storefront).
+ * Se activa con la clase `sf-dark` en <html> (ver ThemeToggle.tsx y app.blade.php).
+ * No usa la clase `.dark` para no afectar al panel de administración.
+ *
+ * Las reglas viven en @layer utilities y usan :where(html.sf-dark) para tener la
+ * misma especificidad que las utilidades de Tailwind: como este archivo se carga
+ * después, ganan a los colores base, pero los hover:/group-hover: siguen funcionando.
+ */
+
+html.sf-dark {
+    --sf-bg: #0e1113;
+    --sf-surface: #161a1e;
+    --sf-surface-2: #1d2227;
+    --sf-surface-3: #252b31;
+    --sf-border: #2a3036;
+    --sf-border-strong: #3a4148;
+    --sf-text: #e8eaed;
+    --sf-text-2: #a8aeb4;
+    --sf-text-3: #7b8289;
+    --sf-orange-text: #ff9b5a;
+    --sf-blue-text: #82a9ff;
+    --sf-tint-orange: #231a14;
+    --sf-tint-blue: #141c2e;
+    color-scheme: dark;
+}
+
+html.sf-dark body:has(.storefront),
+html.sf-dark .storefront {
+    background-color: var(--sf-bg);
+}
+
+/* Transición suave al cambiar de tema (solo mientras dura el cambio) */
+html.sf-theme-anim .storefront,
+html.sf-theme-anim .storefront * {
+    transition:
+        background-color 450ms ease,
+        border-color 450ms ease,
+        color 450ms ease,
+        fill 450ms ease !important;
+}
+
+/* Fundido con View Transitions cuando el navegador lo soporta */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 450ms;
+    animation-timing-function: ease;
+}
+
+@layer utilities {
+    /* ---------- Superficies ---------- */
+    :where(html.sf-dark) .storefront .bg-white,
+    :where(html.sf-dark) .storefront .bg-white\/80,
+    :where(html.sf-dark) .storefront .bg-white\/85 {
+        background-color: var(--sf-surface);
+    }
+
+    :where(html.sf-dark) .storefront :is(
+        .bg-\[\#f2f4f5\], .bg-\[\#f6f7f8\], .bg-\[\#f4f5f6\], .bg-\[\#f9fafb\],
+        .bg-gray-50, .bg-gray-100, .bg-slate-100, .bg-\[\#e7e7e7\]
+    ) {
+        background-color: var(--sf-surface-2);
+    }
+
+    :where(html.sf-dark) .storefront :is(.bg-\[\#eceef0\], .bg-\[\#e4e7e9\], .bg-\[\#dfe2e6\], .bg-\[\#d5d9de\], .bg-\[\#cacccd\]) {
+        background-color: var(--sf-surface-3);
+    }
+
+    :where(html.sf-dark) .storefront :is(.bg-\[\#fff4ec\], .bg-\[\#fff7ed\], .bg-\[\#fff9f5\], .bg-\[\#fdecea\]) {
+        background-color: var(--sf-tint-orange);
+    }
+
+    :where(html.sf-dark) .storefront .border-\[\#fde3cf\] {
+        border-color: #3a2a1f;
+    }
+
+    :where(html.sf-dark) .storefront :is(.bg-\[\#eef3ff\]) {
+        background-color: var(--sf-tint-blue);
+    }
+
+    /* Botones oscuros (#191c1f) pasan a claros para mantener el contraste */
+    :where(html.sf-dark) .storefront .bg-\[\#191c1f\],
+    :where(html.sf-dark) .storefront .bg-\[\#3d4247\] {
+        background-color: var(--sf-text);
+        color: #111417;
+    }
+
+    /* ---------- Textos ---------- */
+    :where(html.sf-dark) .storefront :is(.text-\[\#191c1f\], .text-black, .text-\[\#191c1f\]\/80) {
+        color: var(--sf-text);
+    }
+
+    :where(html.sf-dark) .storefront :is(
+        .text-\[\#3d4247\], .text-\[\#5b6066\], .text-\[\#5b6167\], .text-\[\#6b7076\], .text-\[\#595959\],
+        .text-\[\#5f6c72\], .text-\[\#71767b\], .text-gray-600, .text-gray-700
+    ) {
+        color: var(--sf-text-2);
+    }
+
+    :where(html.sf-dark) .storefront :is(
+        .text-\[\#8a8f94\], .text-\[\#767676\], .text-\[\#77878f\], .text-\[\#b4b9bf\],
+        .text-\[\#c9ccd0\], .text-\[\#cacccd\], .text-gray-500
+    ) {
+        color: var(--sf-text-3);
+    }
+
+    :where(html.sf-dark) .storefront .text-\[\#c2410c\] {
+        color: var(--sf-orange-text);
+    }
+
+    :where(html.sf-dark) .storefront .text-\[\#155eef\] {
+        color: var(--sf-blue-text);
+    }
+
+    :where(html.sf-dark) .storefront :is(input, textarea)::placeholder {
+        color: var(--sf-text-3);
+    }
+
+    /* ---------- Bordes ---------- */
+    :where(html.sf-dark) .storefront :is(
+        .border-\[\#eceef0\], .border-\[\#dfe2e6\], .border-\[\#e3e6ea\], .border-\[\#d7dade\],
+        .border-\[\#cacccd\], .border-\[\#c5c9ce\], .border-gray-300, .border-white
+    ) {
+        border-color: var(--sf-border);
+    }
+
+    :where(html.sf-dark) .storefront .border-\[\#191c1f\] {
+        border-color: var(--sf-text);
+    }
+
+    :where(html.sf-dark) .storefront :is(.border-y, .border-b, .border-t):not([class*='border-[']) {
+        border-color: var(--sf-border);
+    }
+
+    /* ---------- Estados hover que no contrastan sobre fondo oscuro ---------- */
+    :where(html.sf-dark) .storefront :is(.hover\:bg-\[\#f4f5f6\], .hover\:bg-\[\#f6f7f8\], .hover\:bg-gray-100, .hover\:bg-gray-50, .hover\:bg-\[\#e4e7e9\]):hover {
+        background-color: var(--sf-surface-3);
+    }
+
+    :where(html.sf-dark) .storefront .hover\:bg-white:hover {
+        background-color: var(--sf-surface-3);
+    }
+
+    :where(html.sf-dark) .storefront :is(.hover\:bg-\[\#fff4ec\], .hover\:bg-\[\#fff9f5\], .hover\:bg-\[\#fdecea\]):hover {
+        background-color: var(--sf-tint-orange);
+    }
+
+    :where(html.sf-dark) .storefront :is(.hover\:bg-\[\#191c1f\], .hover\:bg-\[\#3d4247\]):hover {
+        background-color: var(--sf-text);
+        color: #111417;
+    }
+
+    :where(html.sf-dark) .storefront .hover\:text-\[\#191c1f\]:hover {
+        color: var(--sf-text);
+    }
+
+    :where(html.sf-dark) .storefront .hover\:text-\[\#c2410c\]:hover {
+        color: var(--sf-orange-text);
+    }
+
+    :where(html.sf-dark) .storefront .group:hover .group-hover\:text-\[\#155eef\] {
+        color: var(--sf-blue-text);
+    }
+
+    :where(html.sf-dark) .storefront :is(.hover\:border-\[\#191c1f\]):hover {
+        border-color: var(--sf-text);
+    }
+
+    :where(html.sf-dark) .storefront :is(.hover\:border-\[\#dfe2e6\], .hover\:border-\[\#c5c9ce\]):hover {
+        border-color: var(--sf-border-strong);
+    }
+}
+
+/* ---------- Excepciones y piezas con estilos en línea ---------- */
+
+/* Cabecera: los iconos SVG usan var(--fill-0, #191C1F) */
+html.sf-dark .storefront [data-name='Header'],
+html.sf-dark .storefront [data-name='CategoriasMenu'] {
+    --fill-0: var(--sf-text);
+    color: var(--sf-text);
+}
+
+/* Iconos del menú de categorías (SVG del CMS con fill-current) */
+html.sf-dark .storefront [data-name='CategoriasMenu'] svg :is(path, circle, rect, polygon)[fill]:not([fill='none']) {
+    fill: currentColor;
+}
+
+/* Pie de página: un tono más profundo que el fondo, con borde sutil */
+html.sf-dark .storefront footer[data-name='Footer'] {
+    background-color: #12161a;
+    border-color: var(--sf-border);
+}
+
+html.sf-dark .storefront footer [data-name='Logo'] {
+    background-color: #ffffff;
+}
+
+/* Logo de la cabecera sobre fondo oscuro: pastilla clara discreta */
+html.sf-dark .storefront [data-name='Header'] [data-name='Logo'] img {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 3px 6px;
+}
+
+/* Imágenes con multiply: sobre fondo oscuro se oscurecerían, se usan tal cual */
+html.sf-dark .storefront .mix-blend-multiply {
+    mix-blend-mode: normal;
+}
+
+/* Banners del hero: un punto menos de brillo para no deslumbrar */
+html.sf-dark .storefront [data-screen-label='Hero'] img {
+    filter: brightness(0.92);
+}
+
+/* Tarjetas de categoría (colores en línea) */
+html.sf-dark .storefront .category-tile[style*='255, 241, 230'],
+html.sf-dark .storefront .category-tile[style*='255, 248, 242'] {
+    background-color: var(--sf-tint-orange) !important;
+}
+
+html.sf-dark .storefront .category-tile[style*='234, 241, 255'] {
+    background-color: var(--sf-tint-blue) !important;
+}
+
+html.sf-dark .storefront .category-tile [style*='color: rgb(25, 28, 31)'] {
+    color: var(--sf-text) !important;
+}
+
+html.sf-dark .storefront .category-tile [style*='color: rgb(91, 97, 103)'] {
+    color: var(--sf-text-2) !important;
+}
+
+html.sf-dark .storefront .category-tile [style*='color: rgb(194, 65, 12)'] {
+    color: var(--sf-orange-text) !important;
+}
+
+html.sf-dark .storefront .category-tile__blob {
+    opacity: 0.22 !important;
+}
+
+/* Tarjeta de producto */
+html.sf-dark .storefront .product-card__shine {
+    background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 10%) 50%, transparent 65%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    html.sf-dark .storefront .product-card:hover {
+        box-shadow: 0 14px 30px rgb(0 0 0 / 45%);
+    }
+}
+
+/* Contenido HTML del CMS (detalle de producto) */
+html.sf-dark .content_product :is(h1, h2, h3, h4, h5) {
+    color: var(--sf-text);
+}
+
+html.sf-dark .content_product table,
+html.sf-dark .content_product table :is(th, td) {
+    border-color: var(--sf-border);
+}
+
+html.sf-dark .content_product table :is(td, th):first-child {
+    color: var(--sf-text-2);
+}
+
+html.sf-dark .content_product table tbody tr:nth-child(even) {
+    background: var(--sf-surface-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.sf-theme-anim .storefront,
+    html.sf-theme-anim .storefront * {
+        transition: none !important;
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}
+
+/* Logos de marcas: misma pastilla clara para todos (algunos traen fondo blanco propio) */
+html.sf-dark .storefront .brand-logo {
+    background-color: #eef0f2;
+    border-radius: 16px;
+    padding: 10px 18px;
+}

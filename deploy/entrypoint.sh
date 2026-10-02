@@ -8,12 +8,19 @@ mkdir -p /persist/data \
     storage/framework/cache storage/framework/sessions storage/framework/views \
     storage/logs bootstrap/cache
 
-if [ ! -L public/data ]; then
-    rm -rf public/data
-    ln -sfn /persist/data public/data
-fi
-
 DB="${DB_DATABASE:-/persist/database.sqlite}"
+
+# Solo se enlazan los uploads al disco persistente si existe (plan con disco);
+# en plan free se conservan las imagenes que vienen en el repo.
+case "$DB" in
+    /persist/*)
+        if [ ! -L public/data ]; then
+            rm -rf public/data
+            ln -sfn /persist/data public/data
+        fi
+        ;;
+esac
+
 FRESH=0
 if [ ! -f "$DB" ]; then
     touch "$DB"

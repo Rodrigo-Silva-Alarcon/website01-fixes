@@ -1,20 +1,14 @@
 import { FormEventHandler, useEffect, useState } from "react";
 import svgPaths from "../imports/svg-51k8givoxg";
 import svgPathsMobile from "../imports/svg-npyi3pa09n";
-import AppLogoIcon from '@/components/app-logo-icon';
 import { img } from "../imports/svg-5wjm2";
 import { img as imgMobile } from "../imports/svg-njpn6";
 import { Link, usePage, useForm, router} from "@inertiajs/react";
 import { route } from 'ziggy-js';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/pages/web/components/ui/sheet";
-import Carrito from "../imports/Carrito";
 import { MenuItem, Product, Cart } from "@/types/models";
 import { toast } from 'sonner';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import ThemeToggle from "@/pages/web/components/ThemeToggle";
 
 interface PageProps {
   flash?: {
@@ -25,18 +19,14 @@ interface PageProps {
 // Mobile Components
 function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {  
   
-  const { find } = usePage<{ find: string }>().props;
+  const { find } = usePage<{ find?: string }>().props;
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchTermMobile, setSearchTermMobile] = useState("");
-  const [searchTerm, setSearchTerm] = useState(find);
+  const [searchTerm, setSearchTerm] = useState(find ?? "");
   const debouncedFind = useDebouncedValue(searchTerm, 300);
-  const { data, setData, processing, errors } = useForm({
-    find: searchTerm,
-  });
 
   useEffect(() => {
-    setData('find', searchTerm);
-  }, [searchTerm]);
+    setSearchTerm(find ?? "");
+  }, [find]);
 
   useEffect(() => {
     if (debouncedFind === (find ?? '')) return;
@@ -46,7 +36,7 @@ function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {
 
   const submit: FormEventHandler = (e) => {
       e.preventDefault();
-      router.get(route('products'), { find: data.find }, { preserveScroll: true });
+      router.get(route('products'), { find: searchTerm.trim() }, { preserveScroll: true });
   };
 
 
@@ -113,6 +103,7 @@ function Frame10124113Mobile({ onOpenCart }: { onOpenCart: () => void }) {
           </div>
         </div>
       </Link>
+      <ThemeToggle />
       <button onClick={onOpenCart} className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
         <div className="relative shrink-0 size-[20px]" data-name="shopping_cart">
           <div className="absolute inset-[9.38%_15.53%_10.18%_6.25%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-1.5px_-2.25px] mask-size-[24px_24px]" data-name="shopping_cart" style={{ maskImage: `url('${imgMobile}')` }}>
@@ -134,7 +125,7 @@ function Frame10124071Mobile({ onOpenCart }: { onOpenCart: () => void }) {
       className="h-[40px] relative shrink-0 w-[118.496px] " data-name="Logo" style={{ color: "#191c1f" }}>
         <div className="absolute inset-0" data-name="image 9">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <AppLogoIcon className="h-full w-full" />
+            <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="h-full w-full object-contain" />
           </div>
         </div>
       </Link>
@@ -145,11 +136,13 @@ function Frame10124071Mobile({ onOpenCart }: { onOpenCart: () => void }) {
 
 export default function Header({ populares, cart}:{ populares:Product[];cart:Cart;}) {
 
-  const [cartOpen, setCartOpen] = useState(false);
+  // el carrito es una página propia (/carrito)
+  const openCart = () => router.visit(route('cart'));
   const { props } = usePage() as { props: { flash?: { status?: string } } };
   const status = props.flash?.status;
   useEffect(() => {
-    if (status) toast.success(status);
+    // 2 s: la mitad de la duración por defecto de sonner (4 s)
+    if (status) toast.success(status, { duration: 2000 });
   }, [status]);
 
   const cartCount = (cart?.cart_items ?? cart?.cartItems ?? []).reduce(
@@ -157,47 +150,23 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
     0,
   );
 
-    const { currentpage } = usePage<{ currentpage: number }>().props;
-    const { cates } = usePage<{ cates: number[] }>().props;
-    const { marcas } = usePage<{ marcas: number[] }>().props;
-    const { find } = usePage<{ find: string }>().props;
-  
-    const page = currentpage && currentpage > 0 ? currentpage : 1;
-    const cs = cates && cates.length > 0 ? cates : [];
-    const ms = marcas && marcas.length > 0 ? marcas : [];
-    
-    const [searchTerm, setSearchTerm] = useState(find);
+    const { find } = usePage<{ find?: string }>().props;
+    const [searchTerm, setSearchTerm] = useState(find ?? "");
     const debouncedFind = useDebouncedValue(searchTerm, 300);
 
-    const { data, setData, processing, errors } = useForm({
-      page: page,
-      cs:cs,
-      ms:ms,
-      find: searchTerm,
-    });
-
     useEffect(() => {
-      setData('find', searchTerm);
-      setData('ms', ms);
-      setData('cs', cs);
-      setData('page', page);
-    }, [searchTerm]);
+      setSearchTerm(find ?? "");
+    }, [find]);
 
     useEffect(() => {
       if (debouncedFind === (find ?? '')) return;
-      const params: { find?: string; page?: number; cs?: number[]; ms?: number[] } = { find: debouncedFind, page: 1 };
-      if (cs.length) params.cs = cs;
-      if (ms.length) params.ms = ms;
-      router.get(route('products'), params, { preserveScroll: true });
+      router.get(route('products'), { find: debouncedFind }, { preserveScroll: true });
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedFind]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        const params: { find?: string; page?: number; cs?: number[]; ms?: number[] } = { find: data.find, page: 1 };
-        if (data.cs.length) params.cs = data.cs;
-        if (data.ms.length) params.ms = data.ms;
-        router.get(route('products'), params, { preserveScroll: true });
+        router.get(route('products'), { find: searchTerm.trim() }, { preserveScroll: true });
     };
   
   return (
@@ -209,7 +178,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
             <div className="h-[50.635px] relative shrink-0 w-[150px]" data-name="Logo" style={{ color: "#191c1f" }}>
               <Link href={route('home')} className="absolute inset-0" data-name="image 9">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <AppLogoIcon className="h-full w-full" />
+                  <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="h-full w-full object-contain" />
                 </div>
               </Link>
             </div>
@@ -273,7 +242,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                   Contacto
                 </p>
               </Link>
-              <button onClick={() => setCartOpen(true)} className="relative bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
+              <button onClick={openCart} className="relative bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" data-name="Botón">
                 <div className="relative shrink-0 size-[20px]" data-name="shopping_cart">
                   <div className="absolute inset-[9.38%_15.53%_10.18%_6.25%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-1.5px_-2.25px] mask-size-[24px_24px]" data-name="shopping_cart" style={{ maskImage: `url('${img}')` }}>
                     <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 17">
@@ -293,25 +262,20 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
                   Carrito
                 </p>
               </button>
+              <div className="flex flex-row items-center self-stretch">
+                <div className="bg-[#cacccd] h-full shrink-0 w-px" />
+              </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>                        
         {/* Mobile Header */}
         <div className="block md:hidden box-border content-stretch px-[20px] py-[16px] relative w-full">
-           <Frame10124071Mobile onOpenCart={() => setCartOpen(true)} /> 
+           <Frame10124071Mobile onOpenCart={openCart} /> 
         </div>
       </div>
 
-      {/* Carrito Offcanvas */}
-      <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-        <SheetContent side="right" className="w-full max-w-[300px] sm:max-w-[540px] p-0 overflow-y-auto [&>button]:hidden">
-          <Carrito 
-            onClose={() => setCartOpen(false)} 
-            populares={populares}
-            cart={cart}
-            />
-        </SheetContent>
-      </Sheet>      
+
     </div>
   );
 }

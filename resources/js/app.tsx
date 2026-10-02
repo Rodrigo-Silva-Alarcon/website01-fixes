@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 import { Toaster } from '@/components/ui/sonner';
+import NavigationLoader from '@/components/navigation-loader';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -17,14 +18,14 @@ createInertiaApp({
 
         root.render(
             <>
+                <NavigationLoader />
                 <App {...props} />
                 <Toaster />
             </>
         );
     },
-    progress: {
-        color: '#4B5563',
-    },
+    // Se usa NavigationLoader en lugar de la barra por defecto de Inertia.
+    progress: false,
 });
 
 // This will set light / dark mode on load...

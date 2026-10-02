@@ -30,40 +30,75 @@ class WebController extends Controller{
         return Inertia::render('web/AboutPage');
     }
 
-    public function products(Request $request){
-        $cateories = $request->cs??[];
+    public function cart(){
+        return Inertia::render('web/CarritoPage');
+    }
 
-        if($request->category){
+    public function products(Request $request){
+        $rawCs = $request->cs;
+        $categories = is_array($rawCs) ? $rawCs : ($request->filled('cs') ? explode(',', (string) $rawCs) : []);
+        $categories = array_values(array_unique(array_filter(array_map('intval', $categories))));
+
+        $activeCategory = null;
+        if ($request->category) {
             $category = $this->get_category_slug($request->category);
-            if($category){
-                $cateories = [$category->id];
+            if ($category) {
+                $activeCategory = $category;
+                if (empty($categories)) {
+                    $categories = [$category->id];
+                }
             }
         }
         
-        $subcategory_id = NULL;
-        if($request->subcategory){
+        $subcategory_id = null;
+        $activeSubcategory = null;
+        if ($request->subcategory) {
             $subcategory = $this->get_subcategory_slug($request->subcategory, $request->category);
-            if($subcategory){
+            if ($subcategory) {
                 $subcategory_id = $subcategory->id;
+                $activeSubcategory = $subcategory;
+            }
+        } elseif ($request->filled('subcategory_id')) {
+            $subcategory_id = (int) $request->subcategory_id;
+            $activeSubcategory = \App\Models\Subcategory::find($subcategory_id);
+        }
+        
+        $rawMs = $request->ms;
+        $brands = is_array($rawMs) ? $rawMs : ($request->filled('ms') ? explode(',', (string) $rawMs) : []);
+        $brands = array_values(array_unique(array_filter(array_map('intval', $brands))));
+
+        if ($request->brand && empty($brands)) {
+            $brandModel = is_numeric($request->brand) ? \App\Models\Brand::find($request->brand) : \App\Models\Brand::where('name', $request->brand)->first();
+            if ($brandModel) {
+                $brands = [$brandModel->id];
+            } elseif (is_numeric($request->brand)) {
+                $brands = [(int) $request->brand];
             }
         }
         
-        $brands = $request->ms??[];
-        if($request->brand){
-            $brands = [$request->brand];
-        }
-        
-        $products = $this->get_products($cateories, $subcategory_id,  $brands, $request->find);
-        
-        $category_id = $request->category;
-        $subcategory_id = $request->subcategory;
-        
+        $rawSs = $request->ss;
+        $subcategories = is_array($rawSs) ? $rawSs : ($request->filled('ss') ? explode(',', (string) $rawSs) : []);
+        $subcategories = array_values(array_unique(array_filter(array_map('intval', $subcategories))));
+
+        $offers = $request->boolean('offers');
+        $sort = in_array($request->sort, ['off', 'asc', 'desc'], true) ? $request->sort : 'rel';
+
+        $find = $request->filled('find') ? trim((string) $request->find) : null;
+        $products = $this->webContent()->products($categories, $subcategory_id, $brands, $find, $subcategories, $offers, $sort);
 
         return Inertia::render('web/ProductosPage', [
             'categorias' => $this->get_categories_home(),
-            'categories' => $this->get_categories_home_all(),
+            'categories' => $this->webContent()->categoryTree(),
             'products' => $products,
             'brands' => $this->get_marcas(),
+            'cates' => $categories,
+            'subs' => $subcategories,
+            'marcas' => $brands,
+            'offers' => $offers,
+            'sort' => $sort,
+            'find' => $find ?? '',
+            'activeCategory' => $activeCategory,
+            'activeSubcategory' => $activeSubcategory,
         ]);
     }
 
@@ -72,9 +107,17 @@ class WebController extends Controller{
         
         abort_unless($product, 404);
 
+        // Relacionados: primero de la misma categoria y, si faltan, se completa con otros productos.
+        $related = Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(4)->get();
+        if ($related->count() < 4) {
+            $related = $related->concat(
+                Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('id', '!=', $product->id)->where('category_id', '!=', $product->category_id)->limit(4 - $related->count())->get()
+            );
+        }
+
         return Inertia::render('web/ProductDetailPage', [
             'product' => $product,
-            'products' => Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(4)->get()
+            'products' => $related->values(),
         ]);
     }
 

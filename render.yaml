@@ -2,15 +2,11 @@ services:
   - type: web
     name: website01
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /
     autoDeploy: true
-    disk:
-      name: website01-data
-      mountPath: /persist
-      sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
@@ -29,7 +25,7 @@ services:
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
-        value: /persist/database.sqlite
+        value: /var/www/database/database.sqlite
       - key: SESSION_DRIVER
         value: database
       - key: SESSION_ENCRYPT

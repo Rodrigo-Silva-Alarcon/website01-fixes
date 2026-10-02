@@ -10,6 +10,48 @@
     }
 }
 
+@keyframes sh-page-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes sh-ping {
+    0% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+    100% {
+        transform: scale(2.6);
+        opacity: 0;
+    }
+}
+
+@keyframes sh-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes sh-breathe {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.35;
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 0;
+    }
+}
+
 @layer utilities {
     .info-slide {
         animation: info-fade 450ms ease;
@@ -31,6 +73,27 @@
     .interactive-card img {
         transition: scale 320ms ease;
         transform-origin: center;
+    }
+
+    /*
+     * Elementos clicables: sin selección de texto (doble clic o clics rápidos en
+     * filtros, botones o menús ya no lo resaltan). Inputs y textos de lectura
+     * siguen siendo seleccionables.
+     */
+    .storefront :where(
+        a, button, label, summary, select,
+        [role='button'], [role='checkbox'], [role='radio'], [role='switch'],
+        [role='tab'], [role='option'], [role='menuitem'],
+        [aria-pressed], [aria-expanded], .cursor-pointer
+    ) {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .storefront :where(input, textarea, [contenteditable='true']) {
+        -webkit-user-select: text;
+        user-select: text;
     }
 
     .storefront :where(a, button):focus-visible {
@@ -78,7 +141,129 @@
         }
     }
 
+    /* Tarjeta de producto: elevación, zoom de imagen y borde que se traza al hover */
+    .product-card {
+        transition: translate 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+    }
+
+    .product-card__img {
+        transition: scale 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .product-card__trace {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .product-card__trace rect {
+        x: 1px;
+        y: 1px;
+        width: calc(100% - 2px);
+        height: calc(100% - 2px);
+        fill: none;
+        stroke: #fa8232;
+        stroke-width: 2;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        transition: stroke-dashoffset 700ms cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .product-card__shine {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 55%) 50%, transparent 65%);
+        translate: -120% 0;
+    }
+
+    .product-card__cart {
+        transition: translate 220ms ease;
+    }
+
+    .product-card:focus-within .product-card__trace rect {
+        stroke-dashoffset: 0;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .product-card:hover {
+            translate: 0 -4px;
+            border-color: transparent;
+            box-shadow: 0 14px 30px rgb(25 28 31 / 10%);
+        }
+
+        .product-card:hover .product-card__trace rect {
+            stroke-dashoffset: 0;
+        }
+
+        .product-card:hover .product-card__img {
+            scale: 1.06;
+        }
+
+        .product-card:hover .product-card__shine {
+            translate: 120% 0;
+            transition: translate 800ms ease;
+        }
+
+        .product-card__cta:not(:disabled):hover .product-card__cart {
+            translate: 3px 0;
+        }
+    }
+
+    /* Tile de categoría: se eleva, la flecha gira y la imagen sube sobre su mancha de color */
+    .category-tile,
+    .category-tile__img,
+    .category-tile__blob,
+    .category-tile__arrow {
+        transition: translate 320ms cubic-bezier(0.2, 0.7, 0.2, 1), scale 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+            rotate 320ms ease, background-color 220ms ease, color 220ms ease, box-shadow 260ms ease;
+    }
+
+    .category-tile:focus-within {
+        box-shadow: 0 0 0 2px #fa8232;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .category-tile:hover {
+            translate: 0 -4px;
+            box-shadow: 0 16px 32px rgb(25 28 31 / 10%);
+        }
+
+        .category-tile:hover .category-tile__img {
+            translate: -6px -10px;
+            scale: 1.08;
+        }
+
+        .category-tile:hover .category-tile__blob {
+            scale: 1.15;
+        }
+
+        .category-tile:hover .category-tile__arrow {
+            translate: 4px 0;
+            scale: 1.1;
+            background-color: #f9751d;
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
+        .category-tile,
+        .category-tile__img,
+        .category-tile__blob,
+        .category-tile__arrow,
+        .product-card,
+        .product-card__img,
+        .product-card__trace rect,
+        .product-card__shine,
+        .product-card__cart {
+            transition: none !important;
+            translate: none !important;
+            scale: none !important;
+        }
+
         .info-slide {
             animation: none !important;
         }
@@ -98,5 +283,385 @@
             transform: none !important;
             transition: none !important;
         }
+    }
+}
+
+/* Página Nosotros (versión B · Showroom): fondo de color animado, entrada y revelado al hacer scroll */
+@keyframes sh-rise {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes about-drift-a {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(18vw, 4%, 0) scale(1.08); }
+}
+
+@keyframes about-drift-b {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-18vw, -6%, 0) scale(1.1); }
+}
+
+@keyframes about-drift-c {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(8vw, -10%, 0); }
+}
+
+.about-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    will-change: transform;
+}
+
+.about-blob--orange {
+    top: -10%;
+    left: 5%;
+    width: 50vw;
+    max-width: 640px;
+    aspect-ratio: 1;
+    background: rgb(250 130 50 / 26%);
+    animation: about-drift-a 14s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.about-blob--blue {
+    top: 0;
+    right: 0;
+    width: 54vw;
+    max-width: 680px;
+    aspect-ratio: 1;
+    background: rgb(21 94 239 / 20%);
+    animation: about-drift-b 16s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.about-blob--peach {
+    bottom: -20%;
+    left: 35%;
+    width: 36vw;
+    max-width: 460px;
+    aspect-ratio: 1;
+    background: rgb(250 130 50 / 14%);
+    animation: about-drift-c 18s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+.about-rise {
+    animation: sh-rise .8s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+/* Parallax suave: --p (0→1) lo actualiza el scroll; cada foto sube a su ritmo */
+.about-hero__copy {
+    translate: 0 calc(var(--p, 0) * 60px);
+    opacity: calc(1 - var(--p, 0) * .5);
+}
+
+.about-parallax {
+    translate: 0 calc(var(--p, 0) * var(--speed, 1) * -70px);
+    will-change: translate;
+}
+
+.about-zoom {
+    transition: scale 700ms cubic-bezier(.2, .7, .2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .about-parallax:hover .about-zoom {
+        scale: 1.05;
+    }
+}
+
+/* Revelado al entrar en pantalla (solo cuando el JS activa .about-motion) */
+.about-motion .about-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity .8s cubic-bezier(.2, .7, .2, 1) var(--d, 0ms),
+        transform .8s cubic-bezier(.2, .7, .2, 1) var(--d, 0ms),
+        translate .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+.about-motion .about-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-blob,
+    .about-rise {
+        animation: none !important;
+    }
+
+    .about-hero__copy,
+    .about-parallax {
+        translate: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Indicador sutil de carga en navegaciones de Inertia (pestanas, filtros, paginacion...). */
+@keyframes nav-loader-slide {
+    0% {
+        transform: translateX(-100%) scaleX(0.3);
+    }
+    50% {
+        transform: translateX(10%) scaleX(0.6);
+    }
+    100% {
+        transform: translateX(110%) scaleX(0.3);
+    }
+}
+
+.nav-loader {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 9999;
+    height: 3px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+.nav-loader.is-loading {
+    opacity: 1;
+}
+
+.nav-loader__bar {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(90deg, transparent, #fa8232 30%, #ea580c 70%, transparent);
+    box-shadow: 0 0 8px rgba(250, 130, 50, .45);
+    transform-origin: left center;
+    animation: nav-loader-slide 1.1s cubic-bezier(.4, 0, .2, 1) infinite;
+    animation-play-state: paused;
+}
+
+.nav-loader.is-loading .nav-loader__bar {
+    animation-play-state: running;
+}
+
+main {
+    transition: opacity .2s ease;
+}
+
+html[data-nav-loading] main {
+    opacity: .6;
+    cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-loader__bar {
+        animation: none;
+        transform: none;
+        background: #fa8232;
+    }
+
+    main {
+        transition: none;
+    }
+}
+
+/* Detalle de producto */
+@keyframes pdp-rise {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.pdp-rise {
+    animation: pdp-rise .6s .12s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+/* HTML del CMS (descripcion y caracteristicas) */
+.content_product p { margin: 0 0 .8em; }
+.content_product h1, .content_product h2, .content_product h3, .content_product h4, .content_product h5 {
+    margin: 0 0 10px;
+    font-weight: 700;
+    color: #191c1f;
+}
+.content_product h1 { font-size: 1.5rem; }
+.content_product h2 { font-size: 1.35rem; }
+.content_product h3 { font-size: 1.2rem; }
+.content_product h4, .content_product h5 { font-size: 1rem; }
+.content_product ul, .content_product ol, .content_product li { margin: revert; padding: revert; list-style: revert; }
+.content_product img { max-width: 100%; height: auto; margin-bottom: 15px; border-radius: 16px; }
+.content_product table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border: 1px solid #eceef0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+.content_product table th,
+.content_product table td {
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #eceef0;
+}
+.content_product table tr:last-child td { border-bottom: none; }
+.content_product table td:first-child,
+.content_product table th:first-child { color: #6b7076; font-weight: 600; }
+.content_product table tbody tr:nth-child(even) { background: #f9fafb; }
+
+@media (prefers-reduced-motion: reduce) {
+    .pdp-rise { animation: none; }
+}
+
+/* Fila de sugerencias del carrito lateral: barra de desplazamiento fina y visible */
+.cart-rail {
+    scrollbar-width: thin;
+    scrollbar-color: #dfe2e6 transparent;
+}
+
+.cart-rail::-webkit-scrollbar {
+    height: 6px;
+}
+
+.cart-rail::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: #dfe2e6;
+}
+
+.cart-rail:hover::-webkit-scrollbar-thumb {
+    background: #fa8232;
+}
+
+/* Categorías del inicio: mosaico en movimiento (opción 4a) */
+@keyframes cat-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes cat-floaty {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.cat-mosaic {
+    --cat-row: 200px;
+    --cat-col: 100px;
+    --cat-gap: 14px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+
+.cat-mosaic__track {
+    display: grid;
+    grid-template-rows: var(--cat-row) var(--cat-row);
+    grid-auto-columns: var(--cat-col);
+    gap: var(--cat-gap);
+    width: max-content;
+    /* El hueco final iguala el gap para que el salto de la cinta no se note */
+    padding-right: var(--cat-gap);
+    animation: cat-marquee var(--cat-duration, 60s) linear infinite;
+}
+
+.cat-mosaic:hover .cat-mosaic__track,
+.cat-mosaic:focus-within .cat-mosaic__track {
+    animation-play-state: paused;
+}
+
+.cat-mosaic__name {
+    font-size: 21px;
+}
+
+.cat-mosaic__tile--wide .cat-mosaic__name {
+    font-size: 26px;
+}
+
+.cat-mosaic__tile--big .cat-mosaic__name {
+    font-size: 32px;
+}
+
+.cat-mosaic__circle {
+    --size: 140px;
+    width: var(--size);
+    height: var(--size);
+    right: calc(var(--size) * -0.22);
+    bottom: calc(var(--size) * -0.22);
+    animation: cat-floaty 5s ease-in-out infinite;
+}
+
+.cat-mosaic__tile--wide .cat-mosaic__circle {
+    --size: 170px;
+}
+
+.cat-mosaic__tile--big .cat-mosaic__circle {
+    --size: 230px;
+    /* En las tarjetas altas el círculo sube para no tapar el "Ver todo" */
+    bottom: 64px;
+}
+
+/* Cada tarjeta flota con un desfase distinto */
+.cat-mosaic__tile:nth-child(3n + 2) .cat-mosaic__circle {
+    animation-delay: -1.6s;
+}
+
+.cat-mosaic__tile:nth-child(3n + 3) .cat-mosaic__circle {
+    animation-delay: -3.2s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cat-mosaic .category-tile:hover {
+        translate: none;
+        scale: 1.025;
+        box-shadow: 0 16px 30px rgb(0 0 0 / 16%);
+    }
+}
+
+@media (max-width: 640px) {
+    .cat-mosaic {
+        --cat-row: 170px;
+        --cat-col: 84px;
+        --cat-gap: 10px;
+    }
+
+    .cat-mosaic__tile--big .cat-mosaic__name {
+        font-size: 26px;
+    }
+
+    .cat-mosaic__tile--big .cat-mosaic__circle {
+        --size: 180px;
+        bottom: 60px;
+    }
+}
+
+/* Sin animación: la cinta se queda quieta y se puede desplazar a mano */
+@media (prefers-reduced-motion: reduce) {
+    .cat-mosaic {
+        overflow-x: auto;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .cat-mosaic__track,
+    .cat-mosaic__circle {
+        animation: none;
     }
 }

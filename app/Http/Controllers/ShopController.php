@@ -33,7 +33,10 @@ class ShopController extends Controller{
         $car_id = NULL;
 
         if($product->id){
-            $added = DB::transaction(function () use ($product) {
+            // Cantidad opcional (selector del detalle de producto); por defecto 1.
+            $qty = max(1, min(99, (int) $request->input('amount', 1)));
+
+            $added = DB::transaction(function () use ($product, $qty) {
                 $car_id = NULL;
 
                 if(session()->has('shop')){
@@ -57,14 +60,14 @@ class ShopController extends Controller{
 
                 $cart = CartItem::where('cart_id', $car_id)->where('product_id', $product->id)->lockForUpdate()->first();
                 $stock = (int) ($product->inventory->stock ?? 0);
-                $nextAmount = $cart ? $cart->amount + 1 : 1;
+                $nextAmount = $cart ? $cart->amount + $qty : $qty;
 
                 if ($stock < $nextAmount) {
                     return false;
                 }
 
                 if ($cart){
-                    $amount = $cart->amount + 1;
+                    $amount = $nextAmount;
                     CartItem::where('id', $cart->id)->update([
                         'amount' => $amount,
                         'sub_total' => $amount * $cart->unit_price,
@@ -77,9 +80,9 @@ class ShopController extends Controller{
                         'name' => $product->name,
                         'image' => $product->image,
                         'unit_price' => $product->inventory->price,
-                        'amount' => 1,
+                        'amount' => $qty,
                         'money' => $product->inventory->money,
-                        'sub_total' => $product->inventory->price,
+                        'sub_total' => $qty * $product->inventory->price,
                     ]);
                 }
 

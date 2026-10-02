@@ -12,13 +12,18 @@ class SubcategorySeeder extends Seeder
     /**
      * Iconos TYPE_SVG_ICONS (resources/js/types/Data.ts).
      * 12=chef_hat 14=brand_awareness(speaker) 15=smart_toy 19=sports_esports
-     * 23=headphones 24=tv 29=gamepad 30=lavadora 08=desktop
+     * 23=headphones 24=tv 29=gamepad 30=lavadora 08=desktop 18=mobile
      */
-    private const CATEGORY_ICONS = [
-        'Electrodomesticos' => '30',
-        'Cocina' => '12',
-        'Equipos-de-sonido' => '14',
-        'Consolas' => '19',
+    /**
+     * Categorias del menu superior, en su orden. Televisores y Celulares no tienen subcategorias.
+     */
+    private const CATEGORIES = [
+        ['slug' => 'Televisores', 'name' => 'Televisores', 'icon' => '08', 'order' => 1],
+        ['slug' => 'Cocina', 'name' => 'Cocina', 'icon' => '12', 'order' => 2],
+        ['slug' => 'Equipos-de-sonido', 'name' => 'Equipos de sonido', 'icon' => '14', 'order' => 3],
+        ['slug' => 'Electrodomesticos', 'name' => 'Electrodomésticos', 'icon' => '30', 'order' => 4],
+        ['slug' => 'Celulares', 'name' => 'Celulares', 'icon' => '18', 'order' => 5],
+        ['slug' => 'Consolas', 'name' => 'Consolas', 'icon' => '19', 'order' => 6],
     ];
 
     private const SUBCATEGORIES = [
@@ -50,8 +55,15 @@ class SubcategorySeeder extends Seeder
 
     public function run(): void
     {
-        foreach (self::CATEGORY_ICONS as $slug => $icon) {
-            Category::where('slug', $slug)->update(['icon' => $icon]);
+        foreach (self::CATEGORIES as $row) {
+            $category = Category::firstOrNew(['slug' => $row['slug']]);
+            if (! $category->exists) {
+                $category->name = $row['name'];
+                $category->active = true;
+            }
+            $category->icon = $row['icon'];
+            $category->order = $row['order'];
+            $category->save();
         }
 
         foreach (self::SUBCATEGORIES as $categorySlug => $rows) {

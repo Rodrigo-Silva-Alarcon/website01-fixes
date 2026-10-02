@@ -66,10 +66,17 @@ trait WebTrait
      */
     function get_products($categories = [], $subcategory = null, $marcas = [], $find = null)
     {
+        if (!is_array($categories)) {
+            $categories = $categories ? [(int) $categories] : [];
+        }
+        if (!is_array($marcas)) {
+            $marcas = $marcas ? [(int) $marcas] : [];
+        }
+
         return $this->webContent()->products(
-            is_array($categories) ? $categories : [],
+            $categories,
             $subcategory !== null ? (int) $subcategory : null,
-            is_array($marcas) ? $marcas : [],
+            $marcas,
             $find !== null ? (string) $find : null,
         );
     }

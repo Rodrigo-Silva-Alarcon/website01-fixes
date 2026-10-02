@@ -44,17 +44,28 @@ class HandleInertiaRequests extends Middleware
     {
         /* para la busqueda de los elementos */
 
-        $cateories = $request->cs??[];
-        $brands = $request->ms??[];
+        $rawCs = $request->cs;
+        $cateories = is_array($rawCs) ? $rawCs : ($request->filled('cs') ? explode(',', (string) $rawCs) : []);
+        $cateories = array_values(array_unique(array_filter(array_map('intval', $cateories))));
 
-        if($request->category){
+        if ($request->category && empty($cateories)) {
             $category = $this->get_category_slug($request->category);
-            if($category){
+            if ($category) {
                 $cateories = [$category->id];
             }
         }
-        if($request->brand){
-            $brands = [$request->brand];
+
+        $rawMs = $request->ms;
+        $brands = is_array($rawMs) ? $rawMs : ($request->filled('ms') ? explode(',', (string) $rawMs) : []);
+        $brands = array_values(array_unique(array_filter(array_map('intval', $brands))));
+
+        if ($request->brand && empty($brands)) {
+            $brandModel = is_numeric($request->brand) ? \App\Models\Brand::find($request->brand) : \App\Models\Brand::where('name', $request->brand)->first();
+            if ($brandModel) {
+                $brands = [$brandModel->id];
+            } elseif (is_numeric($request->brand)) {
+                $brands = [(int) $request->brand];
+            }
         }
 
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
@@ -80,7 +91,9 @@ class HandleInertiaRequests extends Middleware
         if ($isPublic) {
             $base['menu'] = $this->get_menu();
             $base['populares'] = $this->get_populares();
-            $base['cart'] = $this->get_shop_cart();
+            $base['cart'] = $cart = $this->get_shop_cart();
+            $base['cartSuggestions'] = fn () => app(\App\Services\WebContentService::class)
+                ->cartSuggestions($cart ? $cart->cartItems->pluck('product_id')->all() : []);
             $base['cates'] = $cateories;
             $base['marcas'] = $brands;
             $base['currentpage'] = $request->page??1;
@@ -90,6 +103,7 @@ class HandleInertiaRequests extends Middleware
             $base['menu'] = [];
             $base['populares'] = [];
             $base['cart'] = null;
+            $base['cartSuggestions'] = [];
             $base['cates'] = [];
             $base['marcas'] = [];
             $base['currentpage'] = 1;
