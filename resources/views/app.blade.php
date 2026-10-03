@@ -26,7 +26,6 @@
             } catch (e) {}
         </script>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
@@ -51,6 +50,10 @@
         @routes
         @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         @inertiaHead
+        {{-- Con SSR el <title> llega en @inertiaHead; sin SSR se usa este por defecto --}}
+        @if (empty($__inertiaSsrResponse))
+            <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @endif
 
     </head>
     <body class="font-sans antialiased">

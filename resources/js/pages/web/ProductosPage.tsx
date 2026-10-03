@@ -538,7 +538,12 @@ export default function ProductosPage() {
   const [f, setF] = useState<Filters>(serverFilters);
   const [loading, setLoading] = useState(false);
   // teléfono (< 768) y tablet (< 1024) usan la hoja de filtros; escritorio, el panel lateral
-  const [device, setDevice] = useState<Device>(() => (typeof window === "undefined" ? "desktop" : deviceOf(window.innerWidth)));
+  // El primer render usa el dispositivo estimado por el servidor (User-Agent) para que el
+  // HTML de SSR y la hidratación coincidan; luego se ajusta al ancho real de la ventana.
+  const { uaDevice } = usePage<{ uaDevice?: Device }>().props;
+  const [device, setDevice] = useState<Device>(() =>
+    uaDevice ?? (typeof window === "undefined" ? "desktop" : deviceOf(window.innerWidth)),
+  );
   const compact = device !== "desktop";
   const [showFilters, setShowFilters] = useState(true);
   const [sheet, setSheet] = useState<"all" | "sort" | null>(null);
@@ -563,6 +568,7 @@ export default function ProductosPage() {
 
   useEffect(() => {
     const onResize = () => setDevice(deviceOf(window.innerWidth));
+    onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);

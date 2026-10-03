@@ -27,6 +27,10 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    // El bundle SSR incluye sus dependencias: en la imagen Docker no hay node_modules
+    ssr: {
+        noExternal: true,
+    },
     build: {
         rollupOptions: {
             output: {

@@ -19,6 +19,25 @@ class WebContentService
     public const BANNER_PAGES = ['1', '2', '3', '4'];
 
     /**
+     * Campos que solo usa la ficha del producto. En listados y tarjetas se ocultan
+     * para no inflar el HTML/JSON inicial de cada página (sobre todo en móvil).
+     */
+    private const CARD_HIDDEN = [
+        'description', 'technical_info', 'tecnical_image', 'tecnical_image_url', 'tecnical_image_thumbs_url',
+        'video_type', 'video_file', 'video_url', 'video_iframe', 'video_file_url', 'created_at', 'updated_at',
+    ];
+
+    /**
+     * @template T of Collection
+     * @param  T  $products
+     * @return T
+     */
+    private function forCards(Collection $products): Collection
+    {
+        return $products->each(fn (Product $p) => $p->makeHidden(self::CARD_HIDDEN));
+    }
+
+    /**
      * Borra la caché pública para que lo que se cambia en el panel se vea al instante.
      */
     public static function flushCache(): void
@@ -62,10 +81,10 @@ class WebContentService
 
     public function populares(): Collection
     {
-        return Cache::remember('web_populares', 60, fn (): Collection => Product::with([
+        return $this->forCards(Cache::remember('web_populares', 60, fn (): Collection => Product::with([
             'inventory', 'category', 'subcategory', 'brand',
         ])->where('active', true)->where('pop', true)
-            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get());
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get()));
     }
 
     /**
@@ -76,22 +95,22 @@ class WebContentService
      */
     public function cartSuggestions(array $exclude = [], int $limit = 10): Collection
     {
-        return Product::with(['inventory', 'category', 'subcategory', 'brand'])
+        return $this->forCards(Product::with(['inventory', 'category', 'subcategory', 'brand'])
             ->where('active', true)
             ->whereNotIn('id', $exclude)
             ->whereHas('inventory', fn ($q) => $q->where('stock', '>', 0)->where('amount', '>', 0))
             ->orderByDesc('pop')->orderByDesc('featured')
             ->orderBy('order', 'ASC')->orderBy('id', 'DESC')
             ->limit($limit)
-            ->get();
+            ->get());
     }
 
     public function destacados(): Collection
     {
-        return Cache::remember('web_destacados', 60, fn (): Collection => Product::with([
+        return $this->forCards(Cache::remember('web_destacados', 60, fn (): Collection => Product::with([
             'inventory', 'category', 'subcategory', 'brand',
         ])->where('active', true)->where('featured', true)
-            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get());
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get()));
     }
 
     public function marcas(): Collection
@@ -146,7 +165,8 @@ class WebContentService
                     ->orderBy('id', 'DESC')
                     ->limit(8);
             },
-        ])->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
+        ])->where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get()
+            ->each(fn (Category $c) => $this->forCards($c->products));
     }
 
     /**
@@ -250,6 +270,7 @@ class WebContentService
             $products->withPath(route('products'));
         }
         $products->appends(request()->only(['cs', 'ss', 'ms', 'offers', 'sort', 'find', 'category', 'subcategory', 'brand']));
+        $this->forCards($products->getCollection());
 
         return $products;
     }

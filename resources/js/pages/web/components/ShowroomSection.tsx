@@ -92,30 +92,45 @@ export default function ShowroomSection() {
         {/* Columna Derecha: Galería de Fotos del Showroom */}
         <div className="lg:col-span-5 grid grid-cols-3 gap-4">
           <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-sm">
-            <img
-              src="/images/about-hero-smarthouse.jpg"
-              alt="Showroom SmartHouse"
-              className="w-full h-full object-cover"
-            />
+            <picture className="block w-full h-full">
+              <source srcSet="/images/about-hero-smarthouse-480.webp" type="image/webp" />
+              <img
+                src="/images/about-hero-smarthouse.jpg"
+                alt="Showroom SmartHouse"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
+            </picture>
           </div>
 
           <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-md">
-            <img
-              src="/data/banners/025f7828-6a10-44a4-979c-35b0eaffacd4.jpg"
-              alt="Productos SmartHouse"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "/images/about-hero-smarthouse.jpg";
-              }}
-            />
+            <picture className="block w-full h-full">
+              <source srcSet="/images/showroom-productos.webp" type="image/webp" />
+              <img
+                src="/data/banners/025f7828-6a10-44a4-979c-35b0eaffacd4.jpg"
+                alt="Productos SmartHouse"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/about-hero-smarthouse.jpg";
+                }}
+              />
+            </picture>
           </div>
 
           <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-sm">
-            <img
-              src="/images/about-hero-smarthouse.jpg"
-              alt="Instalaciones SmartHouse"
-              className="w-full h-full object-cover scale-x-[-1]"
-            />
+            <picture className="block w-full h-full">
+              <source srcSet="/images/about-hero-smarthouse-480.webp" type="image/webp" />
+              <img
+                src="/images/about-hero-smarthouse.jpg"
+                alt="Instalaciones SmartHouse"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover scale-x-[-1]"
+              />
+            </picture>
           </div>
         </div>
       </div>

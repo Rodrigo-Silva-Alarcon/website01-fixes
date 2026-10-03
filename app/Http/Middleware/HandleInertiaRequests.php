@@ -88,7 +88,26 @@ class HandleInertiaRequests extends Middleware
             ],
         ];
 
+        // SSR solo para la tienda pública (primera pantalla en móvil). El panel admin
+        // se sigue renderizando en el cliente. Si el servidor SSR no responde,
+        // Inertia vuelve automáticamente al renderizado en el cliente.
+        if (! $isPublic || $request->user()) {
+            config(['inertia.ssr.enabled' => false]);
+        } elseif (config('inertia.ssr.enabled') && ! $request->header('X-Inertia')) {
+            // El servidor SSR no tiene el <script> de @routes: se le pasan las rutas
+            // (ya filtradas por ExcludeAdminZiggyRoutes) solo en la carga inicial.
+            $base['ziggy'] = fn () => [
+                ...(new \Tighten\Ziggy\Ziggy)->toArray(),
+                'location' => $request->url(),
+            ];
+        }
+
         if ($isPublic) {
+            // Estimación del dispositivo para que el HTML de SSR use el mismo diseño
+            // (teléfono / tablet / escritorio) que el navegador al hidratar
+            $ua = (string) $request->userAgent();
+            $base['uaDevice'] = preg_match('/iPad|Tablet|Android(?!.*Mobile)/i', $ua) ? 'tablet'
+                : (preg_match('/Mobi|iPhone|Android/i', $ua) ? 'phone' : 'desktop');
             $base['menu'] = $this->get_menu();
             $base['populares'] = $this->get_populares();
             $base['cart'] = $cart = $this->get_shop_cart();

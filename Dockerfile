@@ -15,7 +15,8 @@ RUN npm ci
 COPY . .
 # .dockerignore excluye .env*, asi que se usan variables de entorno de build
 ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=     APP_ENV=production CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync
-RUN npm run build
+# Build del cliente + bundle SSR (la tienda se renderiza en el servidor con Node)
+RUN npm run build:ssr
 
 FROM php:8.3-fpm-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -29,6 +30,9 @@ WORKDIR /var/www
 COPY --from=assets /app/vendor ./vendor
 COPY . .
 COPY --from=assets /app/public/build ./public/build
+COPY --from=assets /app/bootstrap/ssr ./bootstrap/ssr
+# Node solo como runtime del servidor SSR de Inertia (sin npm ni node_modules)
+COPY --from=node:20-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 COPY deploy/entrypoint.sh /entrypoint.sh
 COPY deploy/nginx.conf /etc/nginx/sites-available/default
 COPY deploy/supervisord.conf /etc/supervisord.conf
@@ -43,6 +47,7 @@ ENV APP_ENV=production \
     DB_CONNECTION=sqlite \
     SESSION_DRIVER=database \
     CACHE_STORE=database \
-    QUEUE_CONNECTION=database
+    QUEUE_CONNECTION=database \
+    INERTIA_SSR=true
 
 ENTRYPOINT ["/entrypoint.sh"]

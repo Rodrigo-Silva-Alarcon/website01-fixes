@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 
 interface SeoProps {
   title: string;
@@ -22,7 +22,10 @@ export default function Seo({
 }: SeoProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
   const pageOnlyTitle = title || SITE_NAME;
-  const canonical = url ?? (typeof window !== "undefined" ? window.location.href : "");
+  // En SSR no hay window: el origen llega en la configuración de Ziggy
+  const page = usePage<{ ziggy?: { url?: string } }>();
+  const origin = typeof window !== "undefined" ? window.location.origin : (page.props.ziggy?.url ?? "");
+  const canonical = url ?? `${origin}${page.url}`;
 
   return (
     <Head>
