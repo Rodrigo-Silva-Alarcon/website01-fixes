@@ -6,6 +6,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('shares published CMS texts with public Inertia pages', function () {
+    // Partir sin los textos por defecto que crean las migraciones
+    Text::query()->delete();
+
     Text::create([
         'name' => 'footer_email',
         'date' => now()->toDateString(),

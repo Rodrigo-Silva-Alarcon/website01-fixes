@@ -85,7 +85,7 @@ function Submenu({ items, id }: { items: MenuItem[]; id:string }) {
     >
       <div className="bg-[#f2f4f5] relative rounded-b-[10px] w-full h-full" data-name="Cocina">
         <div className="w-full h-full">
-          <div className="box-border flex flex-col gap-[20px] items-start p-[20px] relative w-full h-full">
+          <div className="box-border flex flex-col gap-[20px] items-stretch p-[20px] relative w-full h-full">
             {items.map((item) => {
               const img = item.icon || '/default-icon.svg';
                const icono = TYPE_SVG_ICONS.find(i => i.id === item.icon)?.icon;
@@ -93,18 +93,21 @@ function Submenu({ items, id }: { items: MenuItem[]; id:string }) {
                 <Link
                   href={route('subcategory', {category: id, subcategory:item.id})}
                   key={item.id}
-                  className="flex gap-[5px] items-center justify-start relative shrink-0"
+                  className="flex gap-[12px] items-center justify-center w-full hover:opacity-80 transition-opacity"
                 >
-                  {icono ? (
-                    <div className="relative shrink-0 size-[24px]" data-name={item.name}>
+                  <div
+                    className="flex shrink-0 items-center justify-center size-[24px]"
+                    data-name={item.name}
+                  >
+                    {icono ? (
                       <div
-                        className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
+                        className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full"
                         dangerouslySetInnerHTML={{ __html: icono }}
                       />
-                    </div>
-                  ) : null}
+                    ) : null}
+                  </div>
                   <p
-                    className="font-['DM_Sans',sans-serif] font-normal leading-[20px] text-[#191c1f] text-[14px] whitespace-pre"
+                    className="font-['DM_Sans',sans-serif] font-normal leading-[20px] text-[#191c1f] text-[14px] text-nowrap"
                     style={{ fontVariationSettings: "'opsz' 14" }}
                   >
                     {item.name}
@@ -121,13 +124,13 @@ function Submenu({ items, id }: { items: MenuItem[]; id:string }) {
 export default function CategoriasMenu({menu}:{menu:MenuItem[]}) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);  
   return (
-    <div className="hidden md:block relative w-full">
+    <div className="hidden lg:block relative w-full">
       <div
         className="bg-[#f2f4f5] relative size-full"
         data-name="CategoriasMenu"
       >
         <div className="flex flex-row items-center size-full">
-          <div className="box-border content-stretch flex items-center justify-between px-[64px] relative size-full max-w-[1440px] mx-auto">
+          <div className="box-border content-stretch flex flex-wrap items-center justify-between gap-x-6 px-8 xl:px-[64px] relative size-full max-w-[1440px] mx-auto">
             {menu.map((item) => {
               const isHovered = hoveredItem === item.id;
 

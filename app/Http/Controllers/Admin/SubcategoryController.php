@@ -91,6 +91,8 @@ class SubcategoryController extends Controller
             Subcategory::where('id', $Id)->update(['order' => $index + 1]);
         }        
 
+        \App\Services\WebContentService::flushCache();
+
         return redirect()->route('subcategories.index')->with('success', 'Se ordeno de manera correcta.');
     }
 }

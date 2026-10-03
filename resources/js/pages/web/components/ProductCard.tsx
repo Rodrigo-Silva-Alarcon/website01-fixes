@@ -69,7 +69,7 @@ export default function ProductCard({ product, index = 0, className = "", compac
     const meta = [brandName, product.subcategory_label || product.category_label].filter(Boolean).join(" · ");
 
     return (
-      <article className={`product-card group relative flex h-full flex-col gap-3.5 rounded-[24px] border border-[#eceef0] bg-white p-2.5 ${className}`}>
+      <article className={`product-card @container group relative flex h-full flex-col gap-3.5 rounded-[24px] border border-[#eceef0] bg-white p-2.5 ${className}`}>
         <svg className="product-card__trace" aria-hidden="true">
           <rect pathLength={100} rx={24} ry={24} />
         </svg>
@@ -112,11 +112,11 @@ export default function ProductCard({ product, index = 0, className = "", compac
           </Link>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-2 px-1.5 pb-1.5">
+        <div className="mt-auto flex flex-col items-stretch gap-2 px-1.5 pb-1.5 @[220px]:flex-row @[220px]:items-center @[220px]:justify-between">
           <div className="flex min-w-0 flex-col">
             {price !== null ? (
               <>
-                <span className="whitespace-nowrap text-[clamp(16px,1.4vw,19px)] font-bold text-[#191c1f]">
+                <span className="whitespace-nowrap text-[16px] font-bold text-[#191c1f] @[220px]:text-[clamp(16px,1.4vw,19px)]">
                   {money} {formatAmount(price)}
                 </span>
                 <span className="min-h-[17px] text-[13px] text-[#8a8f94] line-through">
@@ -135,9 +135,10 @@ export default function ProductCard({ product, index = 0, className = "", compac
             onClick={handleAddToCart}
             disabled={isOutOfStock}
             aria-label={isOutOfStock ? `${product.name} agotado` : `Añadir ${product.name} al carrito`}
-            className="flex size-11 flex-none cursor-pointer items-center justify-center rounded-full bg-[#fa8232] text-white transition-[background-color,transform] duration-200 hover:scale-[1.08] hover:bg-[#f9751d] disabled:cursor-not-allowed disabled:bg-[#e4e7e9] disabled:text-[#77878f] disabled:hover:scale-100"
+            className="flex h-10 w-full flex-none cursor-pointer items-center justify-center gap-2 rounded-full bg-[#fa8232] text-white transition-[background-color,transform] duration-200 @[220px]:size-11 @[220px]:hover:scale-[1.08] hover:bg-[#f9751d] disabled:cursor-not-allowed disabled:bg-[#e4e7e9] disabled:text-[#77878f] disabled:hover:scale-100"
           >
             <ShoppingCart className="size-5" />
+            <span className="text-sm font-semibold @[220px]:hidden">{isOutOfStock ? "Sin stock" : "Añadir"}</span>
           </button>
         </div>
       </article>

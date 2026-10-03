@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\WebContentService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -39,5 +40,20 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('checkout', function (Request $request) {
             return Limit::perMinute(20)->by($request->session()->getId());
         });
+
+        // Lo que se edita en el panel (banners, catálogo, textos) se refleja en la web al instante.
+        $models = [
+            \App\Models\Banner::class,
+            \App\Models\Brand::class,
+            \App\Models\Category::class,
+            \App\Models\Subcategory::class,
+            \App\Models\Product::class,
+            \App\Models\Inventory::class,
+            \App\Models\Text::class,
+        ];
+        foreach ($models as $model) {
+            $model::saved(fn () => WebContentService::flushCache());
+            $model::deleted(fn () => WebContentService::flushCache());
+        }
     }
 }

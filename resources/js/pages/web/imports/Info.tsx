@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCms } from "@/lib/cms";
 import svgPaths from "./svg-hadoz118nb";
 import { img } from "./svg-4o8gu";
 import svgPathsPromo from "./svg-83d4yq5gr8";
@@ -6,9 +7,9 @@ import { img as imgPromo } from "./svg-k80sv";
 import svgPathsSchedule from "./svg-zraidp0zw3";
 import { img as imgSchedule } from "./svg-44yuh";
 
-function TextoDelivery() {
+function TextoDelivery({ label }: { label: string }) {
   return (
-    <div className="info-slide basis-0 content-stretch flex gap-[16px] grow items-center justify-center min-h-px min-w-px relative shrink-0" data-name="Texto">
+    <div className="info-slide basis-0 content-stretch flex gap-2 sm:gap-[16px] grow items-center justify-center min-h-px min-w-0 relative shrink-0" data-name="Texto">
       <div className="relative shrink-0 size-[20px]" data-name="delivery_truck_speed">
         <div className="absolute inset-[20%_5%_17.5%_2.5%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-0.5px_-4px] mask-size-[20px_20px]" data-name="delivery_truck_speed" style={{ maskImage: `url('${img}')` }}>
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19 13">
@@ -16,16 +17,16 @@ function TextoDelivery() {
           </svg>
         </div>
       </div>
-      <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
-        Delivery gratuito
+      <p className="font-dm_sans font-normal leading-[24px] relative min-w-0 truncate text-[14px] sm:text-[16px] text-white" style={{ fontVariationSettings: "'opsz' 14" }}>
+        {label}
       </p>
     </div>
   );
 }
 
-function TextoPromo() {
+function TextoPromo({ label }: { label: string }) {
   return (
-    <div className="info-slide basis-0 content-stretch flex gap-[16px] grow items-center justify-center min-h-px min-w-px relative shrink-0" data-name="Texto">
+    <div className="info-slide basis-0 content-stretch flex gap-2 sm:gap-[16px] grow items-center justify-center min-h-px min-w-0 relative shrink-0" data-name="Texto">
       <div className="relative shrink-0 size-[20px]" data-name="savings">
         <div className="absolute inset-[10%_10%_15%_10%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2px] mask-size-[20px_20px]" data-name="savings" style={{ maskImage: `url('${imgPromo}')` }}>
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 15">
@@ -33,16 +34,16 @@ function TextoPromo() {
           </svg>
         </div>
       </div>
-      <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
-        Promociones y descuentos exclusivos
+      <p className="font-dm_sans font-normal leading-[24px] relative min-w-0 truncate text-[14px] sm:text-[16px] text-white" style={{ fontVariationSettings: "'opsz' 14" }}>
+        {label}
       </p>
     </div>
   );
 }
 
-function TextoSchedule() {
+function TextoSchedule({ label }: { label: string }) {
   return (
-    <div className="info-slide basis-0 content-stretch flex gap-[16px] grow items-center justify-center min-h-px min-w-px relative shrink-0" data-name="Texto">
+    <div className="info-slide basis-0 content-stretch flex gap-2 sm:gap-[16px] grow items-center justify-center min-h-px min-w-0 relative shrink-0" data-name="Texto">
       <div className="relative shrink-0 size-[20px]" data-name="schedule">
         <div className="absolute inset-[10%] mask-alpha mask-intersect mask-no-clip mask-no-repeat mask-position-[-2px] mask-size-[20px_20px]" data-name="schedule" style={{ maskImage: `url('${imgSchedule}')` }}>
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
@@ -50,8 +51,8 @@ function TextoSchedule() {
           </svg>
         </div>
       </div>
-      <p className="font-dm_sans font-normal leading-[24px] relative shrink-0 text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
-        Atención de lunes a sábado
+      <p className="font-dm_sans font-normal leading-[24px] relative min-w-0 truncate text-[14px] sm:text-[16px] text-white" style={{ fontVariationSettings: "'opsz' 14" }}>
+        {label}
       </p>
     </div>
   );
@@ -59,11 +60,13 @@ function TextoSchedule() {
 
 export default function Info() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { text } = useCms();
 
+  // Mensajes editables en Admin › Textos (topbar_1..3); el horario se comparte con el showroom
   const slides = [
-    <TextoDelivery key="delivery" />,
-    <TextoPromo key="promo" />,
-    <TextoSchedule key="schedule" />
+    <TextoDelivery key="delivery" label={text("topbar_1", "Delivery gratuito")} />,
+    <TextoPromo key="promo" label={text("topbar_2", "Promociones y descuentos exclusivos")} />,
+    <TextoSchedule key="schedule" label={text("topbar_3", text("business_hours", "Atención de lunes a sábado"))} />
   ];
 
   useEffect(() => {
@@ -85,7 +88,7 @@ export default function Info() {
     <div className="h-[40px]">
       <div className="bg-[#c2410c] relative size-full" data-name="Info">
         <div className="flex flex-row items-center size-full">
-          <div className="box-border content-stretch flex gap-[80px] items-center px-[32px] py-[8px] relative size-full">
+          <div className="box-border content-stretch flex gap-3 sm:gap-10 md:gap-[80px] items-center px-4 sm:px-[32px] py-[8px] relative size-full">
             <button 
               onClick={handlePrev}
               className="relative shrink-0 size-[20px] cursor-pointer hover:opacity-70 transition-opacity" 
@@ -98,7 +101,7 @@ export default function Info() {
                 </svg>
               </div>
             </button>
-            <div aria-live="polite" className="basis-0 grow flex items-center justify-center min-w-px">
+            <div aria-live="polite" className="basis-0 grow flex items-center justify-center min-w-0 overflow-hidden">
               {slides[currentSlide]}
             </div>
             <button 

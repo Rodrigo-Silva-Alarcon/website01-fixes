@@ -8,6 +8,7 @@ import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { productPrice } from "@/lib/product-enquiry";
 import { formatMoney as fmt, listCents, productHref, useCart } from "@/hooks/use-cart";
 import { useSmoothRail } from "@/hooks/use-smooth-rail";
+import { useCms } from "@/lib/cms";
 
 /** Páginas donde el carrito ya está a la vista y el botón flotante sobra. */
 const HIDE_ON = ["web/CarritoPage", "web/CheckoutPage", "web/CheckoutSuccessPage"];
@@ -182,6 +183,7 @@ function SuggestionsRail({ products, onAdd }: { products: Product[]; onAdd: (p: 
  * El botón "ampliar" del panel lleva a la versión 2 (/carrito).
  */
 export default function CartDrawer() {
+  const { whatsapp } = useCms();
   const { component } = usePage();
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, add } =
     useCart();
@@ -359,7 +361,7 @@ export default function CartDrawer() {
                 <ArrowRight className="size-5" />
               </Link>
               <a
-                href={whatsappCartUrl(live)}
+                href={whatsappCartUrl(live, whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#fa8232] px-[22px] py-[13px] text-[15px] font-semibold text-[#c2410c] transition-colors hover:bg-[#fff4ec]"

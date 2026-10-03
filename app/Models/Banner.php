@@ -117,6 +117,39 @@ class Banner extends Model
         return $categories[$this->subcategory_id] ?? ucfirst((string) $this->subcategory_id);
     }
 
+    /**
+     * Destino del banner según su tipo en el panel:
+     * 1 = página, 2 = producto, 3 = URL externa; cualquier otro valor = sin enlace.
+     */
+    public function getLinkAttribute(): ?string
+    {
+        switch ((string) $this->type) {
+            case '1':
+                return match ((string) $this->page_id) {
+                    '1' => route('home'),
+                    '2' => route('about'),
+                    '3' => route('products', ['offers' => 1]),
+                    '4' => route('contact'),
+                    default => null,
+                };
+            case '2':
+                $product = $this->relationLoaded('product') ? $this->product : $this->product()->where('active', true)->first();
+                if (! $product || ! $product->category) {
+                    return null;
+                }
+
+                return route('product', [
+                    'category' => $product->category->slug,
+                    'subcategory' => $product->subcategory?->slug ?? 'All',
+                    'product' => $product->slug,
+                ]);
+            case '3':
+                return filled($this->url) ? $this->url : null;
+            default:
+                return null;
+        }
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

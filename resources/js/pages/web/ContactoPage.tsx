@@ -3,27 +3,16 @@ import { useForm, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
-
-function formatWhatsapp(raw?: string): string {
-  const digits = (raw ?? "").replace(/\D/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("591") && digits.length >= 11) {
-    const local = digits.slice(3, 11);
-    return `+591 ${local.slice(0, 4)} ${local.slice(4)}`;
-  }
-  if (digits.startsWith("591")) {
-    const local = digits.slice(3);
-    return `+591 ${local}`;
-  }
-  return `+${digits}`;
-}
+import { useCms } from "@/lib/cms";
+import HeroCarousel from "@/pages/web/components/HeroCarousel";
+import { BannerSlide } from "@/types/models";
 
 export default function ContactoPage() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
-  const texts = cmsTexts ?? {};
-  const contactEmail = texts.footer_email || "contacto@smarthouse.com.bo";
-  const contactWhatsapp = formatWhatsapp(texts.footer_whatsapp);
-  const contactAddress = texts.footer_address || "La Paz, Bolivia";
+  const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
+  const { text, whatsappIntl } = useCms();
+  const contactEmail = text("footer_email", "contacto@smarthouse.com.bo");
+  const contactWhatsapp = whatsappIntl;
+  const contactAddress = text("footer_address", "La Paz, Bolivia");
 
   const { data: formData, setData, post, processing, errors, recentlySuccessful } = useForm({
     name: "", email: "", phone: "", company: "", message: ""
@@ -53,6 +42,8 @@ export default function ContactoPage() {
         title="Contáctanos"
         description="¿Tienes dudas o necesitas ayuda? Contáctanos y te responderemos pronto. Estamos aquí para ayudarte."
       />
+      {/* Banners asignados a "Contáctanos" en el panel */}
+      <HeroCarousel banners={banners} fallback={false} />
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}

@@ -1,9 +1,8 @@
 import { Truck, ShieldCheck, CreditCard, Headphones } from "lucide-react";
-import { usePage } from "@inertiajs/react";
+import { useCms } from "@/lib/cms";
 
 export default function FeaturesBar() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
-  const whatsappNum = cmsTexts?.footer_whatsapp || "WhatsApp 682-10861";
+  const { whatsappLocal } = useCms();
 
   const features = [
     {
@@ -24,7 +23,7 @@ export default function FeaturesBar() {
     {
       icon: Headphones,
       title: "Atención personalizada",
-      desc: whatsappNum.startsWith("WhatsApp") ? whatsappNum : `WhatsApp ${whatsappNum}`,
+      desc: `WhatsApp ${whatsappLocal}`,
     },
   ];
 

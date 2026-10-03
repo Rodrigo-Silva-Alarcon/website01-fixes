@@ -6,6 +6,7 @@ import Seo from "@/components/Seo";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import { Cart, CartItem, PagePropsMessage } from "@/types/models";
 import { cartTotals, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
+import { useCms } from "@/lib/cms";
 
 const PAYMENT_OPTIONS = [
   { value: "transfer", label: "Transferencia bancaria" },
@@ -14,6 +15,7 @@ const PAYMENT_OPTIONS = [
 ];
 
 export default function CheckoutPage() {
+  const { whatsapp } = useCms();
   const { cart, flash } = usePage<{ cart: Cart | null; flash: PagePropsMessage["flash"] }>().props;
   const items: CartItem[] = cart?.cart_items ?? [];
   const totals = cartTotals(items);
@@ -63,7 +65,7 @@ export default function CheckoutPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (whatsappOnly) {
-      window.open(whatsappCartUrl(items), "_blank", "noopener,noreferrer");
+      window.open(whatsappCartUrl(items, whatsapp), "_blank", "noopener,noreferrer");
       return;
     }
     post("/checkout", {
@@ -205,7 +207,7 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={() => {
                     setWhatsappOnly(true);
-                    window.open(whatsappCartUrl(items), "_blank", "noopener,noreferrer");
+                    window.open(whatsappCartUrl(items, whatsapp), "_blank", "noopener,noreferrer");
                   }}
                   className="border border-[#fa8232] text-[#fa8232] font-semibold px-6 py-3 rounded-full"
                 >

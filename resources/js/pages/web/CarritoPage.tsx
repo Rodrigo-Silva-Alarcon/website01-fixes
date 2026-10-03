@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { ArrowLeft, ArrowRight, ChevronRight, Lock, MessageCircle, Minus, Plus, ShoppingCart, Store, Trash2, Truck } from "lucide-react";
 import Layout from "@/pages/web/layouts/Layout";
@@ -8,6 +8,7 @@ import ProductCard from "@/pages/web/components/ProductCard";
 import { CartItem } from "@/types/models";
 import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { formatMoney as fmt, listCents, productHref, useCart } from "@/hooks/use-cart";
+import { useCms } from "@/lib/cms";
 
 function Steps() {
   const steps = ["Carrito", "Datos de entrega", "Confirmación"];
@@ -114,11 +115,11 @@ function CartLine({ item, qty, busy, removing, onQty, onRemove }: {
 }
 
 export default function CarritoPage() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
+  const { whatsapp, lines } = useCms();
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove } =
     useCart();
   const upsell = suggestions.slice(0, 4);
-  const address = cmsTexts?.footer_address || "Av. 20 de Octubre esq. Rosendo Gutierrez";
+  const address = lines("showroom_address", ["Av. 20 de Octubre esq. Rosendo Gutierrez"]).slice(0, 2).join(", ");
   const perks = [
     { icon: Truck, t: "Delivery gratuito, entrega en 24 h" },
     { icon: Lock, t: "Pago seguro: transferencia, QR o efectivo" },
@@ -228,7 +229,7 @@ export default function CarritoPage() {
                   <ArrowRight className="size-5" />
                 </Link>
                 <a
-                  href={whatsappCartUrl(live)}
+                  href={whatsappCartUrl(live, whatsapp)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#fa8232] px-[22px] py-[13px] text-[15px] font-semibold text-[#c2410c] transition-colors hover:bg-[#fff4ec]"

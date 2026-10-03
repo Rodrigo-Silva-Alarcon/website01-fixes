@@ -14,6 +14,7 @@ import ProductJsonLd from "@/components/ProductJsonLd";
 import ProductCard from "@/pages/web/components/ProductCard";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import { useSmoothRail } from "@/hooks/use-smooth-rail";
+import { useCms } from "@/lib/cms";
 
 const MAX_QTY = 9;
 
@@ -205,6 +206,7 @@ function Spec({ k, v }: { k: string; v: string }) {
 }
 
 export default function ProductDetailPage({ product }: { product: Product }) {
+  const { whatsapp, whatsappLocal } = useCms();
   const { products: related = [] } = usePage<{ products: Product[] }>().props;
 
   const images = [product.image_url, ...(product.images ?? []).map((i) => i.image_url)].filter(Boolean) as string[];
@@ -232,7 +234,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
     subcategory: product.subcategory_slug || "All",
     product: product.slug,
   });
-  const whatsappUrl = productEnquiryUrl(product, productUrl);
+  const whatsappUrl = productEnquiryUrl(product, productUrl, whatsapp);
 
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
@@ -386,7 +388,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
               className="flex cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-[#191c1f] px-6 py-3.5 text-base font-semibold text-[#191c1f] transition-colors hover:bg-[#191c1f] hover:text-white"
             >
               <MessageCircle className="size-5" />
-              {isOutOfStock ? "Consultar disponibilidad" : "Consultar por WhatsApp"} · 682-10861
+              {isOutOfStock ? "Consultar disponibilidad" : "Consultar por WhatsApp"} · {whatsappLocal}
             </button>
 
             <div className="flex flex-col rounded-[22px] border border-[#eceef0]">

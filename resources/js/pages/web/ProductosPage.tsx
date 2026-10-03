@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import Layout from "@/pages/web/layouts/Layout";
-import { Product, Category, Subcategory, Brand } from "@/types/models";
+import { Product, Category, Subcategory, Brand, BannerSlide } from "@/types/models";
 import { route } from "ziggy-js";
 import { Link, router, usePage } from "@inertiajs/react";
 import Seo from "@/components/Seo";
 import ProductCard from "@/pages/web/components/ProductCard";
+import HeroCarousel from "@/pages/web/components/HeroCarousel";
+import { useCms } from "@/lib/cms";
 import { Check, ChevronDown, ChevronRight, Minus, PackageOpen, SlidersHorizontal, Sparkles, X } from "lucide-react";
 
 type Sort = "rel" | "off" | "asc" | "desc";
@@ -32,6 +34,7 @@ type PageProps = {
   find?: string;
   activeCategory?: Category | null;
   activeSubcategory?: Subcategory | null;
+  banners?: BannerSlide[];
 };
 
 type Filters = { cs: number[]; ss: number[]; ms: number[]; offers: boolean; sort: Sort; find: string };
@@ -258,6 +261,7 @@ function PaginationNav({ products }: { products: Pagination<Product> }) {
 }
 
 function EmptyState({ props, f, onClear }: { props: PageProps; f: Filters; onClear: () => void }) {
+  const { whatsappHref } = useCms();
   const { activeCategory, activeSubcategory } = props;
   let title = "No encontramos productos";
   let description = "Prueba con otra categoría o quita algunos filtros.";
@@ -274,11 +278,11 @@ function EmptyState({ props, f, onClear }: { props: PageProps; f: Filters; onCle
   }
 
   const hasFilters = f.cs.length + f.ss.length + f.ms.length > 0 || f.offers || !!f.find;
-  const whatsappUrl = `https://wa.me/59168210861?text=${encodeURIComponent(
+  const whatsappUrl = whatsappHref(
     `Hola, quisiera consultar sobre la disponibilidad y reingreso de productos${
       activeSubcategory ? ` en la subcategoría ${activeSubcategory.name}` : activeCategory ? ` en ${activeCategory.name}` : ""
     }.`,
-  )}`;
+  );
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-[24px] border border-dashed border-[#dfe2e6] px-6 py-14 text-center">
@@ -306,7 +310,7 @@ function EmptyState({ props, f, onClear }: { props: PageProps; f: Filters; onCle
 
 export default function ProductosPage() {
   const props = usePage<PageProps>().props;
-  const { products, categories: tree = [], brands = [] } = props;
+  const { products, categories: tree = [], brands = [], banners = [] } = props;
 
   const serverFilters = filtersFromProps(props);
   const [f, setF] = useState<Filters>(serverFilters);
@@ -386,6 +390,8 @@ export default function ProductosPage() {
         title={title}
         description="Explora nuestro catálogo de productos de tecnología y electrodomésticos. Encuentra lo que necesitas al mejor precio."
       />
+      {/* Banners asignados a "Ofertas" en el panel (solo llegan con el filtro de ofertas) */}
+      <HeroCarousel banners={banners} fallback={false} />
       <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-[clamp(16px,4.4vw,64px)] pb-[clamp(64px,8vw,96px)] pt-[clamp(20px,3vw,32px)] font-dm_sans text-[#191c1f]">
         <div className="flex flex-col gap-3.5">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-sm text-[#6b7076]">

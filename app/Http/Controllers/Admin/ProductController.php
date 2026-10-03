@@ -117,6 +117,8 @@ class ProductController extends Controller
             Product::where('id', $productId)->update(['order' => $index + 1]);
         }        
 
+        \App\Services\WebContentService::flushCache();
+
         return redirect()->route('products.index')->with('success', 'Se ordeno de manera correcta.');
     }
 

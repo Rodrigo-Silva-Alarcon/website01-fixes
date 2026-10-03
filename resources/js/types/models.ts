@@ -132,6 +132,18 @@ export interface Banner{
     image_url_thumbs: string;
     image_webp_url?: string | null;
 }
+/** Banner ya resuelto por el backend para el carrusel público (WebContentService::banners). */
+export interface BannerSlide{
+    id: number;
+    name: string;
+    summary?: string | null;
+    sw_title: boolean;
+    image_url: string;
+    image_webp_url?: string | null;
+    link?: string | null;
+    external?: boolean;
+}
+
 export interface Image{
     id: number;
     name: string;

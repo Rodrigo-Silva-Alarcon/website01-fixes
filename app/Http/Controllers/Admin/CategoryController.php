@@ -96,6 +96,8 @@ class CategoryController extends Controller
             Category::where('id', $categoryId)->update(['order' => $index + 1]);
         }        
 
+        \App\Services\WebContentService::flushCache();
+
         return redirect()->route('categories.index')->with('success', 'Se ordeno de manera correcta.');
     }
 

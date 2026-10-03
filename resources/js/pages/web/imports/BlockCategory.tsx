@@ -48,14 +48,20 @@ export default function BlockCategory({ promo }: { promo?: ReactNode }) {
               </Link>
             </Reveal>
 
-            {/* Grid de Productos (4 columnas), aparecen escalonados */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {category.products.slice(0, 4).map((product, index) => (
-                <Reveal key={product.id} className="h-full" delay={0.08 * (index + 1)} y={24}>
-                  <ProductCard product={product} index={index} />
-                </Reveal>
-              ))}
-            </div>
+            {/* Misma fila deslizable que "Productos populares": en móvil y tablet se desliza,
+                en escritorio caben las 4 tarjetas. El -mx-2/px-2 deja sitio al borde de hover. */}
+            <Reveal y={24}>
+              <div className="-mx-2 px-2 scroll-px-2 flex gap-4 overflow-x-auto pb-6 pt-2 -mt-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth">
+                {category.products.slice(0, 4).map((product, index) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    index={index}
+                    className="w-[260px] sm:w-[296px] lg:w-[calc((100%-48px)/4)] shrink-0 snap-start"
+                  />
+                ))}
+              </div>
+            </Reveal>
           </section>
 
           {promo && blockIndex === slot && promo}

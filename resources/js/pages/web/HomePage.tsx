@@ -9,9 +9,10 @@ import MarcasLogos from "@/pages/web/components/Marcas";
 import ShowroomSection from "@/pages/web/components/ShowroomSection";
 import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
-import { Product, Category, Brand } from "@/types/models";
+import { Product, Category, Brand, BannerSlide } from "@/types/models";
 
 interface FormProps {
+  banners: BannerSlide[];
   populares: Product[];
   categorias: Category[];
   destacados: Product[];
@@ -20,6 +21,7 @@ interface FormProps {
 }
 
 export default function HomePage({
+  banners,
   populares,
   categorias,
   destacados,
@@ -34,9 +36,9 @@ export default function HomePage({
       />
       <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
 
-      {/* 1. Carrusel principal (cambia cada 15 s, flechas/puntos/arrastre) */}
+      {/* 1. Carrusel principal: banners activos de "Inicio" en el panel (cambia cada 15 s) */}
       <Reveal y={16}>
-        <HeroCarousel />
+        <HeroCarousel banners={banners} />
       </Reveal>
 
       {/* 2. Barra de Beneficios y Garantías */}

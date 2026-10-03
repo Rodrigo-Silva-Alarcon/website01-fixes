@@ -1,3 +1,5 @@
+import { DEFAULT_WHATSAPP, whatsappLink } from '@/lib/cms';
+
 type InventoryPrice = {
     amount: number | string | null;
     offer_amount?: number | string | null;
@@ -30,7 +32,7 @@ export function productEnquiryUrl(product: {
     name: string;
     brand_label?: string | null;
     inventory?: InventoryPrice | null;
-}, productUrl: string): string {
+}, productUrl: string, phone: string = DEFAULT_WHATSAPP): string {
     const price = productPrice(product.inventory);
     const message = [
         'Hola, quisiera más información sobre este producto:',
@@ -39,5 +41,5 @@ export function productEnquiryUrl(product: {
         price !== null ? `Precio: ${product.inventory?.money} ${price.toFixed(2)}` : 'Quisiera consultar el precio y la disponibilidad.',
         `Enlace: ${productUrl}`,
     ].filter(Boolean).join('\n');
-    return `https://wa.me/59168210861?text=${encodeURIComponent(message)}`;
+    return whatsappLink(phone, message);
 }

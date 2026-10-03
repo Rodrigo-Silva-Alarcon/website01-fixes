@@ -3,6 +3,9 @@ import { usePage } from "@inertiajs/react";
 import { CreditCard, Headphones, MessageCircle, Navigation, Package, Trophy, type LucideIcon } from "lucide-react";
 import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
+import { useCms } from "@/lib/cms";
+import HeroCarousel from "@/pages/web/components/HeroCarousel";
+import { BannerSlide } from "@/types/models";
 
 const GALLERY = [
   { src: "/images/about-hero-smarthouse.jpg", webp: null, alt: "Atención en tienda Smart House", ratio: "aspect-[4/5]", speed: 0.6 },
@@ -85,14 +88,13 @@ function useScrollMotion(rootRef: React.RefObject<HTMLDivElement | null>, heroRe
 }
 
 export default function AboutPage() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
-  const texts = cmsTexts ?? {};
-  const address = texts.footer_address || "Av. 20 de Octubre esq. Rosendo Gutierrez, Edif. Guadalquivir #2332";
-  const rawPhone = texts.footer_whatsapp?.replace(/[^\d]/g, "") || "59168210861";
-  const displayPhone = texts.footer_whatsapp || "682-10861";
-  const whatsappHref = `https://wa.me/${rawPhone}`;
+  const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
+  const { text, lines, whatsappLocal, whatsappHref: waHref } = useCms();
+  const address = lines("showroom_address", ["Av. 20 de Octubre", "Esq. Rosendo Gutierrez", "Edif. Guadalquivir #2332"]).join(", ");
+  const displayPhone = whatsappLocal;
+  const whatsappHref = waHref();
   const mapsHref =
-    texts.footer_maps ||
+    text("footer_maps") ||
     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address} La Paz Bolivia`)}`;
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -105,6 +107,8 @@ export default function AboutPage() {
         title="Sobre nosotros"
         description="Conoce SmartHouse: misión, visión y características. Tu tienda de confianza en tecnología y electrodomésticos."
       />
+      {/* Banners asignados a "Nosotros" en el panel */}
+      <HeroCarousel banners={banners} fallback={false} />
       <div ref={rootRef} className="about-page flex flex-col pb-[clamp(64px,8vw,96px)] font-dm_sans text-[#191c1f]">
         {/* Hero con fondo de color animado */}
         <section ref={heroRef} className="about-hero relative overflow-hidden border-b border-[#eceef0]">

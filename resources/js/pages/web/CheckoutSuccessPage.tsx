@@ -3,6 +3,7 @@ import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 import { Order } from "@/types/models";
 import { PagePropsMessage } from "@/types/models";
+import { useCms } from "@/lib/cms";
 
 const PAYMENT_LABELS: Record<string, string> = {
   transfer: "Transferencia bancaria",
@@ -11,6 +12,7 @@ const PAYMENT_LABELS: Record<string, string> = {
 };
 
 export default function CheckoutSuccessPage() {
+  const { whatsapp } = useCms();
   const { order, flash } = usePage<{ order: Order | null; flash: PagePropsMessage["flash"] }>().props;
 
   if (!order) {
@@ -73,7 +75,7 @@ export default function CheckoutSuccessPage() {
 
             <div className="flex flex-wrap gap-3 pt-4">
               <a
-                href={`https://wa.me/59168210861?text=${waText}`}
+                href={`https://wa.me/${whatsapp}?text=${waText}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-[#fa8232] text-white font-semibold px-6 py-3 rounded-full"

@@ -1,22 +1,18 @@
-import { usePage } from "@inertiajs/react";
+import { useCms } from "@/lib/cms";
 import { MapPin, Globe, Clock, MessageCircle, Navigation } from "lucide-react";
 
 export default function ShowroomSection() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
-  const texts = cmsTexts ?? {};
+  const { text, lines, whatsappLocal, whatsappHref } = useCms();
 
-  const address =
-    texts.footer_address ||
-    "Av. 20 de Octubre esq. Rosendo Gutierrez, Edif. Guadalquivir #2332";
-
-  const rawPhone = texts.footer_whatsapp?.replace(/[^\d]/g, "") || "59168210861";
-  const displayPhone = texts.footer_whatsapp || "682-10861";
-  const whatsappHref = `https://wa.me/${rawPhone}`;
+  // Editables en Admin › Textos (cada párrafo de la dirección es una línea)
+  const addressLines = lines("showroom_address", ["Av. 20 de Octubre", "Esq. Rosendo Gutierrez", "Edif. Guadalquivir #2332"]);
+  const website = text("site_url", "www.smarthousebo.com");
+  const hours = text("business_hours", "Atención de lunes a sábado");
 
   const mapsHref =
-    texts.footer_maps ||
+    text("footer_maps") ||
     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      "Av. 20 de Octubre esq. Rosendo Gutierrez, Edif. Guadalquivir #2332 La Paz Bolivia"
+      `${addressLines.join(", ")} La Paz Bolivia`
     )}`;
 
   return (
@@ -44,9 +40,9 @@ export default function ShowroomSection() {
                 <MapPin className="size-5" />
               </div>
               <div className="flex flex-col leading-snug">
-                <span>Av. 20 de Octubre</span>
-                <span>Esq. Rosendo Gutierrez</span>
-                <span>Edif. Guadalquivir #2332</span>
+                {addressLines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
               </div>
             </div>
 
@@ -56,7 +52,7 @@ export default function ShowroomSection() {
                 <Globe className="size-5" />
               </div>
               <span className="text-[#155eef] font-semibold">
-                www.smarthousebo.com
+                {website}
               </span>
             </div>
 
@@ -65,20 +61,20 @@ export default function ShowroomSection() {
               <div className="size-10 shrink-0 rounded-full bg-[#155eef] text-white flex items-center justify-center shadow-sm">
                 <Clock className="size-5" />
               </div>
-              <span>Atención de lunes a sábado</span>
+              <span>{hours}</span>
             </div>
           </div>
 
           {/* Botones de Contacto */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <a
-              href={whatsappHref}
+              href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#fa8232] text-white text-base sm:text-lg font-bold transition-all duration-200 hover:bg-[#f9751d] hover:-translate-y-0.5 shadow-md shadow-orange-500/25 active:translate-y-0"
             >
               <MessageCircle className="size-5" />
-              {displayPhone}
+              {whatsappLocal}
             </a>
 
             <a

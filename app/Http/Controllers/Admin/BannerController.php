@@ -111,6 +111,8 @@ class BannerController extends Controller
             Banner::where('id', $bannerId)->update(['order' => $index + 1]);
         }        
 
+        \App\Services\WebContentService::flushCache();
+
         return redirect()->route('banners.index')->with('success', 'Se ordeno de manera correcta.');
     }
 

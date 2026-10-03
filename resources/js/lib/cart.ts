@@ -1,3 +1,5 @@
+import { DEFAULT_WHATSAPP, whatsappLink } from '@/lib/cms';
+
 type CartLine = { name: string; unit_price: number | string; amount: number; money: string };
 
 export function currencyLabel(money: string): string {
@@ -16,11 +18,11 @@ export function cartTotals(items: CartLine[]): Record<string, number> {
     }, {});
 }
 
-export function whatsappCartUrl(items: CartLine[]): string {
+export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATSAPP): string {
     const lines = items.map(item =>
         `• ${item.name}\n  Cantidad: ${item.amount} × ${currencyLabel(item.money)} ${Number(item.unit_price).toFixed(2)} = ${currencyLabel(item.money)} ${(itemSubtotal(item) / 100).toFixed(2)}`
     );
     const totals = Object.entries(cartTotals(items)).map(([money, cents]) => `TOTAL: ${money} ${(cents / 100).toFixed(2)}`);
     const message = ['Hola, quiero comprar los siguientes productos:', '', ...lines, '', ...totals].join('\n');
-    return `https://wa.me/59168210861?text=${encodeURIComponent(message)}`;
+    return whatsappLink(phone, message);
 }

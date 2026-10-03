@@ -15,6 +15,22 @@ use Illuminate\Support\Collection;
 
 class WebContentService
 {
+    /** Páginas del CMS a las que se puede asignar un banner (TYPE_PAGES del panel). */
+    public const BANNER_PAGES = ['1', '2', '3', '4'];
+
+    /**
+     * Borra la caché pública para que lo que se cambia en el panel se vea al instante.
+     */
+    public static function flushCache(): void
+    {
+        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts'] as $key) {
+            Cache::forget($key);
+        }
+        foreach (self::BANNER_PAGES as $page) {
+            Cache::forget('web_banners_'.$page);
+        }
+    }
+
     public function menu(): array
     {
         return Cache::remember('web_menu', 60, function (): array {
@@ -48,7 +64,8 @@ class WebContentService
     {
         return Cache::remember('web_populares', 60, fn (): Collection => Product::with([
             'inventory', 'category', 'subcategory', 'brand',
-        ])->where('active', true)->where('pop', true)->limit(8)->get());
+        ])->where('active', true)->where('pop', true)
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get());
     }
 
     /**
@@ -73,23 +90,40 @@ class WebContentService
     {
         return Cache::remember('web_destacados', 60, fn (): Collection => Product::with([
             'inventory', 'category', 'subcategory', 'brand',
-        ])->where('active', true)->where('featured', true)->limit(8)->get());
+        ])->where('active', true)->where('featured', true)
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(8)->get());
     }
 
     public function marcas(): Collection
     {
-        return Cache::remember('web_marcas', 60, fn (): Collection => Brand::where('active', true)->limit(10)->get());
+        return Cache::remember('web_marcas', 60, fn (): Collection => Brand::where('active', true)
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(10)->get());
     }
 
     public function banners(string $page): Collection
     {
-        return Cache::remember('web_banners_'.$page, 60, function () use ($page): Collection {
+        $banners = Cache::remember('web_banners_'.$page, 60, function () use ($page): Collection {
             return Banner::scheduled()
+                ->with(['product' => fn ($q) => $q->where('active', true)->with(['category', 'subcategory'])])
                 ->where('pages', 'like', '%"' . $page . '"%')
                 ->orderBy('order', 'ASC')
                 ->orderBy('id', 'DESC')
                 ->get();
         });
+
+        // Solo lo que el carrusel necesita: imagen, textos y a dónde lleva el clic.
+        return $banners->map(fn (Banner $b) => [
+            'id' => $b->id,
+            'name' => $b->name,
+            'summary' => $b->summary,
+            'sw_title' => (bool) $b->sw_title,
+            'image_url' => $b->image_url,
+            'image_webp_url' => $b->image_webp_url,
+            'link' => $b->link,
+            // URL externa (tipo 3 hacia otro dominio): se abre en otra pestaña.
+            'external' => (string) $b->type === '3' && filled($b->url)
+                && ! str_starts_with($b->url, '/') && ! str_starts_with($b->url, rtrim(url('/'), '/')),
+        ])->filter(fn (array $b) => filled($b['image_url']))->values();
     }
 
     public function categoriesHome(): Collection

@@ -96,6 +96,8 @@ class BrandController extends Controller
             Brand::where('id', $brandId)->update(['order' => $index + 1]);
         }        
 
+        \App\Services\WebContentService::flushCache();
+
         return redirect()->route('brands.index')->with('success', 'Se ordeno de manera correcta.');
     }
 
