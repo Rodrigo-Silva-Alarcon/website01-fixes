@@ -93,7 +93,7 @@ function Submenu({ items, id }: { items: MenuItem[]; id:string }) {
                 <Link
                   href={route('subcategory', {category: id, subcategory:item.id})}
                   key={item.id}
-                  className="flex gap-[12px] items-center justify-center w-full hover:opacity-80 transition-opacity"
+                  className="flex gap-[12px] items-center justify-start w-full hover:opacity-80 transition-opacity"
                 >
                   <div
                     className="flex shrink-0 items-center justify-center size-[24px]"

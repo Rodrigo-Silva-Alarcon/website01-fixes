@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Layout from "@/pages/web/layouts/Layout";
 import { Product, Category, Subcategory, Brand, BannerSlide } from "@/types/models";
 import { route } from "ziggy-js";
@@ -7,7 +7,8 @@ import Seo from "@/components/Seo";
 import ProductCard from "@/pages/web/components/ProductCard";
 import HeroCarousel from "@/pages/web/components/HeroCarousel";
 import { useCms } from "@/lib/cms";
-import { Check, ChevronDown, ChevronRight, Minus, PackageOpen, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { ArrowUpDown, Check, ChevronDown, ChevronRight, Loader2, Minus, PackageOpen, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import DraggableSheet from "@/pages/web/components/DraggableSheet";
 
 type Sort = "rel" | "off" | "asc" | "desc";
 
@@ -84,17 +85,34 @@ function Checkbox({ state, small = false }: { state: "on" | "part" | "off"; smal
   );
 }
 
-function FilterPanel({
-  tree, brands, f, expanded, onExpand, apply, narrow,
-}: {
-  tree: TreeCategory[];
-  brands: Brand[];
-  f: Filters;
-  expanded: Record<number, boolean>;
-  onExpand: (id: number) => void;
-  apply: (patch: Partial<Filters>, expandId?: number) => void;
-  narrow: boolean;
-}) {
+type Device = "phone" | "tablet" | "desktop";
+const deviceOf = (w: number): Device => (w < 768 ? "phone" : w < 1024 ? "tablet" : "desktop");
+
+/** Control segmentado de orden (escritorio y tablet). */
+function SortSegments({ sort, onPick }: { sort: Sort; onPick: (s: Sort) => void }) {
+  return (
+    <div className="flex max-w-full gap-0.5 overflow-x-auto rounded-full bg-[#f4f5f6] p-1 [scrollbar-width:none]">
+      {SORTS.map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          aria-pressed={sort === id}
+          onClick={() => onPick(id)}
+          className={`cursor-pointer whitespace-nowrap rounded-full px-3.5 py-[7px] text-sm transition-all duration-200 ${
+            sort === id ? "bg-white text-[#191c1f] shadow-[0_1px_4px_rgba(25,28,31,.12)]" : "text-[#5b6066] hover:text-[#191c1f]"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+type Apply = (patch: Partial<Filters>, expandId?: number) => void;
+
+/** Marcar/desmarcar categorías y subcategorías: compartido por el panel de escritorio y la hoja móvil. */
+function filterActions(f: Filters, apply: Apply) {
   const toggleCategory = (c: TreeCategory) => {
     const on = f.cs.includes(c.id);
     const subIds = c.subcategories.map((s) => s.id);
@@ -113,12 +131,26 @@ function FilterPanel({
     }
   };
 
+  const catState = (c: TreeCategory): "on" | "part" | "off" =>
+    f.cs.includes(c.id) ? "on" : c.subcategories.some((s) => f.ss.includes(s.id)) ? "part" : "off";
+
+  return { toggleCategory, toggleSub, catState };
+}
+
+function FilterPanel({
+  tree, brands, f, expanded, onExpand, apply,
+}: {
+  tree: TreeCategory[];
+  brands: Brand[];
+  f: Filters;
+  expanded: Record<number, boolean>;
+  onExpand: (id: number) => void;
+  apply: Apply;
+}) {
+  const { toggleCategory, toggleSub } = filterActions(f, apply);
+
   return (
-    <aside
-      className={`flex max-w-full flex-col gap-6 rounded-[24px] ${
-        narrow ? "w-full border border-[#eceef0] p-[18px]" : "sticky top-4 max-h-[calc(100vh-32px)] w-[270px] flex-none overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]"
-      }`}
-    >
+    <aside className="sticky top-4 flex max-h-[calc(100vh-32px)] w-[270px] max-w-full flex-none flex-col gap-6 overflow-y-auto overscroll-contain rounded-[24px] pr-1 [scrollbar-width:thin]">
       <div className="flex flex-col gap-1.5">
         <span className="pb-1 text-[13px] font-bold uppercase tracking-[.1em] text-[#6b7076]">Categorías</span>
         {tree.map((c) => {
@@ -236,6 +268,196 @@ function FilterPanel({
   );
 }
 
+const sheetLabel = "text-[13px] font-bold uppercase tracking-[.1em] text-[#6b7076]";
+
+/** Contenido del panel "Filtros" en teléfono y tablet (diseño 1a): objetivos táctiles de 44–48px. */
+function SheetFilters({
+  tree, brands, f, expanded, onExpand, apply, withSort,
+}: {
+  tree: TreeCategory[];
+  brands: Brand[];
+  f: Filters;
+  expanded: Record<number, boolean>;
+  onExpand: (id: number) => void;
+  apply: Apply;
+  withSort: boolean;
+}) {
+  const { toggleCategory, toggleSub, catState } = filterActions(f, apply);
+  const divider = <div className="h-px flex-none bg-[#eceef0]" />;
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-5 pb-5 pt-1">
+      {withSort && (
+        <>
+          <div className="flex flex-col gap-2.5">
+            <span className={sheetLabel}>Ordenar por</span>
+            <div className="grid grid-cols-2 gap-2">
+              {SORTS.map(([id, label]) => {
+                const on = f.sort === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => apply({ sort: id })}
+                    className={`min-h-[46px] cursor-pointer rounded-[14px] border-[1.5px] px-2 text-sm transition-colors duration-200 ${
+                      on ? "border-[#fa8232] bg-[#fff4ec] font-bold text-[#c2410c]" : "border-[#dfe2e6] font-medium text-[#191c1f]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {divider}
+        </>
+      )}
+
+      <div className="flex flex-col gap-1">
+        <span className={`${sheetLabel} pb-1`}>Categorías</span>
+        {tree.map((c) => {
+          const state = catState(c);
+          const open = !!expanded[c.id];
+          const hasSubs = c.subcategories.length > 0;
+          return (
+            <div key={c.id} className="flex flex-col">
+              <div className="flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => toggleCategory(c)}
+                  aria-pressed={state === "on"}
+                  className={`flex min-h-12 flex-1 cursor-pointer items-center gap-3 rounded-[14px] px-3 text-left transition-colors duration-200 ${
+                    state === "on" ? "bg-[#fff4ec]" : "active:bg-[#f6f7f8]"
+                  }`}
+                >
+                  <Checkbox state={state} />
+                  <span className="flex-1 text-base font-medium">{c.name}</span>
+                  <span className="text-[13px] text-[#8a8f94]">{c.products_count}</span>
+                </button>
+                {hasSubs && (
+                  <button
+                    type="button"
+                    onClick={() => onExpand(c.id)}
+                    aria-label={`Subcategorías de ${c.name}`}
+                    aria-expanded={open}
+                    className="flex size-12 flex-none cursor-pointer items-center justify-center rounded-xl text-[#5b6066] active:bg-[#f6f7f8]"
+                  >
+                    <ChevronDown className={`size-5 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+                  </button>
+                )}
+              </div>
+              {hasSubs && (
+                <div
+                  className="grid transition-[grid-template-rows] duration-[350ms] ease-[cubic-bezier(.2,.8,.2,1)]"
+                  style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+                >
+                  <div className="ml-[21px] flex flex-col overflow-hidden border-l-[1.5px] border-[#eceef0] pl-[18px]">
+                    {c.subcategories.map((s) => {
+                      const sOn = state === "on" || f.ss.includes(s.id);
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          tabIndex={open ? 0 : -1}
+                          onClick={() => toggleSub(c, s)}
+                          aria-pressed={sOn}
+                          className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 text-left text-[#3d4247] transition-colors duration-200 ${
+                            sOn ? "bg-[#fff4ec]" : "active:bg-[#f6f7f8]"
+                          }`}
+                        >
+                          <Checkbox state={sOn ? "on" : "off"} small />
+                          <span className="flex-1 text-[15px]">{s.name}</span>
+                          <span className="text-xs text-[#8a8f94]">{s.products_count}</span>
+                        </button>
+                      );
+                    })}
+                    <div className="h-1.5" />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {divider}
+
+      <div className="flex flex-col gap-2.5">
+        <span className={sheetLabel}>Marcas</span>
+        <div className="flex flex-wrap gap-2">
+          {brands.map((b) => {
+            const on = f.ms.includes(b.id);
+            return (
+              <button
+                key={b.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() => apply({ ms: on ? f.ms.filter((x) => x !== b.id) : [...f.ms, b.id] })}
+                className={`min-h-11 cursor-pointer rounded-full border-[1.5px] px-4 text-[15px] transition-colors duration-200 ${
+                  on ? "border-[#fa8232] bg-[#fff4ec] text-[#c2410c]" : "border-[#dfe2e6] bg-white text-[#191c1f]"
+                }`}
+              >
+                {b.name}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {divider}
+
+      <button
+        type="button"
+        role="switch"
+        aria-checked={f.offers}
+        onClick={() => apply({ offers: !f.offers })}
+        className="flex min-h-12 cursor-pointer items-center justify-between text-[#191c1f]"
+      >
+        <span className="flex items-center gap-2 text-base font-semibold">
+          <Sparkles className="size-5 fill-[#fa8232] text-[#fa8232]" />
+          Solo ofertas
+        </span>
+        <span className={`flex h-[30px] w-[50px] rounded-[15px] p-[3px] transition-colors duration-300 ${f.offers ? "bg-[#fa8232]" : "bg-[#d5d9de]"}`}>
+          <span
+            className={`size-6 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,.25)] transition-transform duration-300 ease-[cubic-bezier(.3,1.4,.5,1)] ${
+              f.offers ? "translate-x-5" : "translate-x-0"
+            }`}
+          />
+        </span>
+      </button>
+    </div>
+  );
+}
+
+/** Hoja "Ordenar por" del teléfono: lista con radios. */
+function SortList({ sort, onPick }: { sort: Sort; onPick: (s: Sort) => void }) {
+  return (
+    <div className="flex flex-col px-3 pb-[max(16px,env(safe-area-inset-bottom))] pt-1">
+      {SORTS.map(([id, label]) => {
+        const on = sort === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => onPick(id)}
+            className={`flex min-h-[54px] cursor-pointer items-center justify-between rounded-[14px] px-3 text-left text-base text-[#191c1f] transition-colors duration-200 ${
+              on ? "bg-[#fff4ec] font-bold" : "font-medium active:bg-[#f6f7f8]"
+            }`}
+          >
+            {label}
+            <span className={`flex size-[22px] items-center justify-center rounded-full border-[1.5px] transition-colors ${on ? "border-[#fa8232]" : "border-[#cacccd]"}`}>
+              <span className={`size-[11px] rounded-full transition-[background-color,transform] duration-200 ${on ? "scale-100 bg-[#fa8232]" : "scale-0 bg-transparent"}`} />
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function PaginationNav({ products }: { products: Pagination<Product> }) {
   if (!products?.links || products.links.length <= 3) return null;
   const last = products.links.length - 1;
@@ -315,9 +537,18 @@ export default function ProductosPage() {
   const serverFilters = filtersFromProps(props);
   const [f, setF] = useState<Filters>(serverFilters);
   const [loading, setLoading] = useState(false);
-  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 900);
-  // en escritorio el panel arranca visible; en móvil, oculto
-  const [showFilters, setShowFilters] = useState(() => typeof window === "undefined" || window.innerWidth >= 900);
+  // teléfono (< 768) y tablet (< 1024) usan la hoja de filtros; escritorio, el panel lateral
+  const [device, setDevice] = useState<Device>(() => (typeof window === "undefined" ? "desktop" : deviceOf(window.innerWidth)));
+  const compact = device !== "desktop";
+  const [showFilters, setShowFilters] = useState(true);
+  const [sheet, setSheet] = useState<"all" | "sort" | null>(null);
+  const closeSheet = useCallback(() => setSheet(null), []);
+  // la hoja conserva su contenido mientras se anima su salida (si no, al cerrar "Ordenar" cambiaría a "Filtros")
+  const [sheetKind, setSheetKind] = useState<"all" | "sort">("all");
+  useEffect(() => {
+    if (sheet) setSheetKind(sheet);
+  }, [sheet]);
+  const kind = sheet ?? sheetKind;
   const [expanded, setExpanded] = useState<Record<number, boolean>>(() => {
     const open: Record<number, boolean> = {};
     tree.forEach((c) => {
@@ -331,7 +562,7 @@ export default function ProductosPage() {
   useEffect(() => setF(serverFilters), [serverKey]);
 
   useEffect(() => {
-    const onResize = () => setNarrow(window.innerWidth < 900);
+    const onResize = () => setDevice(deviceOf(window.innerWidth));
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -383,6 +614,9 @@ export default function ProductosPage() {
     : [];
 
   const items = products?.data || [];
+  const nActive = chips.length;
+  const sortLabel = SORTS.find(([id]) => id === f.sort)?.[1] ?? "Relevancia";
+  const toggleExpand = (id: number) => setExpanded((e) => ({ ...e, [id]: !e[id] }));
 
   return (
     <Layout>
@@ -419,32 +653,20 @@ export default function ProductosPage() {
               <h1 className="m-0 text-[clamp(32px,4vw,44px)] font-bold leading-none tracking-[-.035em]">{title}</h1>
               <span className="text-[15px] text-[#6b7076]">{countLabel}</span>
             </div>
-            <div className="flex max-w-full flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setShowFilters((v) => !v)}
-                aria-expanded={showFilters}
-                className="flex cursor-pointer items-center gap-2 rounded-full border border-[#dfe2e6] bg-white px-4 py-2.5 text-sm transition-colors hover:border-[#191c1f]"
-              >
-                <SlidersHorizontal className="size-[18px]" />
-                {showFilters ? "Ocultar filtros" : "Filtros"}
-              </button>
-              <div className="flex max-w-full gap-0.5 overflow-x-auto rounded-full bg-[#f4f5f6] p-1 [scrollbar-width:none]">
-                {SORTS.map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    aria-pressed={f.sort === id}
-                    onClick={() => apply({ sort: id })}
-                    className={`cursor-pointer whitespace-nowrap rounded-full px-3.5 py-[7px] text-sm transition-all duration-200 ${
-                      f.sort === id ? "bg-white text-[#191c1f] shadow-[0_1px_4px_rgba(25,28,31,.12)]" : "text-[#5b6066] hover:text-[#191c1f]"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+            {!compact && (
+              <div className="flex max-w-full flex-wrap items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowFilters((v) => !v)}
+                  aria-expanded={showFilters}
+                  className="flex cursor-pointer items-center gap-2 rounded-full border border-[#dfe2e6] bg-white px-4 py-2.5 text-sm transition-colors hover:border-[#191c1f]"
+                >
+                  <SlidersHorizontal className="size-[18px]" />
+                  {showFilters ? "Ocultar filtros" : "Filtros"}
+                </button>
+                <SortSegments sort={f.sort} onPick={(id) => apply({ sort: id })} />
               </div>
-            </div>
+            )}
           </div>
 
           {pills.length > 0 && (
@@ -465,43 +687,81 @@ export default function ProductosPage() {
           )}
         </div>
 
+        {/* Teléfono y tablet: barra fija con "Filtros" (contador) y ordenar */}
+        {compact && (
+          <div className="sticky top-0 z-[5] -mx-[clamp(16px,4.4vw,64px)] -my-3 flex items-center gap-2.5 border-b border-[#f0f1f3] bg-white px-[clamp(16px,4.4vw,64px)] py-3">
+            <button
+              type="button"
+              onClick={() => setSheet("all")}
+              aria-haspopup="dialog"
+              className={`flex h-[46px] cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-[#191c1f] bg-white px-[18px] text-[15px] font-semibold text-[#191c1f] transition-transform duration-150 active:scale-[.97] ${
+                device === "phone" ? "flex-1" : "flex-none"
+              }`}
+            >
+              <SlidersHorizontal className="size-[18px]" />
+              Filtros
+              {nActive > 0 && (
+                <span className="h-[22px] min-w-[22px] rounded-full bg-[#fa8232] px-1.5 text-center text-xs font-bold leading-[22px] text-white">{nActive}</span>
+              )}
+            </button>
+            {device === "phone" ? (
+              <button
+                type="button"
+                onClick={() => setSheet("sort")}
+                aria-haspopup="dialog"
+                className="flex h-[46px] min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#dfe2e6] bg-white px-4 text-[15px] text-[#191c1f] transition-transform duration-150 active:scale-[.97]"
+              >
+                <ArrowUpDown className="size-[18px] flex-none" />
+                <span className="truncate">{sortLabel}</span>
+              </button>
+            ) : (
+              <div className="ml-auto min-w-0">
+                <SortSegments sort={f.sort} onPick={(id) => apply({ sort: id })} />
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-wrap items-start gap-[clamp(24px,3vw,40px)]">
-          {showFilters && (
+          {!compact && showFilters && (
             <FilterPanel
               tree={tree}
               brands={brands}
               f={f}
               expanded={expanded}
-              onExpand={(id) => setExpanded((e) => ({ ...e, [id]: !e[id] }))}
+              onExpand={toggleExpand}
               apply={apply}
-              narrow={narrow}
             />
           )}
 
           <div className="flex min-w-[min(100%,300px)] flex-1 flex-col gap-[18px]">
             {chips.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className={`flex items-center gap-2 ${compact ? "-mx-[clamp(16px,4.4vw,64px)] overflow-x-auto px-[clamp(16px,4.4vw,64px)] [scrollbar-width:none]" : "flex-wrap"}`}>
                 {chips.map((c) => (
                   <button
                     key={c.key}
                     type="button"
                     onClick={c.remove}
                     aria-label={`Quitar filtro ${c.label}`}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#191c1f] py-1.5 pl-3.5 pr-2 text-sm text-white hover:bg-[#3d4247]"
+                    className={`flex flex-none cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full bg-[#191c1f] pl-3.5 pr-2 text-sm text-white hover:bg-[#3d4247] ${compact ? "h-9" : "py-1.5"}`}
                   >
                     {c.label}
                     <X className="size-4" />
                   </button>
                 ))}
-                <button type="button" onClick={clearAll} className="cursor-pointer px-2 py-1.5 text-sm font-semibold text-[#c2410c] hover:underline">
-                  Limpiar filtros
+                <button type="button" onClick={clearAll} className="flex-none cursor-pointer whitespace-nowrap px-2 py-1.5 text-sm font-semibold text-[#c2410c] hover:underline">
+                  {compact ? "Limpiar" : "Limpiar filtros"}
                 </button>
               </div>
             )}
 
             {items.length > 0 ? (
               <div
-                className={`grid grid-cols-[repeat(auto-fill,minmax(min(100%,150px),1fr))] gap-[clamp(10px,1.2vw,16px)] transition-[opacity,transform] duration-200 sm:grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] ${
+                className={`grid transition-[opacity,transform] duration-200 ${
+                  compact
+                    ? "grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-3"
+                    : "grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] gap-[clamp(10px,1.2vw,16px)]"
+                } ${
                   loading ? "translate-y-2 opacity-40" : ""
                 }`}
                 aria-busy={loading}
@@ -518,6 +778,51 @@ export default function ProductosPage() {
           </div>
         </div>
       </main>
+
+      {compact && (
+        <DraggableSheet
+          open={sheet !== null}
+          onClose={closeSheet}
+          phone={device === "phone"}
+          fit={kind === "sort"}
+          title={kind === "sort" ? "Ordenar por" : "Filtros"}
+          headerActions={
+            kind === "all" && nActive > 0 ? (
+              <button type="button" onClick={clearAll} className="h-11 cursor-pointer px-2.5 text-[15px] font-semibold text-[#c2410c]">
+                Limpiar
+              </button>
+            ) : null
+          }
+          footer={
+            kind === "all" ? (
+              <div className="flex-none border-t border-[#eceef0] px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">
+                <button
+                  type="button"
+                  onClick={closeSheet}
+                  className="flex h-[54px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#fa8232] text-base font-bold text-white transition-[background-color,transform] duration-200 hover:bg-[#f9751d] active:scale-[.98]"
+                >
+                  {loading && <Loader2 className="size-5 animate-spin" />}
+                  {loading ? "Actualizando…" : total ? `Ver ${countLabel}` : "Sin resultados"}
+                </button>
+              </div>
+            ) : null
+          }
+        >
+          {kind === "sort" ? (
+            <SortList sort={f.sort} onPick={(id) => { apply({ sort: id }); closeSheet(); }} />
+          ) : (
+            <SheetFilters
+              tree={tree}
+              brands={brands}
+              f={f}
+              expanded={expanded}
+              onExpand={toggleExpand}
+              apply={apply}
+              withSort={device === "phone"}
+            />
+          )}
+        </DraggableSheet>
+      )}
     </Layout>
   );
 }
