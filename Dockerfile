@@ -32,6 +32,7 @@ COPY --from=assets /app/public/build ./public/build
 COPY deploy/entrypoint.sh /entrypoint.sh
 COPY deploy/nginx.conf /etc/nginx/sites-available/default
 COPY deploy/supervisord.conf /etc/supervisord.conf
+COPY deploy/php-fpm-pool.conf /usr/local/etc/php-fpm.d/www.conf
 RUN rm -rf node_modules \
     && chown -R www-data:www-data storage bootstrap/cache \
     && mkdir -p /persist \
