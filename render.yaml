@@ -17,7 +17,7 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        value: https://website01.onrender.com
+        value: https://website01-a3tc.onrender.com
       - key: APP_LOCALE
         value: es
       - key: APP_FALLBACK_LOCALE

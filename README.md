@@ -1,3 +1,13 @@
+---
+title: Website01 SmartHouse
+emoji: 🏠
+colorFrom: blue
+colorTo: gray
+sdk: docker
+app_port: 10000
+pinned: false
+---
+
 # Website01 — SmartHouse
 
 Tienda/e-commerce con CMS administrativo: catálogo (categorías, subcategorías,

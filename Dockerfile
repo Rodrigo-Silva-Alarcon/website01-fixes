@@ -1,19 +1,18 @@
-FROM composer:2 AS vendor
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install     --no-dev --no-interaction --no-progress --prefer-dist     --no-scripts --ignore-platform-reqs
-
-# Assets: wayfinder (plugin de vite) ejecuta `php artisan wayfinder:generate`,
-# asi que este stage necesita PHP + vendor ademas de node.
+# Stage 1: vendor + assets en un solo stage (limite de 2 stages en SnapDeploy free).
+# wayfinder (plugin de vite) ejecuta `php artisan wayfinder:generate`,
+# asi que necesita PHP + vendor ademas de node.
 FROM php:8.3-cli-bookworm AS assets
+RUN apt-get update && apt-get install -y --no-install-recommends unzip git     && rm -rf /var/lib/apt/lists/*
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 COPY --from=node:20-bookworm-slim /usr/local/bin/node /usr/local/bin/node
 COPY --from=node:20-bookworm-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --no-progress --prefer-dist     --no-scripts --ignore-platform-reqs
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-COPY --from=vendor /app/vendor ./vendor
 # .dockerignore excluye .env*, asi que se usan variables de entorno de build
 ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=     APP_ENV=production CACHE_STORE=array SESSION_DRIVER=array QUEUE_CONNECTION=sync
 RUN npm run build
@@ -27,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /var/www
-COPY --from=vendor /app/vendor ./vendor
+COPY --from=assets /app/vendor ./vendor
 COPY . .
 COPY --from=assets /app/public/build ./public/build
 COPY deploy/entrypoint.sh /entrypoint.sh

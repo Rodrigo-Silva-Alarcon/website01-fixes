@@ -9,3 +9,6 @@ database/*.sqlite-*
 .env.*
 docs
 *.docx
+vendor
+public/build
+public/hot
