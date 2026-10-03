@@ -55,7 +55,7 @@ function Gallery({ images, name, badge }: { images: string[]; name: string; badg
   };
 
   return (
-    <div className="flex flex-col gap-3.5 lg:sticky lg:top-6">
+    <div className="flex flex-col gap-3.5">
       <div
         className="relative aspect-square overflow-hidden rounded-[28px] bg-[#f6f7f8]"
         tabIndex={multi ? 0 : undefined}
@@ -72,8 +72,8 @@ function Gallery({ images, name, badge }: { images: string[]; name: string; badg
             <div
               key={src + i}
               aria-hidden={i !== index}
-              className={`absolute inset-[11%] transition-[opacity,scale] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${
-                i === index ? "scale-100 opacity-100" : "pointer-events-none scale-[.97] opacity-0"
+              className={`absolute inset-[11%] transition-opacity duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${
+                i === index ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
             >
               <ResponsiveImg
