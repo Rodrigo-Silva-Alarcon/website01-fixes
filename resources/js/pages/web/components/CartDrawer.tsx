@@ -253,12 +253,12 @@ export default function CartDrawer() {
         )}
       </button>
 
-      <div className={`fixed inset-0 z-[70] font-dm_sans text-[#191c1f] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
+      <div className={`fixed inset-0 z-[70] font-dm_sans text-[#191c1f] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open} inert={!open}>
         <div
           onClick={close}
           className={`absolute inset-0 bg-[rgba(25,28,31,.4)] transition-opacity duration-[350ms] ${open ? "opacity-100" : "opacity-0"}`}
         />
-        <aside
+        <div
           role="dialog"
           aria-modal="true"
           aria-label="Mi carrito"
@@ -371,7 +371,7 @@ export default function CartDrawer() {
               </a>
             </div>
           )}
-        </aside>
+        </div>
       </div>
     </>
   );

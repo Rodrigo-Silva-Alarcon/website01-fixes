@@ -34,46 +34,44 @@ export default function HomePage({
         title="Inicio"
         description="SmartHouse - Tecnología y electrodomésticos para tu hogar. Encuentra productos de marcas líderes con los mejores precios."
       />
-      <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
+      <main className="flex w-full flex-col">
+        <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
 
-      {/* 1. Carrusel principal: banners activos de "Inicio" en el panel (cambia cada 15 s) */}
-      <Reveal y={16}>
+        {/* 1-3 se pintan sin animación de entrada: están en la primera pantalla
+            (el título de Categorías es el LCP en móvil) y no deben esperar al JS */}
+        {/* 1. Carrusel principal: banners activos de "Inicio" en el panel (cambia cada 15 s) */}
         <HeroCarousel banners={banners} />
-      </Reveal>
 
-      {/* 2. Barra de Beneficios y Garantías */}
-      <Reveal delay={0.15} y={20}>
+        {/* 2. Barra de Beneficios y Garantías */}
         <FeaturesBar />
-      </Reveal>
 
-      {/* 3. Cuadrícula de Categorías */}
-      <Reveal>
+        {/* 3. Cuadrícula de Categorías */}
         <Categorias />
-      </Reveal>
 
-      {/* 4. Carrusel de Productos Populares con Descuento */}
-      <Reveal>
-        <Ofertas />
-      </Reveal>
+        {/* 4. Carrusel de Productos Populares con Descuento */}
+        <Reveal>
+          <Ofertas />
+        </Reveal>
 
-      {/* 5-6. Bloques de Productos por Categoría, con los banners destacados entre Consolas y Equipos de sonido */}
-      <BlockCategory
-        promo={
-          <Reveal>
-            <Destacados />
-          </Reveal>
-        }
-      />
+        {/* 5-6. Bloques de Productos por Categoría, con los banners destacados entre Consolas y Equipos de sonido */}
+        <BlockCategory
+          promo={
+            <Reveal>
+              <Destacados />
+            </Reveal>
+          }
+        />
 
-      {/* 7. Marquee Infinito de Marcas Aliadas */}
-      <Reveal>
-        <MarcasLogos />
-      </Reveal>
+        {/* 7. Marquee Infinito de Marcas Aliadas */}
+        <Reveal>
+          <MarcasLogos />
+        </Reveal>
 
-      {/* 8. Showroom Físico en La Paz con WhatsApp y Mapa */}
-      <Reveal>
-        <ShowroomSection />
-      </Reveal>
+        {/* 8. Showroom Físico en La Paz con WhatsApp y Mapa */}
+        <Reveal>
+          <ShowroomSection />
+        </Reveal>
+      </main>
     </Layout>
   );
 }

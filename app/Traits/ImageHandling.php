@@ -113,7 +113,8 @@ trait ImageHandling
 
                 $thumbWebp = preg_replace('/\.[^.]+$/', '.webp', $thumbPath . $filename);
                 try {
-                    $thumbnail->toWebp(82)->save($thumbWebp);
+                    // La miniatura WebP se reduce a 480px: es la que usan tarjetas y mosaicos en móvil
+                    $thumbnail->scaleDown(width: 480)->toWebp(78)->save($thumbWebp);
                 } catch (\Throwable) {
                     // best-effort
                 }

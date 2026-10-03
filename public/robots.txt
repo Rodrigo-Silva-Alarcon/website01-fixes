@@ -1,6 +1,6 @@
 User-agent: *
 Disallow:
 
-# En produccion, sustituir por la URL real del dominio:
-# Sitemap: https://TU-DOMINIO.com/sitemap.xml
-Sitemap: /sitemap.xml
+# La URL del sitemap debe ser absoluta (Lighthouse/Google rechazan rutas relativas).
+# Si cambias de dominio, actualiza esta línea.
+Sitemap: https://website01-a3tc.onrender.com/sitemap.xml

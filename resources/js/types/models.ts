@@ -47,6 +47,7 @@ export interface Category{
     image_url: string;
     image_thumbs_url:string;
     image_webp_url?: string | null;
+    image_thumbs_webp_url?: string | null;
     summary: string;
     active: boolean;
     created_at: string;
@@ -98,6 +99,7 @@ export interface Product{
     updated_at: string;
     image_url: string; // contiene la direccion de la image
     image_webp_url?: string | null;
+    image_thumbs_webp_url?: string | null;
     tecnical_image_url: string; //. contiene la direccion la imagen de ficha tecnica
     video_file_url:string; //. continene la direccion del video
     images:Image[]; // array de imagenes

@@ -112,6 +112,8 @@ export default function Destacados() {
             className="absolute inset-0 size-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
             src={product.image_url}
             webpSrc={product.image_webp_url}
+            thumbWebpSrc={product.image_thumbs_webp_url}
+            sizes="(max-width: 640px) 60vw, 360px"
           />
         </Link>
       </div>

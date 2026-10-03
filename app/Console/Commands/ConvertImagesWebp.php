@@ -9,8 +9,10 @@ use Intervention\Image\ImageManager;
 
 class ConvertImagesWebp extends Command
 {
-    protected $signature = 'images:webp {--force : Regenerar WebP existentes}';
-    protected $description = 'Generar variantes WebP para imágenes bajo public/data (products, categories, banners, texts)';
+    protected $signature = 'images:webp
+        {--force : Regenerar WebP existentes}
+        {--thumb-width=480 : Ancho máximo de la miniatura WebP (thumbs/*.webp)}';
+    protected $description = 'Generar variantes WebP (completa + miniatura reducida) para imágenes bajo public/data';
 
     public function handle(): int
     {
@@ -22,6 +24,8 @@ class ConvertImagesWebp extends Command
         ];
 
         $manager = new ImageManager(new Driver());
+        $thumbWidth = max(1, (int) $this->option('thumb-width'));
+        $thumbsDir = rtrim(config('variables.thumbs', 'thumbs/'), '/');
         $converted = 0;
         $skipped = 0;
         $failed = 0;
@@ -31,25 +35,42 @@ class ConvertImagesWebp extends Command
                 continue;
             }
 
-            $files = File::allFiles($root);
-            foreach ($files as $file) {
+            // Solo los originales de la carpeta raíz; las miniaturas se derivan de ellos
+            foreach (File::files($root) as $file) {
                 $ext = strtolower($file->getExtension());
-                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif'], true)) {
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
                     continue;
                 }
 
-                $target = preg_replace('/\.[^.]+$/', '.webp', $file->getPathname());
-                if (is_file($target) && !$this->option('force')) {
-                    $skipped++;
-                    continue;
-                }
+                $base = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+                $targets = [
+                    // WebP completo (no se toca si el original ya es WebP)
+                    'full' => $ext === 'webp' ? null : $root . DIRECTORY_SEPARATOR . $base . '.webp',
+                    // Miniatura WebP reducida para tarjetas y mosaicos
+                    'thumb' => $root . DIRECTORY_SEPARATOR . $thumbsDir . DIRECTORY_SEPARATOR . $base . '.webp',
+                ];
 
-                try {
-                    $manager->read($file->getPathname())->toWebp(82)->save($target);
-                    $converted++;
-                } catch (\Throwable $e) {
-                    $failed++;
-                    $this->warn("Falló {$file->getPathname()}: {$e->getMessage()}");
+                foreach ($targets as $kind => $target) {
+                    if ($target === null) {
+                        continue;
+                    }
+                    if (is_file($target) && !$this->option('force')) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    try {
+                        File::ensureDirectoryExists(dirname($target));
+                        $image = $manager->read($file->getPathname());
+                        if ($kind === 'thumb') {
+                            $image->scaleDown(width: $thumbWidth);
+                        }
+                        $image->toWebp($kind === 'thumb' ? 78 : 80)->save($target);
+                        $converted++;
+                    } catch (\Throwable $e) {
+                        $failed++;
+                        $this->warn("Falló {$file->getPathname()} ({$kind}): {$e->getMessage()}");
+                    }
                 }
             }
         }

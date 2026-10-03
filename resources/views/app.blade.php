@@ -36,14 +36,16 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
         {{-- Fuentes no bloqueantes: se cargan en paralelo con el renderizado --}}
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" media="print" onload="this.media='all'" />
-        <noscript><link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" /></noscript>
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+        <noscript><link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" /></noscript>
 
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
         <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
 
-        {{-- TinyMCE Local Override para deshabilitar cloud (defer: no bloquea el render) --}}
-        <script src="/tinymce/tinymce-local-override.js" defer></script>
+        {{-- TinyMCE Local Override: solo el panel admin usa el editor; la tienda no lo descarga --}}
+        @if (str_starts_with($page['component'] ?? '', 'admin/'))
+            <script src="/tinymce/tinymce-local-override.js" defer></script>
+        @endif
 
         @viteReactRefresh
         @routes

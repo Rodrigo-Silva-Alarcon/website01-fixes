@@ -35,7 +35,10 @@ export default defineConfig({
                         if (id.includes('tinymce') || id.includes('@tinymce')) return 'vendor-tinymce';
                         if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) return 'vendor-charts';
                         if (id.includes('framer-motion') || id.includes('aos')) return 'vendor-motion';
-                        return 'vendor';
+                        // Núcleo común a todas las páginas en un chunk estable (bien cacheable)
+                        if (/[\\/]node_modules[\\/](react|react-dom|scheduler|@inertiajs)[\\/]/.test(id)) return 'vendor-react';
+                        // El resto (Radix, dnd-kit, zod, react-hook-form...) lo reparte Rollup según
+                        // qué páginas lo importan: la tienda no descarga librerías que solo usa el panel admin
                     }
                 },
             },

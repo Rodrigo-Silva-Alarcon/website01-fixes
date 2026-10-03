@@ -127,6 +127,8 @@ function CategoryTile({ slot, offset, hidden }: { slot: Slot; offset: number; hi
             className={`category-tile__img relative size-full object-contain p-[16%] ${solid ? "" : "mix-blend-multiply"}`}
             src={category.image_url || category.image_thumbs_url}
             webpSrc={category.image_webp_url}
+            thumbWebpSrc={category.image_thumbs_webp_url}
+            sizes="(max-width: 1024px) 40vw, 200px"
           />
         )}
       </div>

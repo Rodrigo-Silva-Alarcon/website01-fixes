@@ -85,6 +85,8 @@ export default function ProductCard({ product, index = 0, className = "", compac
               className="product-card__img absolute inset-[12%] size-[76%] object-contain mix-blend-multiply"
               src={product.image_url}
               webpSrc={product.image_webp_url}
+              thumbWebpSrc={product.image_thumbs_webp_url}
+              sizes="(max-width: 640px) 50vw, 300px"
             />
           ) : (
             <span className="flex flex-col items-center gap-1.5 text-[#b4b9bf]">
@@ -167,6 +169,8 @@ export default function ProductCard({ product, index = 0, className = "", compac
           className="product-card__img absolute inset-0 size-full object-contain p-4 mix-blend-multiply"
           src={product.image_url}
           webpSrc={product.image_webp_url}
+          thumbWebpSrc={product.image_thumbs_webp_url}
+          sizes="(max-width: 640px) 50vw, 300px"
         />
         <span className="product-card__shine" aria-hidden="true" />
 

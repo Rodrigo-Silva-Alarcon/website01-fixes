@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 interface RevealProps {
   children: ReactNode;
@@ -11,30 +10,54 @@ interface RevealProps {
 }
 
 // Curva "ease-out-expo" suave: arranca rápido y frena sin rebote
-const EASE = [0.16, 1, 0.3, 1] as const;
+const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 /**
  * Hace aparecer su contenido (fundido + leve subida) cuando entra en pantalla
  * al hacer scroll. Se anima una sola vez y respeta "reducir movimiento".
+ * Usa IntersectionObserver + transición CSS (solo opacity/transform, compuestas
+ * en GPU) para no cargar framer-motion en la tienda.
  */
 export default function Reveal({ children, className, delay = 0, y = 32 }: RevealProps) {
-  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
 
-  if (reduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (
+      typeof IntersectionObserver === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -80px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y, filter: "blur(3px)" }}
-      // Al terminar se quita el filtro para no crear un contexto de apilamiento
-      // que afecte a modales o elementos "fixed" dentro de la sección
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
-      viewport={{ once: true, amount: 0, margin: "0px 0px -80px 0px" }}
-      transition={{ duration: 0.9, ease: EASE, delay }}
+    <div
+      ref={ref}
+      className={`motion-reduce:!transform-none motion-reduce:!opacity-100 ${className ?? ""}`}
+      style={{
+        opacity: shown ? 1 : 0,
+        // Al terminar queda en "none" para no crear un contexto de apilamiento
+        // que afecte a modales o elementos "fixed" dentro de la sección
+        transform: shown ? "none" : `translateY(${y}px)`,
+        transition: `opacity 0.9s ${EASE} ${delay}s, transform 0.9s ${EASE} ${delay}s`,
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
