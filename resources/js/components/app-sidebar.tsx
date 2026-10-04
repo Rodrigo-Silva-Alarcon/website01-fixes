@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLogoIcon from '@/components/app-logo-icon';
@@ -27,6 +27,12 @@ export function AppSidebar() {
             href: route('banners.index'),
             icon: Images,
             permission: 'view_banners',
+        },
+        {
+            title: 'Nosotros',
+            href: route('admin.about.index'),
+            icon: Info,
+            permission: 'view_about',
         },
         {
             title: 'Marcas',
@@ -115,7 +121,7 @@ export function AppSidebar() {
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={route('admin.dashboard')} prefetch>
                                 {state === 'collapsed' ? (
-                                    <AppLogoIcon variant="icon" className="size-4!" />
+                                    <AppLogoIcon variant="icon" className="size-6!" />
                                 ) : (
                                     <AppLogoIcon className="h-8! w-auto! max-w-full shrink-0" />
                                 )}

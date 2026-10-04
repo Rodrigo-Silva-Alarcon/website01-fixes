@@ -18,7 +18,9 @@ return [
     'folder_product' => 'data/products/',   
     'folder_category' => 'data/categories/',   
     'folder_image' => 'data/images/',
-    'folder_video' => 'data/videos/',    
+    'folder_video' => 'data/videos/',
+    // Fotos de la galería de "Nosotros" subidas desde el panel
+    'folder_about' => 'data/about/',
 
     'permission_sectors' => [
         'general' => 'General',
@@ -31,6 +33,7 @@ return [
         'subcategories' => 'Subcategorías',
         'brands' => 'Marcas',
         'banners' => 'Banners',
+        'about' => 'Nosotros',
         'inventories' => 'Inventarios',
         'carts' => 'Carritos',
         'configuracion' => 'Configuración',

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\InventoryController;
@@ -106,6 +107,17 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         Route::put('/banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
         Route::patch('/banners/{banner}/toggle-publish', [BannerController::class, 'togglePublish'])->name('banners.toggle-publish');
         Route::resource('/banners', BannerController::class)->names('banners');
+    });
+    // Nosotros: textos, galería e historial de cambios
+    Route::middleware('permission:view_about')->group(function () {
+        Route::get('/about', [AboutController::class, 'index'])->name('admin.about.index');
+        Route::middleware('permission:edit_about')->group(function () {
+            Route::put('/about/texts', [AboutController::class, 'updateTexts'])->name('admin.about.texts');
+            Route::post('/about/gallery', [AboutController::class, 'saveGallery'])->name('admin.about.gallery');
+            Route::put('/about/images/reorder', [AboutController::class, 'reorder'])->name('admin.about.images.reorder');
+            Route::post('/about/images/{image}', [AboutController::class, 'replaceImage'])->name('admin.about.images.replace');
+            Route::patch('/about/images/{image}', [AboutController::class, 'updateImage'])->name('admin.about.images.update');
+        });
     });
     // Marcas
     Route::middleware('permission:view_brands')->group(function () {

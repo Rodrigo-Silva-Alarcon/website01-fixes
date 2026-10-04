@@ -6,30 +6,10 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 export default function MarcasLogos() {
   const { brands } = usePage<{ brands?: Brand[] }>().props;
 
-  // Fallback de marcas si el backend no tiene o vienen vacías
-  const defaultBrandNames = [
-    "PHILIPS",
-    "SAMSUNG",
-    "LG",
-    "SONY",
-    "APPLE",
-    "XIAOMI",
-    "TCL",
-    "XBOX",
-  ];
+  // Solo marcas activas; si no hay ninguna, la sección no se muestra
+  const brandList = (brands ?? []).filter((brand) => brand.active);
 
-  const brandList =
-    brands && brands.length > 0
-      ? brands
-      : defaultBrandNames.map((name, i) => ({
-          id: i + 1,
-          name,
-          slug: name.toLowerCase(),
-          image_url: "",
-          image_webp_url: null,
-          active: true,
-          products: [],
-        }));
+  if (brandList.length === 0) return null;
 
   // Duplicar para efecto continuo infinito en el marquee (la animación avanza -50%)
   const marqueeItems = [...brandList, ...brandList];

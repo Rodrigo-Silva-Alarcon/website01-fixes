@@ -57,3 +57,30 @@ it('shows panel banners on the homepage and reflects toggles immediately', funct
         ->assertOk()
         ->assertInertia(fn ($page) => $page->has('banners', 0));
 });
+
+it('requires at least one page when saving a banner from the panel', function () {
+    seedRbac();
+    $admin = \App\Models\User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->actingAs($admin)
+        ->post(route('banners.store'), ['name' => 'sin página', 'active' => '1'])
+        ->assertSessionHasErrors('pages');
+
+    expect(Banner::where('name', 'sin página')->exists())->toBeFalse();
+});
+
+it('saves unchecking pages on edit instead of keeping the old ones', function () {
+    seedRbac();
+    $admin = \App\Models\User::factory()->create();
+    $admin->assignRole('admin');
+    $banner = makeBanner(['image' => 'a.jpg', 'pages' => ['1', '2']]);
+
+    $this->actingAs($admin)
+        ->put(route('banners.update', $banner), ['name' => 'Banner test', 'pages' => ['2'], 'active' => '1'])
+        ->assertRedirect(route('banners.index'));
+
+    expect($banner->fresh()->pages)->toBe(['2']);
+
+    $this->get('/')->assertInertia(fn ($page) => $page->has('banners', 0));
+});

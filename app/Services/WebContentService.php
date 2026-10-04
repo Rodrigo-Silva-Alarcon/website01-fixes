@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\AboutImage;
+use App\Models\AboutPage;
 use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
@@ -42,7 +44,7 @@ class WebContentService
      */
     public static function flushCache(): void
     {
-        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts'] as $key) {
+        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about'] as $key) {
             Cache::forget($key);
         }
         foreach (self::BANNER_PAGES as $page) {
@@ -301,6 +303,33 @@ class WebContentService
                 ->filter(fn (Text $t) => filled($t->content))
                 ->mapWithKeys(fn (Text $t) => [$t->name => (string) $t->content])
                 ->all();
+        });
+    }
+
+    /**
+     * Contenido de "Nosotros" editable desde Admin › Nosotros: textos + galería ordenada.
+     * Las URLs llevan ?v= con la fecha de edición para que el navegador no muestre una foto vieja.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function aboutContent(): ?array
+    {
+        return Cache::remember('web_about', 3600, function (): ?array {
+            $page = AboutPage::first();
+            if (! $page) {
+                return null;
+            }
+
+            return [
+                'title' => $page->title,
+                'title_highlight' => $page->title_highlight,
+                'intro' => $page->intro,
+                'mission_title' => $page->mission_title,
+                'mission' => $page->mission,
+                'vision_title' => $page->vision_title,
+                'vision' => $page->vision,
+                'gallery' => AboutImage::orderBy('position')->get()->map(fn (AboutImage $image) => $image->toPublicArray())->all(),
+            ];
         });
     }
 }

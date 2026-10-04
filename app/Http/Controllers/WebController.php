@@ -29,6 +29,7 @@ class WebController extends Controller{
     public function about(){        
         return Inertia::render('web/AboutPage', [
             'banners' => $this->get_banners('2'),
+            'about' => $this->webContent()->aboutContent(),
         ]);
     }
 

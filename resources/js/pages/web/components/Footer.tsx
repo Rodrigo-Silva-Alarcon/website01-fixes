@@ -23,6 +23,8 @@ export default function Footer() {
             {/* Logo */}
             <div className="bg-white border border-[#eceef0] rounded-[12px] px-[14px] py-[10px] shrink-0" data-name="Logo">
               <img
+                loading="lazy"
+                decoding="async"
                 src="/images/logo-smarthouse.png"
                 alt="Smart House Importaciones SRL"
                 className="block h-[56px] md:h-[72px] w-auto object-contain"

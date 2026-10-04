@@ -188,8 +188,11 @@ export default function ContactoPage() {
 
       <main className="flex flex-1 flex-col pb-[clamp(64px,8vw,96px)] font-dm_sans text-[#191c1f]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-[#eceef0]">
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <section className="relative overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_0%,#000_45%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_45%,transparent_100%)]"
+          >
             <span className={`${orb} -top-[30%] left-[5%] w-[50vw] max-w-[640px] bg-[rgba(250,130,50,.26)]`} />
             <span className={`${orb} -top-[10%] right-0 w-[46vw] max-w-[600px] bg-[rgba(194,65,12,.16)]`} />
           </div>

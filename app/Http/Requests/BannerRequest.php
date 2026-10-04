@@ -15,6 +15,19 @@ class BannerRequest extends FormRequest
     }
 
     /**
+     * FormData no envía arrays vacíos: si se desmarcan todas las páginas el campo
+     * no llega y se quedarían las anteriores. Se normaliza para que el guardado sea real.
+     */
+    protected function prepareForValidation(): void
+    {
+        $pages = $this->input('pages', []);
+
+        $this->merge([
+            'pages' => array_values(array_unique(array_map('strval', array_filter((array) $pages, 'filled')))),
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -30,7 +43,8 @@ class BannerRequest extends FormRequest
             'product_id' => 'nullable|integer|exists:products,id',
             'page_id' => 'nullable|integer',
             'summary' => 'nullable|string',
-            'pages' => 'nullable',
+            'pages' => 'required|array|min:1',
+            'pages.*' => 'in:'.implode(',', \App\Services\WebContentService::BANNER_PAGES),
             'active' => 'nullable|string|max:2',
             'sw_title' => 'nullable|string|max:2',
             'start_date' => 'nullable|date',
@@ -52,7 +66,9 @@ class BannerRequest extends FormRequest
             'page_id' => 'pagina',
             'summary' => 'resumen',
             'active' => 'publico',
-            'pages' => 'paginas',
+            'pages.required' => 'Selecciona al menos una página donde se mostrará el banner.',
+            'pages.min' => 'Selecciona al menos una página donde se mostrará el banner.',
+            'pages.*.in' => 'Página no válida.',
             'start_date.date' => 'La fecha de inicio debe ser válida.',
             'end_date.date' => 'La fecha de fin debe ser válida.',
             'end_date.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la de inicio.',

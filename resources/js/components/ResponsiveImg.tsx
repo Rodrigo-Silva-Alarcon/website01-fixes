@@ -10,7 +10,7 @@ type Props = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
     thumbWebpSrc?: string | null;
 };
 
-export default function ResponsiveImg({ src, webpSrc, thumbWebpSrc, sizes, ...rest }: Props) {
+export default function ResponsiveImg({ src, webpSrc, thumbWebpSrc, sizes, loading = 'lazy', decoding = 'async', ...rest }: Props) {
     const [failed, setFailed] = useState(false);
     const resolved = !src || failed ? PLACEHOLDER : src;
     const handleError = () => {
@@ -27,10 +27,10 @@ export default function ResponsiveImg({ src, webpSrc, thumbWebpSrc, sizes, ...re
         return (
             <picture>
                 <source srcSet={webpSet} sizes={thumbWebpSrc && webpSrc ? sizes : undefined} type="image/webp" />
-                <img src={resolved} onError={handleError} sizes={sizes} {...rest} />
+                <img src={resolved} onError={handleError} sizes={sizes} loading={loading} decoding={decoding} {...rest} />
             </picture>
         );
     }
 
-    return <img src={resolved} onError={handleError} sizes={sizes} {...rest} />;
+    return <img src={resolved} onError={handleError} sizes={sizes} loading={loading} decoding={decoding} {...rest} />;
 }

@@ -7,12 +7,41 @@ import { useCms } from "@/lib/cms";
 import HeroCarousel from "@/pages/web/components/HeroCarousel";
 import { BannerSlide } from "@/types/models";
 
-const GALLERY = [
-  { src: "/images/about-hero-smarthouse.jpg", webp: null, alt: "Atención en tienda Smart House", ratio: "aspect-[4/5]", speed: 0.6 },
-  { src: "/images/about/store-sony.jpg", webp: "/images/about/store-sony.webp", alt: "Showroom Sony", ratio: "aspect-[3/5]", speed: 1 },
-  { src: "/images/about/store-samsung.jpg", webp: "/images/about/store-samsung.webp", alt: "Showroom Samsung", ratio: "aspect-[3/5]", speed: 1.3 },
-  { src: "/images/about/store-lg.jpg", webp: "/images/about/store-lg.webp", alt: "Showroom LG", ratio: "aspect-[4/5]", speed: 0.8 },
+/** Contenido editable desde Admin › Nosotros (null antes de migrar: se usan los valores por defecto). */
+type AboutGalleryImage = { position: number; webp: string; src: string; alt: string; focus: string };
+type AboutContent = {
+  title: string;
+  title_highlight: string | null;
+  intro: string;
+  mission_title: string;
+  mission: string;
+  vision_title: string;
+  vision: string;
+  gallery: AboutGalleryImage[];
+};
+
+/** Formato y velocidad de parallax por posición: 1 y 4 anchas, 2 y 3 angostas. */
+const SLOTS = [
+  { ratio: "aspect-[4/5]", speed: 0.6 },
+  { ratio: "aspect-[3/5]", speed: 1 },
+  { ratio: "aspect-[3/5]", speed: 1.3 },
+  { ratio: "aspect-[4/5]", speed: 0.8 },
 ];
+
+const DEFAULT_ABOUT: AboutContent = {
+  title: "Sobre Smart House",
+  title_highlight: "Bolivia",
+  intro:
+    "Smart House es una empresa boliviana especializada en la venta de electrodomésticos, muebles y tecnología para el hogar. Ofrecemos una amplia gama de productos de marcas reconocidas, con atención personalizada y precios competitivos en todo el país. Nuestro compromiso es brindar soluciones prácticas y de calidad para que cada hogar cuente con lo mejor.",
+  mission_title: "Misión",
+  mission:
+    "Ofrecer a nuestros clientes productos de calidad para el hogar, con atención cercana, precios justos y entrega confiable en toda Bolivia, construyendo relaciones de largo plazo basadas en la confianza y el servicio.",
+  vision_title: "Visión",
+  vision:
+    "Ser la tienda de referencia en Bolivia para electrodomésticos, muebles y tecnología, reconocida por la calidad de su catálogo, la innovación de sus servicios y la satisfacción de sus clientes.",
+  gallery: [],
+};
+
 
 const FEATURES: { icon: LucideIcon; t: string; d: string }[] = [
   { icon: Package, t: "Entrega más rápida", d: "Entrega en 24/H" },
@@ -88,7 +117,8 @@ function useScrollMotion(rootRef: React.RefObject<HTMLDivElement | null>, heroRe
 }
 
 export default function AboutPage() {
-  const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
+  const { banners = [], about: aboutProp } = usePage<{ banners?: BannerSlide[]; about?: AboutContent | null }>().props;
+  const about = aboutProp ?? DEFAULT_ABOUT;
   const { text, lines, whatsappLocal, whatsappHref: waHref } = useCms();
   const address = lines("showroom_address", ["Av. 20 de Octubre", "Esq. Rosendo Gutierrez", "Edif. Guadalquivir #2332"]).join(", ");
   const displayPhone = whatsappLocal;
@@ -111,8 +141,11 @@ export default function AboutPage() {
       <HeroCarousel banners={banners} fallback={false} />
       <div ref={rootRef} className="about-page flex flex-col pb-[clamp(64px,8vw,96px)] font-dm_sans text-[#191c1f]">
         {/* Hero con fondo de color animado */}
-        <section ref={heroRef} className="about-hero relative overflow-hidden border-b border-[#eceef0]">
-          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <section ref={heroRef} className="about-hero relative overflow-hidden">
+          <div
+            className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_0%,#000_40%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_40%,transparent_100%)]"
+            aria-hidden="true"
+          >
             <span className="about-blob about-blob--orange" />
             <span className="about-blob about-blob--blue" />
             <span className="about-blob about-blob--peach" />
@@ -124,33 +157,32 @@ export default function AboutPage() {
               className="about-rise m-0 max-w-[900px] text-[clamp(40px,6vw,84px)] font-bold leading-[.98] tracking-[-.04em] [text-wrap:balance]"
               style={{ animationDelay: "80ms" }}
             >
-              Sobre Smart House <span className="text-[#fa8232]">Bolivia</span>
+              {about.title}
+              {about.title_highlight && <> <span className="text-[#fa8232]">{about.title_highlight}</span></>}
             </h1>
             <p
               className="about-rise m-0 max-w-[760px] text-[clamp(16px,1.3vw,19px)] leading-[1.65] text-[#3d4247] [text-wrap:pretty]"
               style={{ animationDelay: "160ms" }}
             >
-              Smart House es una empresa boliviana especializada en la venta de electrodomésticos, muebles y tecnología para el
-              hogar. Ofrecemos una amplia gama de productos de marcas reconocidas, con atención personalizada y precios
-              competitivos en todo el país. Nuestro compromiso es brindar soluciones prácticas y de calidad para que cada hogar
-              cuente con lo mejor.
+              {about.intro}
             </p>
           </div>
 
           <div className="relative mx-auto grid max-w-[1440px] grid-cols-2 items-end gap-[clamp(8px,1vw,14px)] px-[clamp(16px,4.4vw,64px)] pb-[clamp(40px,5vw,64px)] md:grid-cols-[1.25fr_1fr_1fr_1.25fr]">
-            {GALLERY.map((g, i) => (
+            {about.gallery.map((g, i) => (
               <div
-                key={g.src}
+                key={g.position}
                 className="about-rise about-parallax overflow-hidden rounded-[24px]"
-                style={{ animationDelay: `${200 + i * 80}ms`, ["--speed" as string]: g.speed }}
+                style={{ animationDelay: `${200 + i * 80}ms`, ["--speed" as string]: SLOTS[i % SLOTS.length].speed }}
               >
                 <picture>
-                  {g.webp && <source srcSet={g.webp} type="image/webp" />}
+                  <source srcSet={g.webp} type="image/webp" />
                   <img
                     src={g.src}
                     alt={g.alt}
-                    loading={i < 2 ? "eager" : "lazy"}
-                    className={`about-zoom block w-full object-cover ${g.ratio} ${i === 3 ? "object-[50%_30%]" : ""}`}
+                    loading="eager"
+                    className={`about-zoom block w-full object-cover ${SLOTS[i % SLOTS.length].ratio}`}
+                    style={{ objectPosition: g.focus }}
                   />
                 </picture>
               </div>
@@ -159,32 +191,30 @@ export default function AboutPage() {
         </section>
 
         {/* Misión y visión */}
-        <section className="mx-auto grid w-full max-w-[1440px] grid-cols-1 px-[clamp(16px,4.4vw,64px)] pt-[clamp(48px,7vw,88px)] md:grid-cols-2">
-          <div className="about-reveal flex flex-col gap-[18px] rounded-t-[28px] bg-[#fff4ec] p-[clamp(28px,4vw,56px)] md:rounded-l-[28px] md:rounded-tr-none">
+        <section className="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-4 px-[clamp(16px,4.4vw,64px)] pt-[clamp(48px,7vw,88px)] md:grid-cols-2 md:gap-6">
+          <div className="about-reveal flex flex-col gap-[18px] rounded-[28px] bg-[#fff4ec] p-[clamp(28px,4vw,56px)]">
             <div className="flex items-center gap-3.5">
               <span className="flex size-[52px] items-center justify-center rounded-full bg-[#fa8232] text-white">
                 <Package className="size-6" />
               </span>
-              <h2 className="m-0 text-[clamp(30px,3vw,40px)] font-bold tracking-[-.03em]">Misión</h2>
+              <h2 className="m-0 text-[clamp(30px,3vw,40px)] font-bold tracking-[-.03em]">{about.mission_title}</h2>
             </div>
             <p className="m-0 text-base leading-[1.7] text-[#3d4247] [text-wrap:pretty]">
-              Ofrecer a nuestros clientes productos de calidad para el hogar, con atención cercana, precios justos y entrega
-              confiable en toda Bolivia, construyendo relaciones de largo plazo basadas en la confianza y el servicio.
+              {about.mission}
             </p>
           </div>
           <div
-            className="about-reveal flex flex-col gap-[18px] rounded-b-[28px] bg-[#eef3ff] p-[clamp(28px,4vw,56px)] md:rounded-r-[28px] md:rounded-bl-none"
+            className="about-reveal flex flex-col gap-[18px] rounded-[28px] bg-[#eef3ff] p-[clamp(28px,4vw,56px)]"
             style={{ ["--d" as string]: "120ms" }}
           >
             <div className="flex items-center gap-3.5">
               <span className="flex size-[52px] items-center justify-center rounded-full bg-[#155eef] text-white">
                 <Trophy className="size-6" />
               </span>
-              <h2 className="m-0 text-[clamp(30px,3vw,40px)] font-bold tracking-[-.03em]">Visión</h2>
+              <h2 className="m-0 text-[clamp(30px,3vw,40px)] font-bold tracking-[-.03em]">{about.vision_title}</h2>
             </div>
             <p className="m-0 text-base leading-[1.7] text-[#3d4247] [text-wrap:pretty]">
-              Ser la tienda de referencia en Bolivia para electrodomésticos, muebles y tecnología, reconocida por la calidad de su
-              catálogo, la innovación de sus servicios y la satisfacción de sus clientes.
+              {about.vision}
             </p>
           </div>
         </section>

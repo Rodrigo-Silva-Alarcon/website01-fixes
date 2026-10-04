@@ -5,6 +5,62 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 import { ArrowRight } from "lucide-react";
 import type { CSSProperties } from "react";
 
+const ILLUSTRATIONS: Record<string, (color: string) => React.ReactElement> = {
+  "Dispositivos-portatiles": (color) => (
+    <svg
+      viewBox="0 0 100 90"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke={color}
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="relative size-full p-[10%]"
+      aria-hidden="true"
+    >
+      {/* Laptop — pantalla + base */}
+      <rect x="4" y="47" width="54" height="34" rx="2.5" fill={color} fillOpacity="0.07" />
+      <rect x="4" y="47" width="54" height="34" rx="2.5" />
+      <path d="M0 81h62" />
+      {/* Tablet — retrato, centro-derecha */}
+      <rect x="66" y="19" width="25" height="38" rx="3" fill={color} fillOpacity="0.07" />
+      <rect x="66" y="19" width="25" height="38" rx="3" />
+      <path d="M76 56h5" />
+      {/* Smartphone — más pequeño, derecha */}
+      <rect x="81" y="43" width="15" height="28" rx="3" fill={color} fillOpacity="0.07" />
+      <rect x="81" y="43" width="15" height="28" rx="3" />
+      <path d="M87 69h3" />
+    </svg>
+  ),
+  "Entretenimiento": (color) => (
+    <svg
+      viewBox="0 0 100 100"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke={color}
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="relative size-full p-[8%]"
+      aria-hidden="true"
+    >
+      {/* Televisor — bisel + pantalla */}
+      <rect x="5" y="7" width="90" height="58" rx="4" fill={color} fillOpacity="0.07" />
+      <rect x="5" y="7" width="90" height="58" rx="4" />
+      <rect x="9" y="11" width="82" height="50" rx="2" />
+      {/* Patas y base del TV */}
+      <path d="M37 65v9M63 65v9" />
+      <path d="M27 74h46" />
+      {/* Reproductor DVD/Blu-ray */}
+      <rect x="20" y="79" width="60" height="13" rx="3" fill={color} fillOpacity="0.07" />
+      <rect x="20" y="79" width="60" height="13" rx="3" />
+      <path d="M26 85.5h32" />
+      <circle cx="65" cy="85.5" r="3.5" />
+      <path d="M70.5 85.5h5.5" />
+    </svg>
+  ),
+};
+
 // Paleta de la marca: naranja #fa8232 y azul #155eef (sin negro)
 type Tone = {
   bg: string;
@@ -120,7 +176,7 @@ function CategoryTile({ slot, offset, hidden }: { slot: Slot; offset: number; hi
           className="category-tile__blob absolute inset-0 rounded-full"
           style={{ backgroundColor: tone.blob, opacity: solid ? 0.9 : 1 }}
         />
-        {(category.image_url || category.image_thumbs_url) && (
+        {(category.image_url || category.image_thumbs_url) ? (
           <ResponsiveImg
             alt=""
             loading="lazy"
@@ -130,7 +186,9 @@ function CategoryTile({ slot, offset, hidden }: { slot: Slot; offset: number; hi
             thumbWebpSrc={category.image_thumbs_webp_url}
             sizes="(max-width: 1024px) 40vw, 200px"
           />
-        )}
+        ) : ILLUSTRATIONS[category.slug] ? (
+          ILLUSTRATIONS[category.slug](tone.title)
+        ) : null}
       </div>
     </div>
   );

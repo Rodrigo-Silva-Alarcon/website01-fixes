@@ -107,15 +107,15 @@ export default function ProductCard({ product, index = 0, className = "", compac
           )}
         </Link>
 
-        <div className="flex min-h-[66px] flex-col gap-1 px-1.5">
+        <Link href={productUrl} className="flex min-h-[66px] cursor-pointer flex-col gap-1 px-1.5">
           <span className="text-xs font-semibold uppercase tracking-[.06em] text-[#6b7076] line-clamp-2">{meta}</span>
-          <Link href={productUrl} className="text-base font-semibold leading-[1.3] text-[#191c1f] line-clamp-3 hover:text-[#c2410c]">
+          <span className="text-base font-semibold leading-[1.3] text-[#191c1f] line-clamp-3 hover:text-[#c2410c]">
             {product.name}
-          </Link>
-        </div>
+          </span>
+        </Link>
 
         <div className="mt-auto flex flex-col items-stretch gap-2 px-1.5 pb-1.5 @[220px]:flex-row @[220px]:items-center @[220px]:justify-between">
-          <div className="flex min-w-0 flex-col">
+          <Link href={productUrl} className="flex min-w-0 cursor-pointer flex-col">
             {price !== null ? (
               <>
                 <span className="whitespace-nowrap text-[16px] font-bold text-[#191c1f] @[220px]:text-[clamp(16px,1.4vw,19px)]">
@@ -131,7 +131,7 @@ export default function ProductCard({ product, index = 0, className = "", compac
                 <span className="min-h-[17px]" />
               </>
             )}
-          </div>
+          </Link>
           <button
             type="button"
             onClick={handleAddToCart}
@@ -187,20 +187,17 @@ export default function ProductCard({ product, index = 0, className = "", compac
       </Link>
 
       {/* Marca y nombre: alturas fijas para que todas las tarjetas queden alineadas */}
-      <div className="flex flex-col gap-1 px-1.5">
+      <Link href={productUrl} className="group/info flex cursor-pointer flex-col gap-1 px-1.5">
         <span className="h-4 text-[11px] font-semibold uppercase leading-4 tracking-wider text-[#6b7076] line-clamp-1">
           {brandName}
         </span>
-        <Link
-          href={productUrl}
-          className="min-h-[44px] text-[15px] font-semibold leading-[22px] text-[#191c1f] line-clamp-2 transition-colors group-hover:text-[#fa8232] sm:text-[16px]"
-        >
+        <span className="min-h-[44px] text-[15px] font-semibold leading-[22px] text-[#191c1f] line-clamp-2 transition-colors group-hover:text-[#fa8232] sm:text-[16px]">
           {product.name}
-        </Link>
-      </div>
+        </span>
+      </Link>
 
       {/* Precio: siempre visible */}
-      <div className="flex min-h-[46px] flex-col justify-end px-1.5">
+      <Link href={productUrl} className="flex min-h-[46px] cursor-pointer flex-col justify-end px-1.5">
         {price !== null ? (
           <>
             <span className="text-lg font-bold leading-6 text-[#191c1f] whitespace-nowrap">
@@ -216,7 +213,7 @@ export default function ProductCard({ product, index = 0, className = "", compac
             <span className="h-[18px]" />
           </>
         )}
-      </div>
+      </Link>
 
       {/* Añadir al carrito: fijado al pie de la tarjeta */}
       <button

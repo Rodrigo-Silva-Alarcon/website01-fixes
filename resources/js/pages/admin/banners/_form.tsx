@@ -30,10 +30,11 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
         product_id: banner.product_id,
         page_id: banner.page_id,
         summary: banner.summary || '',
-        pages: banner.pages || [] as string[],
+        // Un banner nuevo va al hero de Inicio por defecto; sin página no se muestra en ningún sitio.
+        pages: (banner.pages ?? (isEdit ? [] : ['1'])).map(String) as string[],
         delete_image: false,
-        active: banner.active,
-        sw_title: banner.sw_title,
+        active: banner.active ?? true,
+        sw_title: banner.sw_title ?? true,
         start_date: banner.start_date || '',
         end_date: banner.end_date || '',
         _method: isEdit ? 'PUT' : 'POST',
@@ -116,7 +117,7 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
                     onFileChange={(file) => setData('image', file)}
                     onDeleteImageChange={(value) => setData('delete_image', value)}
                 />
-                <Field label="Páginas" htmlFor="pages" error={errors.pages}>
+                <Field label="Páginas donde se muestra" htmlFor="pages" error={errors.pages ?? (errors as Record<string, string>)['pages.0']}>
                     <div className="space-y-2">
                         {TYPE_PAGES.map((page) => (
                             <div key={page.id} className="flex items-center space-x-2">
@@ -228,14 +229,14 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
             <CheckboxField
                 id="sw_title"
                 label="Mostrar Título/Descripción"
-                checked={data.sw_title ?? true}
+                checked={data.sw_title}
                 onCheckedChange={(checked) => setData('sw_title', checked)}
                 error={errors.sw_title}
             />
             <CheckboxField
                 id="active"
                 label="Publicar"
-                checked={data.active ?? true}
+                checked={data.active}
                 onCheckedChange={(checked) => setData('active', checked)}
                 error={errors.active}
             />

@@ -107,21 +107,22 @@ export default function CategoryForm({ category, isEdit = false, title, descript
                 <RadioGroup
                     value={data.icon}
                     onValueChange={(value) => setData('icon', value)}
-                    className="flex flex-wrap gap-6"
+                    className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6"
                 >
                     {TYPE_SVG_ICONS.map((types) => (
-                        <div key={types.id} className="flex items-center space-x-2">
-                            <RadioGroupItem value={types.id} id={types.id} />
-                            <Label
-                                htmlFor={types.id}
-                                className="cursor-pointer flex items-center gap-2"
-                            >
-                                <div
-                                    className="h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current"
-                                    dangerouslySetInnerHTML={{ __html: types.icon }}
-                                />
-                            </Label>
-                        </div>
+                        <Label
+                            key={types.id}
+                            htmlFor={`icon-${types.id}`}
+                            title={types.label}
+                            className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border p-3 text-center text-xs font-normal transition-colors hover:bg-muted has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"
+                        >
+                            <RadioGroupItem value={types.id} id={`icon-${types.id}`} className="sr-only" />
+                            <span
+                                className="h-7 w-7 text-foreground"
+                                dangerouslySetInnerHTML={{ __html: types.icon }}
+                            />
+                            <span className="leading-tight">{types.label}</span>
+                        </Label>
                     ))}
                 </RadioGroup>
             </Field>

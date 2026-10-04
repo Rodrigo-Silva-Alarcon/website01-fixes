@@ -285,8 +285,9 @@ trait PostTrait
         if ($this->imageFields) {
             foreach ($this->imageFields as $field) {
                 // Verificar si se quiere eliminar la imagen existente
-                $eliminarField = 'eliminar_' . $field;
-                if ($request->has($eliminarField) && $request->input($eliminarField)) {
+                // Los formularios del panel envían delete_{campo}; se mantiene eliminar_{campo} por compatibilidad.
+                $eliminar = $request->boolean('eliminar_' . $field) || $request->boolean('delete_' . $field);
+                if ($eliminar && ! $request->hasFile($field)) {
                     // Eliminar imagen existente
                     $model->{$field} = null;
                     $this->deleteOldFile($oldFiles[$field] ?? null);

@@ -420,6 +420,8 @@ export default function SmartHomeHero({ categorias = [] }: SmartHomeHeroProps) {
               >
                 {spot.categoryImage ? (
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={spot.categoryImage}
                     alt={spot.categoryName}
                     className="w-full h-full object-cover p-2.5 transition-transform duration-300 group-hover:scale-110"

@@ -1,6 +1,7 @@
 import EntityIndex, { type EntityColumn, type IndexFilters, type Paginator } from '@/components/admin/entity-index';
 import { Switch } from '@/components/ui/switch';
 import { type Banner } from '@/types';
+import { TYPE_PAGES } from '@/types/Data';
 
 interface Props {
     records: Paginator<Banner>;
@@ -17,6 +18,14 @@ export default function Index({ records, filters, success, error }: Props) {
             sortable: true,
             className: 'font-medium',
             render: (banner) => banner.name,
+        },
+        {
+            key: 'pages',
+            label: 'Se muestra en',
+            render: (banner) => {
+                const labels = TYPE_PAGES.filter((p) => (banner.pages ?? []).map(String).includes(p.id)).map((p) => p.label);
+                return labels.length ? labels.join(', ') : <span className="text-red-500">Ninguna página</span>;
+            },
         },
         {
             key: 'created_at',

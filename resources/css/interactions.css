@@ -360,9 +360,12 @@
     opacity: calc(1 - var(--p, 0) * .5);
 }
 
-.about-parallax {
-    translate: 0 calc(var(--p, 0) * var(--speed, 1) * -70px);
-    will-change: translate;
+/* En móvil (2 columnas) el parallax desalinearía las filas: solo desde tablet */
+@media (min-width: 768px) {
+    .about-parallax {
+        translate: 0 calc(var(--p, 0) * var(--speed, 1) * -70px);
+        will-change: translate;
+    }
 }
 
 .about-zoom {
