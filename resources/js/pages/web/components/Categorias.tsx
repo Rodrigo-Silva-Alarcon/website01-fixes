@@ -4,6 +4,7 @@ import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import { ArrowRight } from "lucide-react";
 import type { CSSProperties } from "react";
+import { useIdleMount } from "@/hooks/use-idle-mount";
 
 const ILLUSTRATIONS: Record<string, (color: string) => React.ReactElement> = {
   "Dispositivos-portatiles": (color) => (
@@ -197,6 +198,9 @@ function CategoryTile({ slot, offset, hidden }: { slot: Slot; offset: number; hi
 
 export default function Categorias({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
   const { categorias } = usePage<{ categorias: Category[] }>().props;
+  // La segunda copia (solo para el bucle de la cinta) no va en el HTML inicial: ~la mitad del
+  // marcado del mosaico. La cinta arranca cuando está montada, así el bucle no da un salto.
+  const loopReady = useIdleMount();
 
   if (!categorias || categorias.length === 0) return null;
 
@@ -222,9 +226,9 @@ export default function Categorias({ title, subtitle }: { title?: string | null;
       </div>
 
       <div className="cat-mosaic" style={{ "--cat-duration": duration } as CSSProperties}>
-        <div className="cat-mosaic__track">
+        <div className="cat-mosaic__track" data-static={loopReady ? undefined : ""}>
           {/* Dos copias del mosaico: la cinta se desplaza la mitad y vuelve sin salto */}
-          {[0, 1].map((copy) =>
+          {(loopReady ? [0, 1] : [0]).map((copy) =>
             slots.map((slot, i) => (
               <CategoryTile key={`${copy}-${i}`} slot={slot} offset={copy * cols} hidden={copy === 1} />
             )),

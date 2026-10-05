@@ -8,6 +8,7 @@ import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { productPrice } from "@/lib/product-enquiry";
 import { formatMoney as fmt, listCents, productHref, useCart } from "@/hooks/use-cart";
 import { useSmoothRail } from "@/hooks/use-smooth-rail";
+import { useIdleMount } from "@/hooks/use-idle-mount";
 import { useCms } from "@/lib/cms";
 
 /** Páginas donde el carrito ya está a la vista y el botón flotante sobra. */
@@ -188,6 +189,8 @@ export default function CartDrawer() {
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, add } =
     useCart();
   const [open, setOpen] = useState(false);
+  // El panel cerrado no va en el HTML inicial: se monta al quedar libre el navegador (o al abrirlo)
+  const panelReady = useIdleMount();
   const [bump, setBump] = useState(false);
   const prevCount = useRef(count);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -253,6 +256,7 @@ export default function CartDrawer() {
         )}
       </button>
 
+      {(panelReady || open) && (
       <div className={`fixed inset-0 z-[70] font-dm_sans text-[#191c1f] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open} inert={!open}>
         <div
           onClick={close}
@@ -373,6 +377,7 @@ export default function CartDrawer() {
           )}
         </div>
       </div>
+      )}
     </>
   );
 }

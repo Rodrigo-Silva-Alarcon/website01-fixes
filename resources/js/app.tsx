@@ -13,7 +13,13 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+    resolve: async (name) => {
+        // app.css solo trae las utilidades de la tienda; el resto de páginas (admin, login...)
+        // necesitan la hoja completa. Se espera a que cargue para no pintar sin estilos
+        // (también al navegar de la tienda al panel sin recargar).
+        if (!name.startsWith('web/')) await import('../css/admin.css');
+        return resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx'));
+    },
     setup({ el, App, props }) {
         // Debe ser el mismo árbol que renderiza ssr.tsx para que la hidratación coincida
         const app = (

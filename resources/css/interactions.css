@@ -602,6 +602,11 @@ html[data-nav-loading] main {
     animation: cat-marquee var(--cat-duration, 60s) linear infinite;
 }
 
+/* Quieta hasta que se monta la segunda copia (ver Categorias.tsx) */
+.cat-mosaic__track[data-static] {
+    animation: none;
+}
+
 .cat-mosaic:hover .cat-mosaic__track,
 .cat-mosaic:focus-within .cat-mosaic__track {
     animation-play-state: paused;

@@ -9,6 +9,7 @@ import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import ThemeToggle from "@/pages/web/components/ThemeToggle";
 import MobileMenu from "@/pages/web/components/MobileMenu";
+import { useIdleMount } from "@/hooks/use-idle-mount";
 
 interface PageProps {
   flash?: {
@@ -54,6 +55,8 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
   // móvil y tablet: menú lateral y buscador desplegable
   const { menu = [] } = usePage<{ menu?: MenuItem[] }>().props;
   const [menuOpen, setMenuOpen] = useState(false);
+  // El menú cerrado no va en el HTML inicial: se monta al quedar libre el navegador (o al abrirlo)
+  const menuReady = useIdleMount();
   const [searchOpen, setSearchOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const iconButton = "relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white text-[#191c1f] transition-colors hover:bg-[#f4f5f6]";
@@ -234,7 +237,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
         </div>
       </div>
 
-      <MobileMenu open={menuOpen} onClose={closeMenu} menu={menu} />
+      {(menuReady || menuOpen) && <MobileMenu open={menuOpen} onClose={closeMenu} menu={menu} />}
 
 
     </div>

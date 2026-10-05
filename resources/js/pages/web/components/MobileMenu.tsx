@@ -62,9 +62,9 @@ export default function MobileMenu({ open, onClose, menu }: { open: boolean; onC
         <div className="flex items-center justify-between gap-3 border-b border-[#eceef0] px-4 py-3" data-name="Header">
           <Link href={route("home")} className="h-10 w-[118px]" data-name="Logo" tabIndex={open ? undefined : -1}>
             <picture className="contents">
-                    <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
-                    <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="size-full object-contain" />
-                  </picture>
+              <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
+              <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="size-full object-contain" />
+            </picture>
           </Link>
           <button
             type="button"

@@ -31,16 +31,14 @@
         <link rel="icon" href="{{ asset('favicon-32.png') }}" type="image/png" sizes="32x32">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        {{-- Fuentes no bloqueantes: se cargan en paralelo con el renderizado --}}
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-        <noscript><link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" /></noscript>
-
-        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-        <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+        {{-- Fuentes no bloqueantes: se cargan en paralelo con el renderizado.
+             Una sola petición con las versiones variables (400–700) de las dos familias que usa el
+             sitio: 2 archivos (~67 KB) en vez de 4 (~116 KB) repartidos entre dos proveedores. --}}
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+        <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" /></noscript>
 
         {{-- TinyMCE Local Override: solo el panel admin usa el editor; la tienda no lo descarga --}}
         @if (str_starts_with($page['component'] ?? '', 'admin/'))
@@ -49,6 +47,10 @@
 
         @viteReactRefresh
         @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+        {{-- La tienda usa solo app.css (ligero); el resto de páginas también la hoja completa --}}
+        @unless (str_starts_with($page['component'] ?? '', 'web/'))
+            @vite('resources/css/admin.css')
+        @endunless
         {{-- Antes de @routes (~23 KB de rutas en línea): así el preload de la imagen LCP del hero
              se descubre en los primeros KB del HTML --}}
         @inertiaHead

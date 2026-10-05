@@ -1,0 +1,10 @@
+/*
+ * CSS completo para el panel admin, login y demás páginas que no son de la tienda.
+ * Escanea todo el proyecto (igual que antes app.css). Se carga además de app.css:
+ * como contiene todas las utilidades en su orden, las reglas repetidas no cambian la cascada.
+ */
+@import 'tailwindcss';
+@import './shared.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
