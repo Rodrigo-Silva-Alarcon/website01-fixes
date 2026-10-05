@@ -26,6 +26,9 @@ class ConvertImagesWebp extends Command
         $manager = new ImageManager(new Driver());
         $thumbWidth = max(1, (int) $this->option('thumb-width'));
         $thumbsDir = rtrim(config('variables.thumbs', 'thumbs/'), '/');
+        $bannersRoot = public_path(rtrim(config('variables.folder_banner'), '/'));
+        $mdDir = rtrim(config('variables.banner_md', 'md/'), '/');
+        $mdWidth = (int) config('variables.banner_md_width', 800);
         $converted = 0;
         $skipped = 0;
         $failed = 0;
@@ -48,6 +51,8 @@ class ConvertImagesWebp extends Command
                     'full' => $ext === 'webp' ? null : $root . DIRECTORY_SEPARATOR . $base . '.webp',
                     // Miniatura WebP reducida para tarjetas y mosaicos
                     'thumb' => $root . DIRECTORY_SEPARATOR . $thumbsDir . DIRECTORY_SEPARATOR . $base . '.webp',
+                    // Banners: WebP mediano para el srcset del hero (solo si el original es más ancho)
+                    'md' => $root === $bannersRoot ? $root . DIRECTORY_SEPARATOR . $mdDir . DIRECTORY_SEPARATOR . $base . '.webp' : null,
                 ];
 
                 foreach ($targets as $kind => $target) {
@@ -65,7 +70,14 @@ class ConvertImagesWebp extends Command
                         if ($kind === 'thumb') {
                             $image->scaleDown(width: $thumbWidth);
                         }
-                        $image->toWebp($kind === 'thumb' ? 78 : 80)->save($target);
+                        if ($kind === 'md') {
+                            if ($image->width() <= $mdWidth) {
+                                $skipped++;
+                                continue;
+                            }
+                            $image->scaleDown(width: $mdWidth);
+                        }
+                        $image->toWebp($kind === 'full' ? 80 : 78)->save($target);
                         $converted++;
                     } catch (\Throwable $e) {
                         $failed++;

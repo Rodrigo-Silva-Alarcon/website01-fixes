@@ -45,6 +45,8 @@ export default function HomeProducts({ title, products, link }: Props) {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-[#191c1f] text-sm font-semibold text-[#191c1f] transition-all duration-200 hover:bg-[#191c1f] hover:text-white"
             >
               Ver más
+              {/* Nombre único para cada "Ver más" (lectores de pantalla); visualmente no cambia */}
+              {title && <span className="sr-only"> {title}</span>}
               <ArrowRight className="size-4" />
             </Link>
           )}

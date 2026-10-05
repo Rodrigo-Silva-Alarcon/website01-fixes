@@ -39,7 +39,13 @@ class WebContentService
      */
     private function forCards(Collection $products): Collection
     {
-        return $products->each(fn (Product $p) => $p->makeHidden(self::CARD_HIDDEN));
+        return $products->each(function (Product $p): void {
+            $p->makeHidden(self::CARD_HIDDEN);
+            // Las relaciones siguen cargadas para category_label/slug, subcategory_label/slug y brand_label,
+            // pero no viajan en el JSON: era ~2 KB por producto que la tienda no usa.
+            $p->makeHidden(['category', 'subcategory', 'brand']);
+            $p->inventory?->makeHidden(['created_at', 'updated_at']);
+        });
     }
 
     /**
@@ -143,6 +149,7 @@ class WebContentService
             'sw_title' => (bool) $b->sw_title,
             'image_url' => $b->image_url,
             'image_webp_url' => $b->image_webp_url,
+            'image_srcset' => $b->image_srcset,
             'link' => $b->link,
             // URL externa (tipo 3 hacia otro dominio): se abre en otra pestaña.
             'external' => (string) $b->type === '3' && filled($b->url)

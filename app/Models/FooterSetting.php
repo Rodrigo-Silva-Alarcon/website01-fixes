@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FooterSetting extends Model
 {
     public const DEFAULT_LOGO = '/images/logo-smarthouse.png';
+    // Misma imagen en WebP (11 KB frente a 29 KB del PNG)
+    public const DEFAULT_LOGO_WEBP = '/images/logo-smarthouse.webp';
 
     /** Marcador del año actual en el texto de copyright. */
     public const YEAR_TOKEN = '{año}';
@@ -52,7 +54,7 @@ class FooterSetting extends Model
     {
         $light = $this->logo_light
             ? ['src' => self::url($this->logo_light), 'fallback' => self::url($this->logo_light_fallback)]
-            : ['src' => self::DEFAULT_LOGO, 'fallback' => null];
+            : ['src' => self::DEFAULT_LOGO_WEBP, 'fallback' => self::DEFAULT_LOGO];
         $dark = ! $this->logo_transparent && $this->logo_dark
             ? ['src' => self::url($this->logo_dark), 'fallback' => self::url($this->logo_dark_fallback)]
             : null;

@@ -54,7 +54,8 @@ test('users without view_footer get 403', function () {
 
 test('without uploaded logos the storefront uses the default logo', function () {
     $this->get('/')->assertInertia(fn ($page) => $page
-        ->where('footer.logo.light.src', FooterSetting::DEFAULT_LOGO)
+        ->where('footer.logo.light.src', FooterSetting::DEFAULT_LOGO_WEBP)
+        ->where('footer.logo.light.fallback', FooterSetting::DEFAULT_LOGO)
         ->where('footer.logo.dark', null)
         ->where('footer.logo.themed', false));
 });

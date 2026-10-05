@@ -112,7 +112,8 @@ export function useSmoothRail(railRef: RefObject<HTMLDivElement | null>, step: n
     if (!el) return;
     const st = s.current;
     st.reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    syncEdges();
+    // En el siguiente frame: leer scrollWidth al montar forzaría un layout en mitad de la hidratación
+    const firstSync = requestAnimationFrame(syncEdges);
 
     const onWheel = (e: WheelEvent) => {
       // el desplazamiento horizontal nativo (trackpad) se deja pasar y luego se encaja
@@ -146,6 +147,7 @@ export function useSmoothRail(railRef: RefObject<HTMLDivElement | null>, step: n
     el.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("resize", syncEdges);
     return () => {
+      cancelAnimationFrame(firstSync);
       stop();
       el.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", syncEdges);

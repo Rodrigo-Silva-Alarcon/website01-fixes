@@ -74,7 +74,8 @@ const TONES: Tone[] = [
   { bg: "#fff1e6", blob: "#ffd9bd", count: "#c2410c", title: "#191c1f", text: "#5b6167" },
   { bg: "#eaf1ff", blob: "#c9dbff", count: "#155eef", title: "#191c1f", text: "#5b6167" },
   { bg: "#fff8f2", blob: "#ffe6d2", count: "#c2410c", title: "#191c1f", text: "#5b6167" },
-  { bg: "#155eef", blob: "#fa8232", count: "#ffd9bd", title: "#ffffff", text: "#dbe6ff" },
+  // Sobre el azul, textos en blanco: los tonos claros (#ffd9bd/#dbe6ff) no llegaban al contraste 4.5:1
+  { bg: "#155eef", blob: "#fa8232", count: "#ffffff", title: "#ffffff", text: "#ffffff" },
 ];
 
 /**
@@ -208,12 +209,12 @@ export default function Categorias({ title, subtitle }: { title?: string | null;
     <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pt-12 md:pt-16">
       <div className="flex flex-wrap items-end justify-between gap-4 px-4 sm:px-8 lg:px-16">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#fa8232]">{subtitle || "Explora por categoría"}</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#c2410c]">{subtitle || "Explora por categoría"}</span>
           <h2 className="text-[clamp(28px,3vw,36px)] font-semibold tracking-[-.02em] text-[#191c1f]">{title || "Categorías"}</h2>
         </div>
         <Link
           href={route("products")}
-          className="inline-flex items-center gap-2 rounded-full border-2 border-[#fa8232] px-[22px] py-2.5 text-sm font-semibold text-[#fa8232] transition-colors hover:bg-[#fa8232] hover:text-white"
+          className="inline-flex items-center gap-2 rounded-full border-2 border-[#c2410c] px-[22px] py-2.5 text-sm font-semibold text-[#c2410c] transition-colors hover:bg-[#c2410c] hover:text-white"
         >
           Ver todas
           <ArrowRight className="size-4" />

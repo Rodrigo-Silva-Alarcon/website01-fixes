@@ -67,7 +67,10 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
             <div className="h-[50.635px] relative shrink-0 w-[150px]" data-name="Logo" style={{ color: "#191c1f" }}>
               <Link href={route('home')} className="absolute inset-0" data-name="image 9">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="h-full w-full object-contain" />
+                  <picture className="contents">
+                    <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
+                    <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="h-full w-full object-contain" />
+                  </picture>
                 </div>
               </Link>
             </div>
@@ -165,7 +168,10 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
               <Menu className="size-[22px]" />
             </button>
             <Link href={route('home')} className="h-[38px] sm:h-[44px] w-[clamp(92px,28vw,132px)] shrink-0" data-name="Logo">
-              <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="size-full object-contain object-left" />
+              <picture className="contents">
+                    <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
+                    <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="size-full object-contain object-left" />
+                  </picture>
             </Link>
 
             {/* En tablet el buscador va en la misma fila */}

@@ -14,6 +14,9 @@ return [
     */  
     'thumbs' => 'thumbs/',
     'hthumbs' => 'hthumbs/',
+    // Variante WebP mediana (800px) de los banners: la usa el hero en móvil vía srcset
+    'banner_md' => 'md/',
+    'banner_md_width' => 800,
     'folder_banner' => 'data/banners/', 
     'folder_product' => 'data/products/',   
     'folder_category' => 'data/categories/',   

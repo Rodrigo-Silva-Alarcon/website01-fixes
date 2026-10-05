@@ -142,6 +142,8 @@ export interface BannerSlide{
     sw_title: boolean;
     image_url: string;
     image_webp_url?: string | null;
+    /** WebP "md 800w, completa NNNw" para el hero; null si el banner no tiene variante mediana. */
+    image_srcset?: string | null;
     link?: string | null;
     external?: boolean;
 }

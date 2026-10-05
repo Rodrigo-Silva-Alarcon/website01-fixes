@@ -48,9 +48,11 @@
         @endif
 
         @viteReactRefresh
-        @routes
         @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+        {{-- Antes de @routes (~23 KB de rutas en línea): así el preload de la imagen LCP del hero
+             se descubre en los primeros KB del HTML --}}
         @inertiaHead
+        @routes
         {{-- Con SSR el <title> llega en @inertiaHead; sin SSR se usa este por defecto --}}
         @if (empty($__inertiaSsrResponse))
             <title inertia>{{ config('app.name', 'Laravel') }}</title>

@@ -138,7 +138,8 @@ export default function Destacados({ products }: { products: Product[] }) {
           {cards.slice(0, count).map((c, i) => (
             <div
               key={i}
-              aria-hidden={active !== i}
+              // inert oculta la tarjeta de los lectores de pantalla y además saca sus enlaces del foco
+              inert={active !== i}
               className={`col-start-1 row-start-1 transition-all duration-700 ease-in-out ${
                 active === i ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"
               }`}
@@ -148,15 +149,20 @@ export default function Destacados({ products }: { products: Product[] }) {
           ))}
         </div>
         {count > 1 && (
-          <div className="mt-4 flex justify-center gap-2">
+          <div className="mt-3 flex justify-center">
             {cards.slice(0, count).map((_, i) => (
+              // Área táctil de 24px; el punto visible es el <span>
               <button
                 key={i}
                 type="button"
                 aria-label={`Ver banner ${i + 1}`}
                 onClick={() => setActive(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${active === i ? "w-6 bg-[#191c1f]" : "w-2 bg-[#191c1f]/25"}`}
-              />
+                className="flex h-6 min-w-6 items-center justify-center"
+              >
+                <span
+                  className={`block h-2 rounded-full transition-all duration-300 ${active === i ? "w-6 bg-[#191c1f]" : "w-2 bg-[#191c1f]/25"}`}
+                />
+              </button>
             ))}
           </div>
         )}

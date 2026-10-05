@@ -85,6 +85,32 @@ class Banner extends Model
         return null;
     }
     
+    /**
+     * srcset WebP "md 800w, completa NNNw" para el hero; null si no hay variante mediana.
+     */
+    public function getImageSrcsetAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        $folder = config('variables.folder_banner');
+        $base = pathinfo(str_replace('storage/', '', $this->image), PATHINFO_FILENAME);
+        $md = $folder . config('variables.banner_md') . $base . '.webp';
+        $full = $folder . $base . '.webp';
+        if (! is_file(public_path($md)) || ! is_file(public_path($full))) {
+            return null;
+        }
+
+        $mdSize = @getimagesize(public_path($md));
+        $fullSize = @getimagesize(public_path($full));
+        if (! $mdSize || ! $fullSize || $fullSize[0] <= $mdSize[0]) {
+            return null;
+        }
+
+        return asset($md) . ' ' . $mdSize[0] . 'w, ' . asset($full) . ' ' . $fullSize[0] . 'w';
+    }
+
     public function getImageThumbsUrlAttribute()
     {
         if ($this->tecnical_image) {

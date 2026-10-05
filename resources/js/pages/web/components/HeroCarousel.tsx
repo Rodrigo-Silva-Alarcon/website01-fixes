@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BannerSlide } from "@/types/models";
 
@@ -7,6 +7,8 @@ interface Slide {
   key: string;
   src: string;
   webp?: string | null;
+  /** WebP en varios anchos ("md 800w, completa NNNw"). */
+  srcset?: string | null;
   alt: string;
   title?: string | null;
   summary?: string | null;
@@ -28,6 +30,10 @@ const FALLBACK_SLIDES: Slide[] = [
   },
 ];
 
+/** Ancho real del banner: la sección es de máx. 1440px con px-4 / sm:px-8 / lg:px-16. */
+const HERO_SIZES =
+  "(min-width: 1440px) 1312px, (min-width: 1024px) calc(100vw - 128px), (min-width: 640px) calc(100vw - 64px), calc(100vw - 32px)";
+
 const AUTOPLAY_MS = 15000;
 const SWIPE_THRESHOLD = 50;
 /** Movimiento mínimo (px) para considerar que es arrastre y no clic. */
@@ -38,6 +44,7 @@ function toSlides(banners: BannerSlide[]): Slide[] {
     key: `banner-${b.id}`,
     src: b.image_url,
     webp: b.image_webp_url,
+    srcset: b.image_srcset,
     alt: b.summary ? `${b.name} — ${b.summary}` : b.name,
     title: b.sw_title ? b.name : null,
     summary: b.sw_title ? b.summary : null,
@@ -120,6 +127,8 @@ export default function HeroCarousel({ banners = [], fallback = true }: HeroCaro
   };
 
   const dragging = dragOffset !== 0;
+  const lcp = slides[0];
+  const lcpSrcSet = lcp.srcset ?? lcp.webp;
 
   return (
     <section
@@ -127,6 +136,23 @@ export default function HeroCarousel({ banners = [], fallback = true }: HeroCaro
       aria-roledescription="carrusel"
       className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pt-6 md:pt-8"
     >
+      {/* La primera imagen es el LCP: con SSR este preload va en el <head>, antes del JSON de la página,
+          y el navegador la pide sin esperar a leer todo el HTML. */}
+      <Head>
+        {lcpSrcSet ? (
+          <link
+            head-key="hero-lcp"
+            rel="preload"
+            as="image"
+            type="image/webp"
+            imageSrcSet={lcpSrcSet}
+            imageSizes={lcp.srcset ? HERO_SIZES : undefined}
+            fetchPriority="high"
+          />
+        ) : (
+          <link head-key="hero-lcp" rel="preload" as="image" href={lcp.src} fetchPriority="high" />
+        )}
+      </Head>
       <div
         className={`group relative overflow-hidden rounded-3xl bg-[#e7e7e7] aspect-[1899/702] select-none touch-pan-y ${multiple ? "cursor-grab active:cursor-grabbing" : ""}`}
         onPointerDown={onPointerDown}
@@ -180,8 +206,9 @@ export default function HeroCarousel({ banners = [], fallback = true }: HeroCaro
             </button>
 
             {/* Indicadores */}
-            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-0.5 sm:bottom-2.5 left-1/2 -translate-x-1/2 flex">
               {slides.map((slide, i) => (
+                // Área táctil de 24px; el punto visible sigue siendo el <span> de dentro
                 <button
                   key={slide.key}
                   type="button"
@@ -189,10 +216,14 @@ export default function HeroCarousel({ banners = [], fallback = true }: HeroCaro
                   aria-current={i === current}
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => goTo(i)}
-                  className={`h-2.5 rounded-full transition-all cursor-pointer shadow ${
-                    i === current ? "w-8 bg-[#fa8232]" : "w-2.5 bg-white/80 hover:bg-white"
-                  }`}
-                />
+                  className="group/dot flex h-6 min-w-6 items-center justify-center cursor-pointer"
+                >
+                  <span
+                    className={`block h-2.5 rounded-full transition-all shadow ${
+                      i === current ? "w-8 bg-[#fa8232]" : "w-2.5 bg-white/80 group-hover/dot:bg-white"
+                    }`}
+                  />
+                </button>
               ))}
             </div>
           </>
@@ -205,7 +236,9 @@ export default function HeroCarousel({ banners = [], fallback = true }: HeroCaro
 function SlideBody({ slide, eager, focusable }: { slide: Slide; eager: boolean; focusable: boolean }) {
   const img = (
     <picture className="contents">
-      {slide.webp && <source srcSet={slide.webp} type="image/webp" />}
+      {(slide.srcset || slide.webp) && (
+        <source srcSet={slide.srcset ?? slide.webp ?? undefined} sizes={slide.srcset ? HERO_SIZES : undefined} type="image/webp" />
+      )}
       <img
         src={slide.src}
         alt={slide.alt}

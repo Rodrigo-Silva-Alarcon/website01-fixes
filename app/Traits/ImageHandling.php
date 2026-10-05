@@ -94,6 +94,11 @@ trait ImageHandling
                 // WebP es best-effort; la imagen original ya quedó guardada.
             }
 
+            // Banners: variante mediana para que el móvil no descargue la imagen de 1600px
+            if ($publicPath === config('variables.folder_banner')) {
+                $this->saveBannerMd($manager->read($file), $fullPath, $filename);
+            }
+
             // Crear thumbnail si está configurado
             if ($this->imageThumbnail) {
                 $thumbPath = $fullPath . config('variables.thumbs');
@@ -125,6 +130,27 @@ trait ImageHandling
         } catch (\Exception $e) {
             // Lanzar excepción con mensaje específico para que se muestre en el frontend
             throw new \Exception("Error al procesar la imagen: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Guarda md/<nombre>.webp reducida al ancho configurado (best-effort).
+     */
+    private function saveBannerMd($image, string $fullPath, string $filename): void
+    {
+        $mdWidth = (int) config('variables.banner_md_width', 800);
+        if ($image->width() <= $mdWidth) {
+            return;
+        }
+
+        try {
+            $mdPath = $fullPath . config('variables.banner_md');
+            File::ensureDirectoryExists($mdPath);
+            $image->scaleDown(width: $mdWidth)
+                ->toWebp(78)
+                ->save($mdPath . preg_replace('/\.[^.]+$/', '.webp', $filename));
+        } catch (\Throwable) {
+            // best-effort
         }
     }
 }

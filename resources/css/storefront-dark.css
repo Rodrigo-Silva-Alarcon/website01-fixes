@@ -90,6 +90,11 @@ html.sf-theme-anim .storefront * {
         color: var(--sf-text);
     }
 
+    /* Texto oscuro sobre el naranja de marca (botones del footer): oscuro en ambos temas por contraste */
+    :where(html.sf-dark) .storefront .bg-\[\#fa8232\] .text-\[\#191c1f\] {
+        color: #191c1f;
+    }
+
     :where(html.sf-dark) .storefront :is(
         .text-\[\#3d4247\], .text-\[\#5b6066\], .text-\[\#5b6167\], .text-\[\#6b7076\], .text-\[\#595959\],
         .text-\[\#5f6c72\], .text-\[\#71767b\], .text-gray-600, .text-gray-700

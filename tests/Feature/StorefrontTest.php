@@ -269,10 +269,28 @@ it('shares at least five in-stock cart suggestions, popular first and without ca
 
     $this->post('/addshop/'.$ids[1]);
 
+    // Se envían diferidas: no van en la carga inicial, llegan en la recarga parcial
     $this->get('/productos')->assertOk()->assertInertia(fn (Assert $page) => $page
-        ->has('cartSuggestions', 5)
-        ->where('cartSuggestions.0.id', $ids[7])
-        ->where('cartSuggestions', fn ($s) => !collect($s)->pluck('id')->intersect([$ids[1], $ids[6]])->count()));
+        ->missing('cartSuggestions')
+        ->loadDeferredProps(fn (Assert $reload) => $reload
+            ->has('cartSuggestions', 5)
+            ->where('cartSuggestions.0.id', $ids[7])
+            ->where('cartSuggestions', fn ($s) => !collect($s)->pluck('id')->intersect([$ids[1], $ids[6]])->count())));
+});
+
+it('sends product cards with labels and slugs but without the full relations', function () {
+    $category = Category::create(['name' => 'Audio', 'active' => true]);
+    $p = Product::create(['name' => 'Parlante Pop', 'category_id' => $category->id, 'active' => true]);
+    $p->forceFill(['pop' => true])->save();
+    App\Models\Inventory::create(['product_id' => $p->id, 'amount' => 100, 'stock' => 3, 'money' => 'Bs.']);
+
+    $this->get('/productos')->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->where('populares.0.category_slug', $category->slug)
+        ->where('populares.0.category_label', 'Audio')
+        ->missing('populares.0.category')
+        ->missing('populares.0.brand')
+        ->missing('populares.0.inventory.created_at')
+        ->etc());
 });
 
 it('sends the product gallery images in their configured order to the detail page', function () {

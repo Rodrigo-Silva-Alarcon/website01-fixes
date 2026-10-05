@@ -19,7 +19,7 @@ export interface FooterContent {
 }
 
 const DEFAULT_FOOTER: FooterContent = {
-  logo: { light: { src: "/images/logo-smarthouse.png", fallback: null }, dark: null, themed: false, alt: "Smart House Importaciones SRL" },
+  logo: { light: { src: "/images/logo-smarthouse.webp", fallback: "/images/logo-smarthouse.png" }, dark: null, themed: false, alt: "Smart House Importaciones SRL" },
   copyright: "© Smart House, {año}. Todos los derechos reservados.",
   credits: "Desarrollado por MegaLink S.R.L.",
 };

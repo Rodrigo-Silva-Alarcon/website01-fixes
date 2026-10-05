@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 use App\Traits\WebTrait;
 use App\Traits\ShopTrait;
@@ -111,8 +112,10 @@ class HandleInertiaRequests extends Middleware
             $base['menu'] = $this->get_menu();
             $base['populares'] = $this->get_populares();
             $base['cart'] = $cart = $this->get_shop_cart();
-            $base['cartSuggestions'] = fn () => app(\App\Services\WebContentService::class)
-                ->cartSuggestions($cart ? $cart->cartItems->pluck('product_id')->all() : []);
+            // Diferido: solo se usa al abrir el carrito, así no engorda el HTML inicial.
+            // Mientras llega, use-cart muestra "populares" como respaldo.
+            $base['cartSuggestions'] = Inertia::defer(fn () => app(\App\Services\WebContentService::class)
+                ->cartSuggestions($cart ? $cart->cartItems->pluck('product_id')->all() : []));
             $base['cates'] = $cateories;
             $base['marcas'] = $brands;
             $base['currentpage'] = $request->page??1;
