@@ -33,7 +33,7 @@ export function useFooterContent(): FooterContent {
 /** Reemplaza {año} por el año actual. */
 export const withYear = (text: string) => text.replace(/\{a[ñn]o\}/gi, String(new Date().getFullYear()));
 
-function LogoPicture({ source, alt, className }: { source: LogoSource; alt: string; className: string }) {
+function LogoPicture({ source, alt, className, imgClassName }: { source: LogoSource; alt: string; className: string; imgClassName: string }) {
   return (
     <picture className={className}>
       {source.fallback && <source srcSet={source.src} type="image/webp" />}
@@ -42,7 +42,7 @@ function LogoPicture({ source, alt, className }: { source: LogoSource; alt: stri
         decoding="async"
         src={source.fallback ?? source.src}
         alt={alt}
-        className="block h-[56px] md:h-[72px] w-auto object-contain"
+        className={imgClassName}
       />
     </picture>
   );
@@ -54,17 +54,28 @@ function LogoPicture({ source, alt, className }: { source: LogoSource; alt: stri
  * ni diferencias entre el HTML del servidor y el navegador. La imagen oculta no se
  * descarga gracias a loading="lazy".
  */
+/** Logo del sitio (Admin › Logo), compartido por cabecera, menú móvil y footer. */
+export function SiteLogo({ imgClassName }: { imgClassName: string }) {
+  const { logo } = useFooterContent();
+
+  return (
+    <span className="site-logo contents" data-logo-themed={logo.themed ? "" : undefined}>
+      <LogoPicture source={logo.light} alt={logo.alt} className={logo.dark ? "site-logo-light" : "contents"} imgClassName={imgClassName} />
+      {logo.dark && <LogoPicture source={logo.dark} alt={logo.alt} className="site-logo-dark" imgClassName={imgClassName} />}
+    </span>
+  );
+}
+
 export default function FooterLogo() {
   const { logo } = useFooterContent();
 
   return (
     <div
-      className="bg-white border border-[#eceef0] rounded-[12px] px-[14px] py-[10px] shrink-0"
+      className="bg-transparent shrink-0"
       data-name="Logo"
       data-logo-themed={logo.themed ? "" : undefined}
     >
-      <LogoPicture source={logo.light} alt={logo.alt} className={logo.dark ? "footer-logo-light" : "block"} />
-      {logo.dark && <LogoPicture source={logo.dark} alt={logo.alt} className="footer-logo-dark" />}
+      <SiteLogo imgClassName="block h-[56px] md:h-[72px] w-auto object-contain" />
     </div>
   );
 }

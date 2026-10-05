@@ -126,10 +126,16 @@ trait PostTrait
 
         // Aplicar búsqueda automática
         if ($request->filled('search') && $this->searchableFields) {
-            $search = $request->get('search');
+            // Búsqueda sin distinguir mayúsculas/minúsculas; admite campos de relaciones ("product.name")
+            $search = '%' . mb_strtolower(trim($request->get('search'))) . '%';
             $query->where(function ($q) use ($search) {
                 foreach ($this->searchableFields as $field) {
-                    $q->orWhere($field, 'like', "%{$search}%");
+                    if (str_contains($field, '.')) {
+                        [$relation, $column] = explode('.', $field, 2);
+                        $q->orWhereHas($relation, fn ($r) => $r->whereRaw('LOWER(' . $r->getGrammar()->wrap($column) . ') LIKE ?', [$search]));
+                    } else {
+                        $q->orWhereRaw('LOWER(' . $q->getGrammar()->wrap($field) . ') LIKE ?', [$search]);
+                    }
                 }
             });
         }

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import ThemeToggle from "@/pages/web/components/ThemeToggle";
+import { SiteLogo } from "@/pages/web/components/FooterLogo";
 import MobileMenu from "@/pages/web/components/MobileMenu";
 import { useIdleMount } from "@/hooks/use-idle-mount";
 
@@ -70,10 +71,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
             <div className="h-[50.635px] relative shrink-0 w-[150px]" data-name="Logo" style={{ color: "#191c1f" }}>
               <Link href={route('home')} className="absolute inset-0" data-name="image 9">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <picture className="contents">
-                    <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
-                    <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="h-full w-full object-contain" />
-                  </picture>
+                  <SiteLogo imgClassName="h-full w-full object-contain" />
                 </div>
               </Link>
             </div>
@@ -171,10 +169,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
               <Menu className="size-[22px]" />
             </button>
             <Link href={route('home')} className="h-[38px] sm:h-[44px] w-[clamp(92px,28vw,132px)] shrink-0" data-name="Logo">
-              <picture className="contents">
-                    <source srcSet="/images/logo-smarthouse.webp" type="image/webp" />
-                    <img src="/images/logo-smarthouse.png" alt="Smart House Importaciones SRL" className="size-full object-contain object-left" />
-                  </picture>
+              <SiteLogo imgClassName="size-full object-contain object-left" />
             </Link>
 
             {/* En tablet el buscador va en la misma fila */}
@@ -237,7 +232,7 @@ export default function Header({ populares, cart}:{ populares:Product[];cart:Car
         </div>
       </div>
 
-      {(menuReady || menuOpen) && <MobileMenu open={menuOpen} onClose={closeMenu} menu={menu} />}
+      {(menuReady || menuOpen) && <MobileMenu open={menuOpen} onClose={closeMenu} menu={menu} cartCount={cartCount} />}
 
 
     </div>

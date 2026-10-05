@@ -18,7 +18,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Edit, Trash2, Search, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { route } from 'ziggy-js';
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -188,21 +188,34 @@ export default function EntityIndex<T extends { id: number }>({
         ...extra,
     });
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get(route(`${entity}.index`), indexParams(), {
+    const runSearch = (term: string) => {
+        router.get(route(`${entity}.index`), indexParams({ search: term.trim() || undefined }), {
             preserveState: true,
+            preserveScroll: true,
             replace: true,
         });
     };
 
+    // Búsqueda en tiempo real (con debounce) mientras se escribe
+    const lastSearched = useRef(filters.search || '');
+    useEffect(() => {
+        if (searchTerm.trim() === lastSearched.current.trim()) return;
+        const timer = setTimeout(() => {
+            lastSearched.current = searchTerm;
+            runSearch(searchTerm);
+        }, 300);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchTerm]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        lastSearched.current = searchTerm;
+        runSearch(searchTerm);
+    };
+
     const clearSearch = () => {
         setSearchTerm('');
-        router.get(
-            route(`${entity}.index`),
-            { sort_by: sortBy, sort_order: sortOrder },
-            { preserveState: true, replace: true },
-        );
     };
 
     const handleSort = (column: string) => {

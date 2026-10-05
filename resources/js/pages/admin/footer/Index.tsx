@@ -37,7 +37,7 @@ type Mode = 'light' | 'dark';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Panel de Control', href: route('admin.dashboard') },
-    { title: 'Footer', href: route('admin.footer.index') },
+    { title: 'Logo', href: route('admin.footer.index') },
 ];
 
 /** Valores del formulario a partir de lo publicado (sin archivos pendientes). */
@@ -203,12 +203,12 @@ export default function FooterIndex({ footer, defaultLogo, yearToken }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Footer" />
+            <Head title="Logo" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-3 sm:p-4">
                 <Card>
                     <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="grid gap-1">
-                            <CardTitle className="text-xl font-medium">Footer</CardTitle>
+                            <CardTitle className="text-xl font-medium">Logo</CardTitle>
                             <CardDescription>
                                 Logo del pie de página para modo claro y oscuro, y los textos de la franja inferior.
                                 {footer.updated_at && (
@@ -473,9 +473,6 @@ interface FooterPreviewProps {
 
 function FooterPreview({ mode, url, themed, alt, copyright, credits }: FooterPreviewProps) {
     const theme = THEME[mode];
-    // En la web, la pastilla es blanca salvo que el logo siga el tema (transparente o con versión oscura)
-    const pill = mode === 'dark' && themed ? theme.pill : '#ffffff';
-    const border = mode === 'dark' && themed ? theme.border : '#eceef0';
 
     return (
         <div className="overflow-hidden rounded-2xl border" style={{ backgroundColor: theme.footer, borderColor: theme.border }}>
@@ -487,9 +484,14 @@ function FooterPreview({ mode, url, themed, alt, copyright, credits }: FooterPre
                 <span className="rounded-full bg-[#fa8232] px-2.5 py-0.5 text-[10px] text-white">WhatsApp</span>
             </div>
             <div className="px-4 py-4">
-                <div className="inline-flex rounded-[10px] border px-3 py-2" style={{ backgroundColor: pill, borderColor: border }}>
-                    <img src={url} alt={alt} className="h-10 w-auto object-contain" />
-                </div>
+                {/* Igual que en la web: sin pastilla; en claro, multiply funde el fondo blanco de un logo no transparente */}
+                <img
+                    src={url}
+                    alt={alt}
+                    className="h-10 w-auto object-contain"
+                    style={{ mixBlendMode: mode === 'light' && !themed ? 'multiply' : 'normal' }}
+                />
+
             </div>
             <div className="grid gap-1 border-t px-4 py-3 text-[11px]" style={{ borderColor: theme.border, color: theme.text }}>
                 <span>{copyright}</span>

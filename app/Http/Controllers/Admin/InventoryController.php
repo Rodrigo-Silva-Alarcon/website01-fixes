@@ -16,7 +16,7 @@ class InventoryController extends Controller
     use PostTrait;
     public function __construct(){
         // Configurar campos de búsqueda
-        $this->configureSearchable(['amount', 'stock', 'money']);
+        $this->configureSearchable(['product.name','amount', 'stock', 'money']);
         // Configurar campos ordenables
         $this->configureSortable(['amount', 'stock', 'created_at'], 'created_at', 'desc');
         // Configurar paginación

@@ -197,31 +197,37 @@ html.sf-dark .storefront footer[data-name='Footer'] {
 }
 
 html.sf-dark .storefront footer [data-name='Logo'] {
-    background-color: #ffffff;
+    background-color: transparent;
+    border-color: transparent;
 }
 
 /* Logo del footer (Admin › Footer): versión clara u oscura según el tema. Con logo
    transparente o con versión oscura, la pastilla deja de ser blanca y sigue el tema. */
-footer [data-name='Logo'] .footer-logo-light {
+[data-name='Logo'] .site-logo-light {
     display: block;
 }
 
-footer [data-name='Logo'] .footer-logo-dark,
-html.sf-dark .storefront footer [data-name='Logo'] .footer-logo-light {
+[data-name='Logo'] .site-logo-dark,
+html.sf-dark .storefront [data-name='Logo'] .site-logo-light {
     display: none;
 }
 
-html.sf-dark .storefront footer [data-name='Logo'] .footer-logo-dark {
+html.sf-dark .storefront [data-name='Logo'] .site-logo-dark {
     display: block;
 }
 
-html.sf-dark .storefront footer [data-name='Logo'][data-logo-themed] {
-    background-color: var(--sf-surface-2);
-    border-color: var(--sf-border);
+/* Sin pastilla: el logo se funde con el fondo del footer. En claro, multiply hace
+   transparente el fondo blanco de la imagen. */
+[data-name='Logo'] .site-logo-light img {
+    mix-blend-mode: multiply;
+}
+
+html.sf-dark .storefront [data-name='Logo'] .site-logo-dark img {
+    mix-blend-mode: normal;
 }
 
 /* Logo de la cabecera sobre fondo oscuro: pastilla clara discreta */
-html.sf-dark .storefront [data-name='Header'] [data-name='Logo'] img {
+html.sf-dark .storefront [data-name='Header'] [data-name='Logo'] .site-logo:not([data-logo-themed]) img {
     background: #ffffff;
     border-radius: 10px;
     padding: 3px 6px;

@@ -47,7 +47,7 @@ export function AppSidebar() {
             permission: 'view_contact',
         },
         {
-            title: 'Footer',
+            title: 'Logo',
             href: route('admin.footer.index'),
             icon: PanelBottom,
             permission: 'view_footer',
