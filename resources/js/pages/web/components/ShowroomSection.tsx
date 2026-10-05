@@ -2,18 +2,8 @@ import { useCms } from "@/lib/cms";
 import { MapPin, Globe, Clock, MessageCircle, Navigation } from "lucide-react";
 
 export default function ShowroomSection({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
-  const { text, lines, whatsappLocal, whatsappHref } = useCms();
-
-  // Editables en Admin › Textos (cada párrafo de la dirección es una línea)
-  const addressLines = lines("showroom_address", ["Av. 20 de Octubre", "Esq. Rosendo Gutierrez", "Edif. Guadalquivir #2332"]);
-  const website = text("site_url", "www.smarthousebo.com");
-  const hours = text("business_hours", "Atención de lunes a sábado");
-
-  const mapsHref =
-    text("footer_maps") ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      `${addressLines.join(", ")} La Paz Bolivia`
-    )}`;
+  // Editables en Admin › Contacto (cada renglón de la dirección es una línea)
+  const { addressLines, website, scheduleSummary: hours, mapsHref, whatsappLocal, whatsappHref } = useCms();
 
   return (
     <section

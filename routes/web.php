@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\AboutController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\FooterController;
 use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
@@ -119,6 +121,20 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
             Route::post('/about/images/{image}', [AboutController::class, 'replaceImage'])->name('admin.about.images.replace');
             Route::patch('/about/images/{image}', [AboutController::class, 'updateImage'])->name('admin.about.images.update');
         });
+    });
+    // Contacto: datos, horario de atención y textos de Contáctanos (fuente única para toda la web)
+    Route::middleware('permission:view_contact')->group(function () {
+        Route::get('/contact', [ContactController::class, 'index'])->name('admin.contact.index');
+        Route::middleware('permission:edit_contact')->group(function () {
+            Route::put('/contact/data', [ContactController::class, 'updateData'])->name('admin.contact.data');
+            Route::put('/contact/schedule', [ContactController::class, 'updateSchedule'])->name('admin.contact.schedule');
+            Route::put('/contact/texts', [ContactController::class, 'updateTexts'])->name('admin.contact.texts');
+        });
+    });
+    // Footer: logo (modo claro / oscuro o uno transparente) y textos del pie de página
+    Route::middleware('permission:view_footer')->group(function () {
+        Route::get('/footer', [FooterController::class, 'index'])->name('admin.footer.index');
+        Route::post('/footer', [FooterController::class, 'update'])->middleware('permission:edit_footer')->name('admin.footer.update');
     });
     // Página de inicio: secciones (orden, visibilidad, contenido)
     Route::middleware('permission:view_home')->group(function () {

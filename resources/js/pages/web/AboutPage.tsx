@@ -93,24 +93,57 @@ function useScrollMotion(rootRef: React.RefObject<HTMLDivElement | null>, heroRe
     );
     root.querySelectorAll(".about-reveal").forEach((el) => io.observe(el));
 
+    if (!hero) {
+      return () => {
+        io.disconnect();
+        root.classList.remove("about-motion");
+      };
+    }
+
+    // Parallax: solo escucha el scroll mientras el hero está en pantalla y solo escribe --p si cambió,
+    // porque cada escritura recalcula estilos de todo el hero.
     let frame = 0;
+    let height = hero.offsetHeight || 1;
+    let last = "";
     const update = () => {
       frame = 0;
-      if (!hero) return;
-      const h = hero.offsetHeight || 1;
-      const p = Math.min(Math.max(-hero.getBoundingClientRect().top / h, 0), 1);
-      hero.style.setProperty("--p", p.toFixed(4));
+      const p = Math.min(Math.max(-hero.getBoundingClientRect().top / height, 0), 1).toFixed(3);
+      if (p !== last) {
+        last = p;
+        hero.style.setProperty("--p", p);
+      }
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const ro = new ResizeObserver(() => {
+      height = hero.offsetHeight || 1;
+    });
+    ro.observe(hero);
+
+    // Fuera de pantalla: sin listener de scroll y con los blobs en pausa.
+    let listening = false;
+    const heroIo = new IntersectionObserver(([entry]) => {
+      const visible = entry.isIntersecting;
+      hero.classList.toggle("is-idle", !visible);
+      if (visible && !listening) {
+        window.addEventListener("scroll", onScroll, { passive: true });
+        listening = true;
+      } else if (!visible && listening) {
+        window.removeEventListener("scroll", onScroll);
+        listening = false;
+      }
+      update(); // deja --p en su valor final al entrar o salir
+    });
+    heroIo.observe(hero);
 
     return () => {
       io.disconnect();
+      heroIo.disconnect();
+      ro.disconnect();
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
+      hero.classList.remove("is-idle");
       root.classList.remove("about-motion");
     };
   }, []);
@@ -119,13 +152,10 @@ function useScrollMotion(rootRef: React.RefObject<HTMLDivElement | null>, heroRe
 export default function AboutPage() {
   const { banners = [], about: aboutProp } = usePage<{ banners?: BannerSlide[]; about?: AboutContent | null }>().props;
   const about = aboutProp ?? DEFAULT_ABOUT;
-  const { text, lines, whatsappLocal, whatsappHref: waHref } = useCms();
-  const address = lines("showroom_address", ["Av. 20 de Octubre", "Esq. Rosendo Gutierrez", "Edif. Guadalquivir #2332"]).join(", ");
+  // Teléfono, dirección y mapa de Admin › Contacto
+  const { address, mapsHref, whatsappLocal, whatsappHref: waHref } = useCms();
   const displayPhone = whatsappLocal;
   const whatsappHref = waHref();
-  const mapsHref =
-    text("footer_maps") ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address} La Paz Bolivia`)}`;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -180,7 +210,10 @@ export default function AboutPage() {
                   <img
                     src={g.src}
                     alt={g.alt}
-                    loading="eager"
+                    width={900}
+                    height={1200}
+                    loading="lazy"
+                    decoding="async"
                     className={`about-zoom block w-full object-cover ${SLOTS[i % SLOTS.length].ratio}`}
                     style={{ objectPosition: g.focus }}
                   />

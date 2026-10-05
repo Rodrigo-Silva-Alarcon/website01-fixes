@@ -21,6 +21,8 @@ return [
     'folder_video' => 'data/videos/',
     // Fotos de la galería de "Nosotros" subidas desde el panel
     'folder_about' => 'data/about/',
+    // Logos del footer (modo claro / oscuro) subidos desde el panel
+    'folder_footer' => 'data/footer/',
 
     'permission_sectors' => [
         'general' => 'General',
@@ -34,6 +36,7 @@ return [
         'brands' => 'Marcas',
         'banners' => 'Banners',
         'about' => 'Nosotros',
+        'footer' => 'Footer',
         'inventories' => 'Inventarios',
         'carts' => 'Carritos',
         'configuracion' => 'Configuración',

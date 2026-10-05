@@ -118,6 +118,8 @@ class HandleInertiaRequests extends Middleware
             $base['currentpage'] = $request->page??1;
             $base['find'] = $request->find??'';
             $base['cmsTexts'] = $this->get_cms_texts();
+            $base['contact'] = $this->webContent()->contactInfo();
+            $base['footer'] = $this->webContent()->footerInfo();
         } else {
             $base['menu'] = [];
             $base['populares'] = [];
@@ -128,6 +130,8 @@ class HandleInertiaRequests extends Middleware
             $base['currentpage'] = 1;
             $base['find'] = '';
             $base['cmsTexts'] = [];
+            $base['contact'] = null;
+            $base['footer'] = null;
         }
 
         return $base;

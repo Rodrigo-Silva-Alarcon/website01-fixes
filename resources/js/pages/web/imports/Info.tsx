@@ -60,13 +60,13 @@ function TextoSchedule({ label }: { label: string }) {
 
 export default function Info() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { text } = useCms();
+  const { text, scheduleSummary } = useCms();
 
-  // Mensajes editables en Admin › Textos (topbar_1..3); el horario se comparte con el showroom
+  // Mensajes editables en Admin › Textos (topbar_1..2); el horario sale de Admin › Contacto
   const slides = [
     <TextoDelivery key="delivery" label={text("topbar_1", "Delivery gratuito")} />,
     <TextoPromo key="promo" label={text("topbar_2", "Promociones y descuentos exclusivos")} />,
-    <TextoSchedule key="schedule" label={text("topbar_3", text("business_hours", "Atención de lunes a sábado"))} />
+    <TextoSchedule key="schedule" label={scheduleSummary} />
   ];
 
   useEffect(() => {

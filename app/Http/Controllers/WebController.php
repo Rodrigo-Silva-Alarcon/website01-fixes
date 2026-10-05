@@ -156,7 +156,7 @@ class WebController extends Controller{
             'email.required' => 'El email es obligatorio.',
             'email.email' => 'El email no es válido.',
         ]);
-        Mail::to(config('contact.email'))->send(new MessageReceived($message));
+        Mail::to(\App\Models\ContactSetting::value('form_recipient') ?: config('contact.email'))->send(new MessageReceived($message));
 
         return redirect()->route('contact')->with('status', 'El mensaje fue enviado exitosamente.');
         

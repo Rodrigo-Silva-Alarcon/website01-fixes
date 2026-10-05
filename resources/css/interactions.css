@@ -313,41 +313,58 @@
     50% { transform: translate3d(8vw, -10%, 0); }
 }
 
+/* El hero no pinta fuera de su caja: los blobs no ensucian el resto de la página al moverse */
+.about-hero {
+    contain: paint;
+}
+
+/*
+ * Difuminado con radial-gradient en vez de filter: blur(), que obliga a re-rasterizar
+ * capas enormes (sobre todo con la máscara del contenedor). Mismo aspecto, mucho más barato.
+ */
 .about-blob {
     position: absolute;
+    aspect-ratio: 1;
     border-radius: 9999px;
-    filter: blur(90px);
+    background: radial-gradient(closest-side, var(--blob) 0%, var(--blob) 35%, transparent 100%);
     will-change: transform;
+    animation-timing-function: cubic-bezier(.45, 0, .55, 1);
+    animation-iteration-count: infinite;
+}
+
+/* Fuera de pantalla (o pestaña oculta) no se anima: lo controla el JS */
+.about-hero.is-idle .about-blob {
+    animation-play-state: paused;
 }
 
 .about-blob--orange {
-    top: -10%;
-    left: 5%;
-    width: 50vw;
-    max-width: 640px;
-    aspect-ratio: 1;
-    background: rgb(250 130 50 / 26%);
-    animation: about-drift-a 14s cubic-bezier(.45, 0, .55, 1) infinite;
+    top: -25%;
+    left: -5%;
+    width: 70vw;
+    max-width: 900px;
+    --blob: rgb(250 130 50 / 26%);
+    animation-name: about-drift-a;
+    animation-duration: 14s;
 }
 
 .about-blob--blue {
-    top: 0;
-    right: 0;
-    width: 54vw;
-    max-width: 680px;
-    aspect-ratio: 1;
-    background: rgb(21 94 239 / 20%);
-    animation: about-drift-b 16s cubic-bezier(.45, 0, .55, 1) infinite;
+    top: -15%;
+    right: -10%;
+    width: 74vw;
+    max-width: 940px;
+    --blob: rgb(21 94 239 / 20%);
+    animation-name: about-drift-b;
+    animation-duration: 16s;
 }
 
 .about-blob--peach {
-    bottom: -20%;
-    left: 35%;
-    width: 36vw;
-    max-width: 460px;
-    aspect-ratio: 1;
-    background: rgb(250 130 50 / 14%);
-    animation: about-drift-c 18s cubic-bezier(.45, 0, .55, 1) infinite;
+    bottom: -40%;
+    left: 28%;
+    width: 52vw;
+    max-width: 660px;
+    --blob: rgb(250 130 50 / 14%);
+    animation-name: about-drift-c;
+    animation-duration: 18s;
 }
 
 .about-rise {

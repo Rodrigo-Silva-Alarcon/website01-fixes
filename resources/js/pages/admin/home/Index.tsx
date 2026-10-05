@@ -109,7 +109,7 @@ const TYPE_META: Record<SectionType, { icon: LucideIcon; tone: string; hint: str
     products: { icon: ShoppingBag, tone: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300', hint: 'Fila de productos: elegidos a mano, populares, en oferta o de una categoría.' },
     promo: { icon: Sparkles, tone: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300', hint: 'Dos tarjetas grandes (naranja y azul) con el producto que elijas en cada una.' },
     brands: { icon: Award, tone: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300', hint: 'Cinta con los logos de las marcas publicadas.' },
-    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Dirección, horario, WhatsApp y mapa (textos en Admin › Textos).' },
+    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Dirección, horario, WhatsApp y mapa (datos en Admin › Contacto).' },
 };
 
 /** Tipos cuyo título y subtítulo se ven en la web. */

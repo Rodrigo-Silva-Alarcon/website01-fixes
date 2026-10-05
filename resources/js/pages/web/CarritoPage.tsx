@@ -115,11 +115,11 @@ function CartLine({ item, qty, busy, removing, onQty, onRemove }: {
 }
 
 export default function CarritoPage() {
-  const { whatsapp, lines } = useCms();
+  const { whatsapp, addressLines } = useCms();
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove } =
     useCart();
   const upsell = suggestions.slice(0, 4);
-  const address = lines("showroom_address", ["Av. 20 de Octubre esq. Rosendo Gutierrez"]).slice(0, 2).join(", ");
+  const address = addressLines.slice(0, 2).join(", ");
   const perks = [
     { icon: Truck, t: "Delivery gratuito, entrega en 24 h" },
     { icon: Lock, t: "Pago seguro: transferencia, QR o efectivo" },

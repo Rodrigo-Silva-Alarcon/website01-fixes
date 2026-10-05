@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Check, ChevronRight, Mail, MapPin, MessageCircle, Navigation, Send } from "lucide-react";
+import { ArrowUpRight, Check, ChevronRight, Mail, MapPin, MessageCircle, Navigation, Phone, Send } from "lucide-react";
 import { Link, useForm, usePage } from "@inertiajs/react";
 import { toast } from "sonner";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 import { useCms } from "@/lib/cms";
+import { groupSchedule, scheduleNow } from "@/lib/schedule";
 import HeroCarousel from "@/pages/web/components/HeroCarousel";
 import { BannerSlide } from "@/types/models";
 
 type FieldKey = "name" | "phone" | "email" | "message";
-type HoursRow = { d: string; h: string };
 
 const inputClass =
   "w-full rounded-2xl border-[1.5px] border-[#dfe2e6] bg-white px-[18px] text-base text-[#191c1f] outline-none transition-[border-color,box-shadow] duration-[180ms] placeholder:text-[#8a8f94] focus:border-[#fa8232] focus:shadow-[0_0_0_4px_rgba(250,130,50,.15)]";
@@ -28,53 +28,6 @@ function validate(data: Record<FieldKey, string>): Partial<Record<FieldKey, stri
   if (!/^\S+@\S+\.\S+$/.test(data.email.trim())) err.email = "Ingresa un email válido.";
   if (!data.message.trim()) err.message = "Escribe tu mensaje.";
   return err;
-}
-
-const DAYS = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
-const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-
-/** "Lunes - Viernes" → [1..5], "Sábado" → [6], "Lunes, Miércoles" → [1, 3] */
-function daysOf(label: string): number[] {
-  const found = [...normalize(label).matchAll(/domingo|lunes|martes|miercoles|jueves|viernes|sabado/g)].map((m) => DAYS.indexOf(m[0]));
-  if (found.length === 2 && /\s(-|–|a|al)\s/.test(normalize(label))) {
-    const [from, to] = found;
-    const range: number[] = [];
-    for (let d = from; ; d = (d + 1) % 7) {
-      range.push(d);
-      if (d === to || range.length > 7) break;
-    }
-    return range;
-  }
-  return found;
-}
-
-/** "9:00 AM - 6:00 PM" → [9, 18]; "Cerrado" o texto sin horas → null */
-function hoursOf(text: string): [number, number] | null {
-  const times = [...text.matchAll(/(\d{1,2})(?::(\d{2}))?\s*(a\.?\s?m\.?|p\.?\s?m\.?)?/gi)].map((m) => {
-    // sin AM/PM se toma como 24 h ("18:00")
-    const h = m[3] ? (Number(m[1]) % 12) + (/p/i.test(m[3]) ? 12 : 0) : Number(m[1]);
-    return h + Number(m[2] ?? 0) / 60;
-  });
-  return times.length >= 2 ? [times[0], times[1]] : null;
-}
-
-/**
- * Fila de hoy y si la tienda está abierta ahora, con la hora de La Paz.
- * open es null si el horario de hoy no indica horas (no se puede saber).
- */
-function scheduleNow(rows: HoursRow[]): { today: number; open: boolean | null } {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/La_Paz", weekday: "short", hour: "numeric", minute: "numeric", hourCycle: "h23",
-  }).formatToParts(new Date());
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(get("weekday"));
-  const hour = Number(get("hour")) + Number(get("minute")) / 60;
-
-  const today = rows.findIndex((r) => daysOf(r.d).includes(day));
-  if (today < 0) return { today, open: false };
-  if (/cerrado/i.test(rows[today].h)) return { today, open: false };
-  const span = hoursOf(rows[today].h);
-  return { today, open: span ? hour >= span[0] && hour < span[1] : null };
 }
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
@@ -108,31 +61,25 @@ function ChannelRow({ href, icon, label, value, external, small }: {
 
 export default function ContactoPage() {
   const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
-  const { text, lines, whatsappLocal, whatsappIntl, whatsappHref } = useCms();
+  const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, schedule: days, whatsappLocal, whatsappIntl, whatsappHref } = useCms();
 
-  // Datos editables desde Admin › Textos
-  const contactEmail = text("footer_email", "contacto@smarthouse.com.bo");
-  const addressLines = lines("showroom_address");
-  const contactAddress = addressLines.length
-    ? addressLines.join(", ")
-    : text("footer_address", "Av. 20 de Octubre esq. Rosendo Gutierrez, Edif. Guadalquivir #2332");
-  const mapsHref =
-    text("footer_maps") ||
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${contactAddress} La Paz Bolivia`)}`;
-  const hours: HoursRow[] = lines("business_hours", [
-    "Lunes - Viernes: 9:00 AM - 6:00 PM",
-    "Sábado: 10:00 AM - 4:00 PM",
-    "Domingo: Cerrado",
-  ]).map((row) => {
-    const i = row.indexOf(":");
-    return i > 0 && i < row.length - 1 ? { d: row.slice(0, i).trim(), h: row.slice(i + 1).trim() } : { d: row, h: "" };
-  });
+  // Textos por sección editables en Admin › Contacto
+  const t = {
+    heroTitle: contact?.hero_title || "Contáctanos",
+    heroSubtitle: contact?.hero_subtitle ?? "Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos pronto.",
+    formTitle: contact?.form_title || "Envíanos un mensaje",
+    formSubtitle: contact?.form_subtitle ?? "Los campos marcados con * son obligatorios.",
+    formSuccess: contact?.form_success || "El mensaje fue enviado exitosamente.",
+    hoursTitle: contact?.hours_title || "Horario de atención",
+    hoursNote: contact?.hours_note ?? "",
+  };
+  const hours = groupSchedule(days);
 
   // "Abierto ahora" / "HOY" dependen de la hora actual: se calculan solo en el navegador
-  const hoursKey = JSON.stringify(hours);
-  const [schedule, setSchedule] = useState<{ today: number; open: boolean | null } | null>(null);
+  const hoursKey = JSON.stringify(days);
+  const [schedule, setSchedule] = useState<{ today: number; open: boolean } | null>(null);
   useEffect(() => {
-    const update = () => setSchedule(scheduleNow(hours));
+    const update = () => setSchedule(scheduleNow(days));
     update();
     const id = window.setInterval(update, 60_000);
     return () => window.clearInterval(id);
@@ -157,7 +104,7 @@ export default function ContactoPage() {
       onSuccess: () => {
         reset();
         setSentTo(firstName);
-        toast.success("El mensaje fue enviado exitosamente.");
+        toast.success(t.formSuccess);
       },
       onError: () => toast.error("Revisa los campos del formulario e inténtalo de nuevo."),
     });
@@ -180,7 +127,7 @@ export default function ContactoPage() {
   return (
     <Layout>
       <Seo
-        title="Contáctanos"
+        title={t.heroTitle}
         description="¿Tienes dudas o necesitas ayuda? Contáctanos y te responderemos pronto. Estamos aquí para ayudarte."
       />
       {/* Banners asignados a "Contáctanos" en el panel */}
@@ -203,11 +150,13 @@ export default function ContactoPage() {
               <span className="text-[#191c1f]">Contacto</span>
             </nav>
             <h1 className="m-0 max-w-[900px] text-[clamp(40px,6vw,84px)] font-bold leading-[.98] tracking-[-.04em] [text-wrap:balance]">
-              Contáctanos
+              {t.heroTitle}
             </h1>
-            <p className="m-0 max-w-[640px] text-[clamp(16px,1.3vw,19px)] leading-[1.65] text-[#3d4247] [text-wrap:pretty]">
-              Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos pronto.
-            </p>
+            {t.heroSubtitle && (
+              <p className="m-0 max-w-[640px] text-[clamp(16px,1.3vw,19px)] leading-[1.65] text-[#3d4247] [text-wrap:pretty]">
+                {t.heroSubtitle}
+              </p>
+            )}
             <div className="flex flex-wrap justify-center gap-3 pt-1.5">
               <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className={`${pillSolid} px-[22px] py-3.5`}>
                 <MessageCircle className="size-5" />
@@ -234,7 +183,7 @@ export default function ContactoPage() {
                   <Check className="size-8" />
                 </span>
                 <span className="text-2xl font-bold tracking-[-.02em]">¡Gracias{sentTo ? `, ${sentTo}` : ""}!</span>
-                <span className="text-[15px] text-[#6b7076]">El mensaje fue enviado exitosamente.</span>
+                <span className="text-[15px] text-[#6b7076]">{t.formSuccess}</span>
                 <button
                   type="button"
                   onClick={() => setSentTo(null)}
@@ -246,8 +195,8 @@ export default function ContactoPage() {
             ) : (
               <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1.5">
-                  <h2 className="m-0 text-[clamp(26px,2.8vw,34px)] font-bold tracking-[-.03em]">Envíanos un mensaje</h2>
-                  <p className="m-0 text-[15px] text-[#6b7076]">Los campos marcados con * son obligatorios.</p>
+                  <h2 className="m-0 text-[clamp(26px,2.8vw,34px)] font-bold tracking-[-.03em]">{t.formTitle}</h2>
+                  {t.formSubtitle && <p className="m-0 text-[15px] text-[#6b7076]">{t.formSubtitle}</p>}
                 </div>
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-[18px]">
                   <Field label="Nombre completo *" error={errors.name}>
@@ -288,6 +237,12 @@ export default function ContactoPage() {
             <div className="flex flex-col rounded-[28px] border border-[#eceef0] p-2">
               <ChannelRow external href={whatsappHref()} icon={<MessageCircle className="size-6" />} label="WhatsApp" value={whatsappIntl} />
               <div className="mx-4 h-px bg-[#eceef0]" />
+              {phone && (
+                <>
+                  <ChannelRow href={`tel:${phone.replace(/[^\d+]/g, "")}`} icon={<Phone className="size-6" />} label="Teléfono" value={phone} />
+                  <div className="mx-4 h-px bg-[#eceef0]" />
+                </>
+              )}
               <ChannelRow href={`mailto:${contactEmail}`} icon={<Mail className="size-6" />} label="Email" value={contactEmail} />
               <div className="mx-4 h-px bg-[#eceef0]" />
               <ChannelRow external small href={mapsHref} icon={<MapPin className="size-6" />} label="Showroom" value={contactAddress} />
@@ -295,27 +250,34 @@ export default function ContactoPage() {
 
             <div className="flex flex-col gap-4 rounded-[28px] border border-[#fde3cf] bg-[#fff4ec] p-[clamp(20px,2.4vw,28px)]">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xl font-bold">Horario de atención</span>
-                {schedule && schedule.open !== null && (
+                <span className="text-xl font-bold">{t.hoursTitle}</span>
+                {schedule && (
                   <span className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[13px] font-bold" style={{ color: openColor }}>
                     <span className="size-2 rounded-full" style={{ backgroundColor: openColor }} />
                     {schedule.open ? "Abierto ahora" : "Cerrado ahora"}
                   </span>
                 )}
               </div>
-              {hours.map((row, i) => (
-                <div key={i} className="flex justify-between gap-3 border-b border-[#fde3cf] pb-3 text-[15px]">
+              {hours.map((row) => (
+                <div key={row.days.join("-")} className="flex justify-between gap-3 border-b border-[#fde3cf] pb-3 text-[15px]">
                   <span className="flex items-center gap-2 text-[#3d4247]">
-                    {row.d}
-                    {schedule?.today === i && (
+                    {row.label}
+                    {schedule && row.days.includes(schedule.today) && (
                       <span className="rounded-full bg-[#fa8232] px-2 py-0.5 text-[11px] font-bold tracking-[.04em] text-white">HOY</span>
                     )}
                   </span>
-                  {row.h && (
-                    <span className={`text-right font-semibold ${/cerrado/i.test(row.h) ? "text-[#c2410c]" : "text-[#191c1f]"}`}>{row.h}</span>
+                  {row.closed ? (
+                    <span className="text-right font-semibold text-[#c2410c]">Cerrado</span>
+                  ) : (
+                    <span className="flex flex-col text-right font-semibold tabular-nums text-[#191c1f]">
+                      {row.hours.map((h) => (
+                        <span key={h} className="whitespace-nowrap">{h}</span>
+                      ))}
+                    </span>
                   )}
                 </div>
               ))}
+              {t.hoursNote && <p className="m-0 text-sm leading-[1.5] text-[#6b7076]">{t.hoursNote}</p>}
             </div>
           </aside>
         </section>

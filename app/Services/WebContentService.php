@@ -7,6 +7,8 @@ use App\Models\AboutPage;
 use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\ContactSetting;
+use App\Models\FooterSetting;
 use App\Models\HomeSection;
 use App\Models\Inventory;
 use App\Models\Product;
@@ -45,7 +47,7 @@ class WebContentService
      */
     public static function flushCache(): void
     {
-        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about', 'web_home_sections'] as $key) {
+        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about', 'web_home_sections', 'web_contact', 'web_footer'] as $key) {
             Cache::forget($key);
         }
         foreach (self::BANNER_PAGES as $page) {
@@ -434,5 +436,38 @@ class WebContentService
                 'gallery' => AboutImage::orderBy('position')->get()->map(fn (AboutImage $image) => $image->toPublicArray())->all(),
             ];
         });
+    }
+
+    /**
+     * Datos de contacto, horario y textos de Contáctanos (Admin › Contacto), compartidos con
+     * toda la web pública. No incluye el correo interno que recibe el formulario.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function contactInfo(): ?array
+    {
+        return Cache::remember('web_contact', 3600, function (): ?array {
+            $contact = ContactSetting::first();
+            if (! $contact) {
+                return null;
+            }
+
+            return [
+                ...$contact->only(array_diff(array_keys(ContactSetting::DATA_FIELDS), ['form_recipient'])),
+                ...$contact->only(array_keys(ContactSetting::TEXT_FIELDS)),
+                'schedule' => $contact->schedule,
+                'schedule_summary' => $contact->schedule_summary,
+            ];
+        });
+    }
+
+    /**
+     * Logo (modo claro / oscuro) y textos del pie de página (Admin › Footer).
+     *
+     * @return array<string, mixed>|null
+     */
+    public function footerInfo(): ?array
+    {
+        return Cache::remember('web_footer', 3600, fn (): ?array => FooterSetting::first()?->toPublicArray());
     }
 }

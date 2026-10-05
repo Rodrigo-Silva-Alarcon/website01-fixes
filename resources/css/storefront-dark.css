@@ -195,6 +195,26 @@ html.sf-dark .storefront footer [data-name='Logo'] {
     background-color: #ffffff;
 }
 
+/* Logo del footer (Admin › Footer): versión clara u oscura según el tema. Con logo
+   transparente o con versión oscura, la pastilla deja de ser blanca y sigue el tema. */
+footer [data-name='Logo'] .footer-logo-light {
+    display: block;
+}
+
+footer [data-name='Logo'] .footer-logo-dark,
+html.sf-dark .storefront footer [data-name='Logo'] .footer-logo-light {
+    display: none;
+}
+
+html.sf-dark .storefront footer [data-name='Logo'] .footer-logo-dark {
+    display: block;
+}
+
+html.sf-dark .storefront footer [data-name='Logo'][data-logo-themed] {
+    background-color: var(--sf-surface-2);
+    border-color: var(--sf-border);
+}
+
 /* Logo de la cabecera sobre fondo oscuro: pastilla clara discreta */
 html.sf-dark .storefront [data-name='Header'] [data-name='Logo'] img {
     background: #ffffff;

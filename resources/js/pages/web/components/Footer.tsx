@@ -1,18 +1,21 @@
 import svgPaths from "@/pages/web/imports/svg-3m2zodg2fw";
 import { img } from "@/pages/web/imports/svg-ksqrv";
-import { usePage } from "@inertiajs/react";
+import { useCms } from "@/lib/cms";
+import FooterLogo, { useFooterContent, withYear } from "./FooterLogo";
 
 export default function Footer() {
-  const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
-  const texts = cmsTexts ?? {};
-  const whatsappRaw = texts.footer_whatsapp?.replace(/[^\d]/g, "") ?? "";
-  const whatsappHref = whatsappRaw ? `https://wa.me/${whatsappRaw}` : "";
-  const emailHref = texts.footer_email ? `mailto:${texts.footer_email}` : "";
-  const mapsHref = texts.footer_maps ?? "";
-  const facebookHref = texts.footer_facebook ?? "";
-  const instagramHref = texts.footer_instagram ?? "";
-  const twitterHref = texts.footer_twitter ?? "";
-  const address = texts.footer_address ?? "";
+  // Datos de Admin › Contacto (fuente única de la web)
+  const cms = useCms();
+  const whatsappHref = cms.whatsappHref();
+  const emailHref = cms.email ? `mailto:${cms.email}` : "";
+  const mapsHref = cms.mapsHref;
+  const facebookHref = cms.facebook;
+  const instagramHref = cms.instagram;
+  const twitterHref = cms.twitter;
+  const tiktokHref = cms.tiktok;
+  const address = cms.city;
+  // Logo y textos de Admin › Footer
+  const footer = useFooterContent();
 
   return (
     <footer className="bg-[#f6f7f8] border-t border-[#eceef0] relative w-full" data-name="Footer">
@@ -21,15 +24,7 @@ export default function Footer() {
           {/* Logo y Botones */}
           <div className="content-center flex flex-col md:flex-row flex-wrap gap-[32px] md:gap-[80px] items-center justify-between relative w-full">
             {/* Logo */}
-            <div className="bg-white border border-[#eceef0] rounded-[12px] px-[14px] py-[10px] shrink-0" data-name="Logo">
-              <img
-                loading="lazy"
-                decoding="async"
-                src="/images/logo-smarthouse.png"
-                alt="Smart House Importaciones SRL"
-                className="block h-[56px] md:h-[72px] w-auto object-contain"
-              />
-            </div>
+            <FooterLogo />
 
             {/* Botones de Contacto */}
             <div className="content-start flex flex-wrap gap-[12px] md:gap-[16px] items-center justify-center md:justify-end">
@@ -147,22 +142,41 @@ export default function Footer() {
                   </p>
                 </a>
               )}
+              {tiktokHref && (
+                <a
+                  href={tiktokHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="interactive-button bg-[#fa8232] box-border content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[8px] rounded-[40px] hover:bg-[#e67528] transition-colors cursor-pointer"
+                >
+                  <div className="relative shrink-0 size-[20px]" data-name="TikTok">
+                    <svg className="block size-full" preserveAspectRatio="none" viewBox="0 0 24 24" fill="white">
+                      <path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.4-2.47V9.67a5.68 5.68 0 0 0-.8-.06 5.69 5.69 0 0 0-5.69 5.69A5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.69V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.24-1.48z" />
+                    </svg>
+                  </div>
+                  <p className="font-dm_sans font-normal leading-[24px] text-[16px] text-nowrap text-white whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                    TikTok
+                  </p>
+                </a>
+              )}
             </div>
           </div>
 
           {/* Copyright */}
           <div className="box-border content-start flex flex-col md:flex-row flex-wrap gap-[12px] md:gap-[20px] items-start md:items-center justify-between px-0 py-[20px] relative w-full border-t border-[#dfe2e6]">
             <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center md:text-left w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
-              © Smart House, {new Date().getFullYear()}. Todos los derechos reservados.
+              {withYear(footer.copyright)}
             </p>
             {address && (
               <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center w-full md:w-auto" style={{ fontVariationSettings: "'opsz' 14" }}>
                 {address}
               </p>
             )}
-            <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center md:text-right w-full md:w-auto whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
-              Desarrollado por MegaLink S.R.L.
-            </p>
+            {footer.credits && (
+              <p className="font-dm_sans font-normal leading-[20px] text-[#6b7076] text-[14px] text-center md:text-right w-full md:w-auto whitespace-pre" style={{ fontVariationSettings: "'opsz' 14" }}>
+                {footer.credits}
+              </p>
+            )}
           </div>
         </div>
       </div>

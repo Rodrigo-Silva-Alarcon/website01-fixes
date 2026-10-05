@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react';
+import { autoSummary, DEFAULT_SCHEDULE, type ScheduleDay } from '@/lib/schedule';
 
 /**
  * Textos editables desde el panel (Admin › Textos). El backend comparte los publicados
@@ -66,8 +67,34 @@ export function whatsappLink(digits: string, message?: string): string {
     return `https://wa.me/${digits}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 }
 
+/** Datos de Admin › Contacto que comparte el backend como `contact` en las páginas públicas. */
+export interface ContactInfo {
+    whatsapp: string;
+    phone: string | null;
+    email: string;
+    address: string;
+    city: string | null;
+    maps_url: string | null;
+    website: string | null;
+    facebook: string | null;
+    instagram: string | null;
+    twitter: string | null;
+    tiktok: string | null;
+    schedule: ScheduleDay[];
+    schedule_summary: string | null;
+    hero_title: string;
+    hero_subtitle: string | null;
+    form_title: string;
+    form_subtitle: string | null;
+    form_success: string;
+    hours_title: string;
+    hours_note: string | null;
+}
+
+const DEFAULT_ADDRESS = ['Av. 20 de Octubre', 'Esq. Rosendo Gutierrez', 'Edif. Guadalquivir #2332'];
+
 export function useCms() {
-    const { cmsTexts } = usePage<{ cmsTexts?: Record<string, string> }>().props;
+    const { cmsTexts, contact } = usePage<{ cmsTexts?: Record<string, string>; contact?: ContactInfo | null }>().props;
     const texts = cmsTexts ?? {};
 
     /** Texto plano del panel o el valor por defecto. */
@@ -78,12 +105,37 @@ export function useCms() {
         return value ? value.split('\n') : fallback;
     };
 
-    const whatsapp = text('footer_whatsapp').replace(/\D/g, '') || DEFAULT_WHATSAPP;
+    // Admin › Contacto es la fuente única; los textos antiguos solo sirven de respaldo
+    const whatsapp = (contact?.whatsapp || text('footer_whatsapp')).replace(/\D/g, '') || DEFAULT_WHATSAPP;
+    const addressLines = contact?.address ? contact.address.split('\n').filter(Boolean) : lines('showroom_address', DEFAULT_ADDRESS);
+    const address = addressLines.join(', ');
+    const schedule = contact?.schedule?.length ? contact.schedule : DEFAULT_SCHEDULE;
+
+    const info = {
+        email: contact?.email || text('footer_email', 'contacto@smarthouse.com.bo'),
+        phone: contact?.phone || '',
+        addressLines,
+        address,
+        city: contact?.city ?? text('footer_address'),
+        mapsHref:
+            contact?.maps_url ||
+            text('footer_maps') ||
+            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address} La Paz Bolivia`)}`,
+        website: contact?.website ?? text('site_url', 'www.smarthousebo.com'),
+        facebook: contact ? contact.facebook || '' : text('footer_facebook'),
+        instagram: contact ? contact.instagram || '' : text('footer_instagram'),
+        twitter: contact ? contact.twitter || '' : text('footer_twitter'),
+        tiktok: contact?.tiktok || '',
+        schedule,
+        scheduleSummary: contact?.schedule_summary || autoSummary(schedule),
+    };
 
     return {
         texts,
         text,
         lines,
+        contact: contact ?? null,
+        ...info,
         whatsapp,
         whatsappLocal: formatWhatsappLocal(whatsapp),
         whatsappIntl: formatWhatsappIntl(whatsapp),
