@@ -182,8 +182,8 @@ export function ImageUploadField({ id, label, error, hint, existingUrl, deleteIm
 
             {preview && !deleteImage && (
                 <div className="space-y-2">
-                    <div className="relative w-48 h-32 border rounded-lg overflow-hidden">
-                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="relative w-full max-w-md border rounded-lg overflow-hidden">
+                        <img src={preview} alt="Preview" className="block w-full h-auto" />
                     </div>
                     <Button
                         type="button"

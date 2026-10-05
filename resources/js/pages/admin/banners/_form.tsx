@@ -1,8 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { useForm, FormEventHandler } from '@inertiajs/react';
 import { type BreadcrumbItem, Banner, Category } from '@/types';
 import { toast } from 'sonner';
@@ -30,8 +28,6 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
         product_id: banner.product_id,
         page_id: banner.page_id,
         summary: banner.summary || '',
-        // Un banner nuevo va al hero de Inicio por defecto; sin página no se muestra en ningún sitio.
-        pages: (banner.pages ?? (isEdit ? [] : ['1'])).map(String) as string[],
         delete_image: false,
         active: banner.active ?? true,
         sw_title: banner.sw_title ?? true,
@@ -106,38 +102,16 @@ export default function BannerForm({ banner, categories, isEdit = false, title, 
                 />
             </Field>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ImageUploadField
-                    id="image"
-                    label="Imagen / Banner"
-                    error={errors.image}
-                    hint="Imagen que se redimensionará automáticamente a 800x600 píxeles"
-                    existingUrl={banner.image_url}
-                    deleteImage={data.delete_image}
-                    onFileChange={(file) => setData('image', file)}
-                    onDeleteImageChange={(value) => setData('delete_image', value)}
-                />
-                <Field label="Páginas donde se muestra" htmlFor="pages" error={errors.pages ?? (errors as Record<string, string>)['pages.0']}>
-                    <div className="space-y-2">
-                        {TYPE_PAGES.map((page) => (
-                            <div key={page.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                    id={`page-${page.id}`}
-                                    checked={data.pages.includes(page.id)}
-                                    onCheckedChange={(checked) => {
-                                        if (checked) {
-                                            setData('pages', [...data.pages, page.id]);
-                                        } else {
-                                            setData('pages', data.pages.filter((id: string) => id !== page.id));
-                                        }
-                                    }}
-                                />
-                                <Label htmlFor={`page-${page.id}`}>{page.label}</Label>
-                            </div>
-                        ))}
-                    </div>
-                </Field>
-            </div>
+            <ImageUploadField
+                id="image"
+                label="Imagen / Banner"
+                error={errors.image}
+                hint="Imagen que se redimensionará automáticamente a 800x600 píxeles"
+                existingUrl={banner.image_url}
+                deleteImage={data.delete_image}
+                onFileChange={(file) => setData('image', file)}
+                onDeleteImageChange={(value) => setData('delete_image', value)}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Field label="Tipo de Banner" htmlFor="type" error={errors.type}>

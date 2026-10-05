@@ -20,10 +20,9 @@ class BannerRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $pages = $this->input('pages', []);
-
+        // Los banners solo se muestran en el hero de Inicio.
         $this->merge([
-            'pages' => array_values(array_unique(array_map('strval', array_filter((array) $pages, 'filled')))),
+            'pages' => ['1'],
         ]);
     }
 
