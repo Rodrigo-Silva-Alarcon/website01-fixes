@@ -1,33 +1,23 @@
+import { Fragment } from "react";
 import HeroCarousel from "@/pages/web/components/HeroCarousel";
 import Reveal from "@/pages/web/components/Reveal";
 import FeaturesBar from "@/pages/web/components/FeaturesBar";
 import Categorias from "@/pages/web/components/Categorias";
-import Ofertas from "@/pages/web/components/Ofertas";
+import HomeProducts from "@/pages/web/components/HomeProducts";
 import Destacados from "@/pages/web/components/Banner";
-import BlockCategory from "@/pages/web/imports/BlockCategory";
 import MarcasLogos from "@/pages/web/components/Marcas";
 import ShowroomSection from "@/pages/web/components/ShowroomSection";
 import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
-import { Product, Category, Brand, BannerSlide } from "@/types/models";
+import { BannerSlide, HomeSectionData } from "@/types/models";
 
 interface FormProps {
   banners: BannerSlide[];
-  populares: Product[];
-  categorias: Category[];
-  destacados: Product[];
-  brands: Brand[];
-  categories: Category[];
+  sections: HomeSectionData[];
 }
 
-export default function HomePage({
-  banners,
-  populares,
-  categorias,
-  destacados,
-  brands,
-  categories,
-}: FormProps) {
+/** Las secciones, su orden y su contenido se editan en Admin › Página de inicio. */
+export default function HomePage({ banners, sections }: FormProps) {
   return (
     <Layout>
       <Seo
@@ -37,41 +27,37 @@ export default function HomePage({
       <main className="flex w-full flex-col">
         <h1 className="sr-only">Smart House — Tecnología y electrodomésticos para tu hogar</h1>
 
-        {/* 1-3 se pintan sin animación de entrada: están en la primera pantalla
-            (el título de Categorías es el LCP en móvil) y no deben esperar al JS */}
-        {/* 1. Carrusel principal: banners activos de "Inicio" en el panel (cambia cada 15 s) */}
-        <HeroCarousel banners={banners} />
-
-        {/* 2. Barra de Beneficios y Garantías */}
-        <FeaturesBar />
-
-        {/* 3. Cuadrícula de Categorías */}
-        <Categorias />
-
-        {/* 4. Carrusel de Productos Populares con Descuento */}
-        <Reveal>
-          <Ofertas />
-        </Reveal>
-
-        {/* 5-6. Bloques de Productos por Categoría, con los banners destacados entre Consolas y Equipos de sonido */}
-        <BlockCategory
-          promo={
-            <Reveal>
-              <Destacados />
-            </Reveal>
-          }
-        />
-
-        {/* 7. Marquee Infinito de Marcas Aliadas */}
-        <Reveal>
-          <MarcasLogos />
-        </Reveal>
-
-        {/* 8. Showroom Físico en La Paz con WhatsApp y Mapa */}
-        <Reveal>
-          <ShowroomSection />
-        </Reveal>
+        {sections.map((section, index) => {
+          const content = renderSection(section, banners);
+          if (!content) return null;
+          // Las 3 primeras se pintan sin animación de entrada: están en la primera pantalla
+          // (en móvil el título de Categorías es el LCP) y no deben esperar al JS.
+          // Productos ya anima su cabecera y su fila por separado.
+          const animate = index >= 3 && section.type !== "products";
+          return <Fragment key={section.id}>{animate ? <Reveal>{content}</Reveal> : content}</Fragment>;
+        })}
       </main>
     </Layout>
   );
+}
+
+function renderSection(section: HomeSectionData, banners: BannerSlide[]) {
+  switch (section.type) {
+    case "hero":
+      return <HeroCarousel banners={banners} />;
+    case "features":
+      return <FeaturesBar />;
+    case "categories":
+      return <Categorias title={section.title} subtitle={section.subtitle} />;
+    case "products":
+      return <HomeProducts title={section.title} products={section.products ?? []} link={section.link} />;
+    case "promo":
+      return <Destacados products={section.products ?? []} />;
+    case "brands":
+      return <MarcasLogos title={section.title} subtitle={section.subtitle} />;
+    case "showroom":
+      return <ShowroomSection title={section.title} subtitle={section.subtitle} />;
+    default:
+      return null;
+  }
 }

@@ -1,20 +1,14 @@
-import { useEffect, useLayoutEffect, useRef, useState, type FormEventHandler, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useState, type FormEventHandler } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import { type Page } from '@inertiajs/core';
 import { route } from 'ziggy-js';
 import { toast } from 'sonner';
 import {
-    ArrowDown,
     ArrowLeft,
     ArrowRight,
-    ArrowUp,
-    Crosshair,
     ExternalLink,
     FileText,
-    GripVertical,
     History,
     ImageIcon,
-    ImageUp,
     Loader2,
     RotateCcw,
     Save,
@@ -30,11 +24,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Field } from '@/components/admin/form-shell';
-
-interface Editor {
-    id: number;
-    name: string;
-}
+import { ConfirmDialog } from '@/components/admin/confirm-dialog';
+import { useUnsavedChangesGuard } from '@/hooks/use-unsaved-changes';
+import { Gallery } from './_gallery';
+import { type AboutImage, type Editor, flash, formatDate } from './_shared';
 
 interface AboutPageData {
     title: string;
@@ -44,18 +37,6 @@ interface AboutPageData {
     mission: string;
     vision_title: string;
     vision: string;
-    updated_at: string | null;
-    editor: Editor | null;
-}
-
-interface AboutImage {
-    id: number;
-    position: number;
-    image: string;
-    image_url: string;
-    alt: string;
-    focus_x: number;
-    focus_y: number;
     updated_at: string | null;
     editor: Editor | null;
 }
@@ -93,9 +74,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Nosotros', href: route('admin.about.index') },
 ];
 
-/** Formato de cada posición en la web: 1 y 4 anchas, 2 y 3 angostas (igual que AboutPage). */
-const SLOT_RATIO: Record<number, string> = { 1: '4 / 5', 2: '3 / 5', 3: '3 / 5', 4: '4 / 5' };
-
 const ACTION_STYLE: Record<string, string> = {
     text_updated: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
     image_replaced: 'bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
@@ -104,22 +82,18 @@ const ACTION_STYLE: Record<string, string> = {
     image_moved: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
 };
 
-const formatDate = (value: string | null) =>
-    value ? new Date(value).toLocaleString('es-BO', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-
 const assetUrl = (path: string) => (/^https?:\/\//.test(path) ? path : `/${path.replace(/^\/+/, '')}`);
-
-/** Muestra el mensaje flash que devuelve el servidor tras cada guardado. */
-const flash = (page: Page) => {
-    const messages = (page.props as { flash?: { success?: string; error?: string } }).flash;
-    if (messages?.success) toast.success(messages.success);
-    if (messages?.error) toast.error(messages.error);
-};
 
 export default function AboutIndex({ page, images, logs, actions, fields, filters, tab: initialTab }: Props) {
     const { hasPermission } = usePermissions();
     const canEdit = hasPermission('edit_about');
     const [tab, setTab] = useState(['texts', 'gallery', 'history'].includes(initialTab) ? initialTab : 'texts');
+    const [textsDirty, setTextsDirty] = useState(false);
+    const [galleryChanges, setGalleryChanges] = useState<string[]>([]);
+    const leave = useUnsavedChangesGuard(textsDirty || galleryChanges.length > 0);
+
+    const sections = [textsDirty && 'los textos', galleryChanges.length > 0 && 'la galería'].filter(Boolean).join(' y ');
+    const leaveDetails = [...(textsDirty ? ['Textos modificados'] : []), ...galleryChanges];
 
     const changeTab = (value: string) => {
         setTab(value);
@@ -185,11 +159,12 @@ export default function AboutIndex({ page, images, logs, actions, fields, filter
                                 </TabsTrigger>
                             </TabsList>
 
-                            <TabsContent value="texts" className="mt-2">
-                                <TextsForm page={page} canEdit={canEdit} />
+                            {/* Textos y galería se mantienen montados para no perder los cambios sin guardar al cambiar de pestaña */}
+                            <TabsContent value="texts" forceMount className="mt-2 data-[state=inactive]:hidden">
+                                <TextsForm page={page} canEdit={canEdit} onDirtyChange={setTextsDirty} />
                             </TabsContent>
-                            <TabsContent value="gallery" className="mt-2">
-                                <Gallery images={images} canEdit={canEdit} />
+                            <TabsContent value="gallery" forceMount className="mt-2 data-[state=inactive]:hidden">
+                                <Gallery images={images} canEdit={canEdit} onDirtyChange={setGalleryChanges} />
                             </TabsContent>
                             <TabsContent value="history" className="mt-2">
                                 <HistoryList logs={logs} actions={actions} fields={fields} filters={filters} />
@@ -198,13 +173,24 @@ export default function AboutIndex({ page, images, logs, actions, fields, filter
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmDialog
+                open={leave.open}
+                title="Tienes cambios sin guardar"
+                description={`Si sales ahora, se perderán los cambios en ${sections || 'esta página'}. Guárdalos antes de continuar o sal sin guardar.`}
+                details={leaveDetails}
+                confirmLabel="Salir sin guardar"
+                cancelLabel="Seguir editando"
+                onConfirm={leave.confirm}
+                onCancel={leave.cancel}
+            />
         </AppLayout>
     );
 }
 
 /* ─────────────────────────────── Textos ─────────────────────────────── */
 
-function TextsForm({ page, canEdit }: { page: AboutPageData; canEdit: boolean }) {
+function TextsForm({ page, canEdit, onDirtyChange }: { page: AboutPageData; canEdit: boolean; onDirtyChange: (dirty: boolean) => void }) {
+    const [confirmDiscard, setConfirmDiscard] = useState(false);
     const { data, setData, put, processing, errors, isDirty, reset } = useForm({
         title: page.title ?? '',
         title_highlight: page.title_highlight ?? '',
@@ -224,8 +210,17 @@ function TextsForm({ page, canEdit }: { page: AboutPageData; canEdit: boolean })
                 // Los valores guardados pasan a ser la nueva base (isDirty vuelve a false)
                 reset();
             },
-            onError: () => toast.error('Por favor corrige los errores en el formulario'),
+            onError: (errs) =>
+                toast.error('No se pudieron guardar los textos', { description: Object.values(errs)[0] ?? 'Revisa los campos marcados en rojo.' }),
         });
+    };
+
+    useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange]);
+
+    const discard = () => {
+        reset();
+        setConfirmDiscard(false);
+        toast('Cambios descartados', { description: 'Los textos volvieron a como están publicados en la web.' });
     };
 
     const counter = (value: string, max: number) => (
@@ -286,7 +281,7 @@ function TextsForm({ page, canEdit }: { page: AboutPageData; canEdit: boolean })
                             {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Guardar textos
                         </Button>
-                        <Button type="button" variant="outline" disabled={processing || !isDirty} onClick={() => reset()}>
+                        <Button type="button" variant="outline" disabled={processing || !isDirty} onClick={() => setConfirmDiscard(true)}>
                             <RotateCcw className="mr-2 h-4 w-4" />
                             Descartar
                         </Button>
@@ -315,366 +310,18 @@ function TextsForm({ page, canEdit }: { page: AboutPageData; canEdit: boolean })
                     </div>
                 </div>
             </aside>
+
+            <ConfirmDialog
+                open={confirmDiscard}
+                tone="danger"
+                title="¿Descartar los cambios en los textos?"
+                description="Los textos volverán a como están publicados en la web. Esta acción no se puede deshacer."
+                confirmLabel="Descartar cambios"
+                cancelLabel="Seguir editando"
+                onConfirm={discard}
+                onCancel={() => setConfirmDiscard(false)}
+            />
         </form>
-    );
-}
-
-/* ─────────────────────────────── Galería ─────────────────────────────── */
-
-interface GalleryItem {
-    id: number;
-    image_url: string;
-    focus_x: number;
-    focus_y: number;
-    editor: Editor | null;
-    updated_at: string | null;
-    /** Foto nueva elegida pero todavía sin guardar */
-    file?: File;
-    preview?: string;
-}
-
-const toItems = (images: AboutImage[]): GalleryItem[] =>
-    images.map(({ id, image_url, focus_x, focus_y, editor, updated_at }) => ({ id, image_url, focus_x, focus_y, editor, updated_at }));
-
-/** Escritorio (≥1024px): cuadrícula de 4 con arrastrar y soltar. Móvil/tablet: lista vertical con flechas. */
-function useIsDesktop() {
-    const [desktop, setDesktop] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
-    useEffect(() => {
-        const query = window.matchMedia('(min-width: 1024px)');
-        const update = () => setDesktop(query.matches);
-        query.addEventListener('change', update);
-        return () => query.removeEventListener('change', update);
-    }, []);
-    return desktop;
-}
-
-interface DragState {
-    id: number;
-    dx: number;
-    dy: number;
-    overId: number | null;
-}
-
-function Gallery({ images, canEdit }: { images: AboutImage[]; canEdit: boolean }) {
-    const desktop = useIsDesktop();
-    const [items, setItems] = useState<GalleryItem[]>(() => toItems(images));
-    const [saving, setSaving] = useState(false);
-    const [drag, setDrag] = useState<DragState | null>(null);
-
-    const cards = useRef(new Map<number, HTMLElement>());
-    const startRects = useRef(new Map<number, DOMRect>());
-    const dragOrigin = useRef({ x: 0, y: 0 });
-    const flipFrom = useRef<Map<number, DOMRect> | null>(null);
-
-    // Tras guardar, el servidor devuelve el estado real: se vuelve a partir de él
-    useEffect(() => {
-        setItems((prev) => {
-            prev.forEach((item) => item.preview && URL.revokeObjectURL(item.preview));
-            return toItems(images);
-        });
-    }, [images]);
-
-    const dirty =
-        items.some((item, i) => item.id !== images[i]?.id || item.file || item.focus_x !== images[i]?.focus_x || item.focus_y !== images[i]?.focus_y) &&
-        items.length > 0;
-
-    const measure = () => {
-        const rects = new Map<number, DOMRect>();
-        cards.current.forEach((el, id) => rects.set(id, el.getBoundingClientRect()));
-        return rects;
-    };
-
-    /** Cambia el orden animando cada tarjeta desde donde estaba hasta su nuevo lugar (FLIP). */
-    const commitOrder = (next: GalleryItem[]) => {
-        flipFrom.current = measure();
-        setItems(next);
-    };
-
-    useLayoutEffect(() => {
-        const from = flipFrom.current;
-        flipFrom.current = null;
-        if (!from) return;
-        cards.current.forEach((el, id) => {
-            const first = from.get(id);
-            if (!first) return;
-            const last = el.getBoundingClientRect();
-            const dx = first.left - last.left;
-            const dy = first.top - last.top;
-            const sx = first.width / last.width;
-            const sy = first.height / last.height;
-            if (!dx && !dy && sx === 1 && sy === 1) return;
-            el.animate(
-                [
-                    { transformOrigin: 'top left', transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
-                    { transformOrigin: 'top left', transform: 'none' },
-                ],
-                { duration: 380, easing: 'cubic-bezier(.2,.8,.2,1)' },
-            );
-        });
-    }, [items, drag]);
-
-    const swap = (a: number, b: number) => {
-        const next = [...items];
-        [next[a], next[b]] = [next[b], next[a]];
-        commitOrder(next);
-    };
-
-    const moveBy = (index: number, delta: number) => {
-        const target = index + delta;
-        if (target >= 0 && target < items.length) swap(index, target);
-    };
-
-    const startDrag = (e: ReactPointerEvent<HTMLElement>, id: number) => {
-        if (!canEdit || saving) return;
-        e.currentTarget.setPointerCapture(e.pointerId);
-        startRects.current = measure();
-        dragOrigin.current = { x: e.clientX, y: e.clientY };
-        setDrag({ id, dx: 0, dy: 0, overId: null });
-    };
-
-    const moveDrag = (e: ReactPointerEvent<HTMLElement>) => {
-        if (!drag) return;
-        let overId: number | null = null;
-        startRects.current.forEach((rect, id) => {
-            if (id !== drag.id && e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) overId = id;
-        });
-        setDrag({ id: drag.id, dx: e.clientX - dragOrigin.current.x, dy: e.clientY - dragOrigin.current.y, overId });
-    };
-
-    const endDrag = () => {
-        if (!drag) return;
-        const from = items.findIndex((item) => item.id === drag.id);
-        const to = items.findIndex((item) => item.id === drag.overId);
-        if (to >= 0 && from !== to) {
-            swap(from, to);
-        } else {
-            // Sin destino: la tarjeta vuelve suavemente a su lugar
-            flipFrom.current = measure();
-        }
-        setDrag(null);
-    };
-
-    const patchItem = (id: number, patch: Partial<GalleryItem>) => setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-
-    const pickFile = (id: number, file: File) => {
-        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return toast.error('Formato no permitido: usa JPG, PNG o WebP');
-        if (file.size > 8 * 1024 * 1024) return toast.error('La imagen no debe superar los 8MB');
-        const current = items.find((item) => item.id === id);
-        if (current?.preview) URL.revokeObjectURL(current.preview);
-        patchItem(id, { file, preview: URL.createObjectURL(file), focus_x: 50, focus_y: 50 });
-    };
-
-    const discard = () => {
-        items.forEach((item) => item.preview && URL.revokeObjectURL(item.preview));
-        setItems(toItems(images));
-    };
-
-    const save = () => {
-        setSaving(true);
-        router.post(
-            route('admin.about.gallery'),
-            { images: items.map(({ id, focus_x, focus_y, file }) => ({ id, focus_x, focus_y, ...(file ? { image: file } : {}) })) },
-            {
-                forceFormData: true,
-                preserveScroll: true,
-                onSuccess: flash,
-                onError: (errs) => toast.error(Object.values(errs)[0] ?? 'No se pudo guardar la galería'),
-                onFinish: () => setSaving(false),
-            },
-        );
-    };
-
-    return (
-        <div className="grid gap-4">
-            <p className="text-sm text-muted-foreground">
-                {desktop
-                    ? 'Arrastra una tarjeta desde el asa y suéltala sobre otra para intercambiar sus posiciones. Las posiciones 1 y 4 son anchas, la 2 y 3 angostas.'
-                    : 'Usa las flechas para subir o bajar cada foto. Las posiciones 1 y 4 son anchas, la 2 y 3 angostas.'}
-                {canEdit && ' Toca o arrastra sobre una foto para elegir el punto que queda centrado.'}
-            </p>
-
-            <div className={desktop ? 'grid grid-cols-[1.25fr_1fr_1fr_1.25fr] items-start gap-4' : 'mx-auto grid w-full max-w-md gap-4'}>
-                {items.map((item, index) => (
-                    <ImageCard
-                        key={item.id}
-                        item={item}
-                        index={index}
-                        total={items.length}
-                        canEdit={canEdit}
-                        saving={saving}
-                        desktop={desktop}
-                        drag={drag}
-                        registerEl={(el) => (el ? cards.current.set(item.id, el) : cards.current.delete(item.id))}
-                        onHandleDown={(e) => startDrag(e, item.id)}
-                        onHandleMove={moveDrag}
-                        onHandleUp={endDrag}
-                        onMove={(delta) => moveBy(index, delta)}
-                        onFocus={(x, y) => patchItem(item.id, { focus_x: x, focus_y: y })}
-                        onFile={(file) => pickFile(item.id, file)}
-                    />
-                ))}
-            </div>
-
-            {canEdit && (
-                <div className="sticky bottom-3 z-10 flex flex-wrap items-center gap-3 rounded-xl border bg-background/95 p-3 shadow-sm backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
-                    <Button type="button" disabled={saving || !dirty} onClick={save} className="flex-1 sm:flex-none">
-                        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                        Guardar galería
-                    </Button>
-                    <Button type="button" variant="outline" disabled={saving || !dirty} onClick={discard}>
-                        <RotateCcw className="mr-2 h-4 w-4" />
-                        Descartar
-                    </Button>
-                    {dirty && <span className="text-sm text-orange-600">Hay cambios sin guardar</span>}
-                </div>
-            )}
-        </div>
-    );
-}
-
-interface ImageCardProps {
-    item: GalleryItem;
-    index: number;
-    total: number;
-    canEdit: boolean;
-    saving: boolean;
-    desktop: boolean;
-    drag: DragState | null;
-    registerEl: (el: HTMLElement | null) => void;
-    onHandleDown: (e: ReactPointerEvent<HTMLElement>) => void;
-    onHandleMove: (e: ReactPointerEvent<HTMLElement>) => void;
-    onHandleUp: () => void;
-    onMove: (delta: number) => void;
-    onFocus: (x: number, y: number) => void;
-    onFile: (file: File) => void;
-}
-
-function ImageCard({ item, index, total, canEdit, saving, desktop, drag, registerEl, onHandleDown, onHandleMove, onHandleUp, onMove, onFocus, onFile }: ImageCardProps) {
-    const fileRef = useRef<HTMLInputElement>(null);
-    const picking = useRef(false);
-    // En móvil el encuadre se activa a propósito para no bloquear el scroll al tocar la foto
-    const [adjusting, setAdjusting] = useState(false);
-
-    const position = index + 1;
-    const wide = position === 1 || position === 4;
-    const isDragged = drag?.id === item.id;
-    const isTarget = !!drag && drag.overId === item.id;
-    const focusActive = canEdit && !saving && !drag && (desktop || adjusting);
-
-    const setFocusFromPointer = (e: ReactPointerEvent<HTMLDivElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const clamp = (n: number) => Math.round(Math.min(100, Math.max(0, n)));
-        onFocus(clamp(((e.clientX - rect.left) / rect.width) * 100), clamp(((e.clientY - rect.top) / rect.height) * 100));
-    };
-
-    return (
-        <div
-            ref={registerEl}
-            className={`flex min-w-0 flex-col gap-3 rounded-2xl border bg-card p-2.5 shadow-sm transition-shadow ${isTarget ? 'ring-2 ring-[#fa8232] ring-offset-2 ring-offset-background' : ''} ${isDragged ? 'relative z-50 shadow-2xl' : ''}`}
-            style={isDragged ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.03)`, willChange: 'transform' } : undefined}
-        >
-            <div className="flex items-center justify-between gap-2 px-1">
-                <span className="flex items-center gap-2 text-sm font-semibold">
-                    <span className="flex size-6 items-center justify-center rounded-full bg-[#fa8232] text-xs text-white">{position}</span>
-                    <span className="text-muted-foreground">{wide ? 'Ancha' : 'Angosta'}</span>
-                </span>
-                {canEdit &&
-                    (desktop ? (
-                        <div
-                            role="button"
-                            aria-label="Arrastrar para cambiar de posición"
-                            title="Arrastrar para cambiar de posición"
-                            className={`flex size-8 touch-none select-none items-center justify-center rounded-md text-muted-foreground hover:bg-muted ${saving ? 'opacity-40' : isDragged ? 'cursor-grabbing' : 'cursor-grab'}`}
-                            onPointerDown={onHandleDown}
-                            onPointerMove={onHandleMove}
-                            onPointerUp={onHandleUp}
-                            onPointerCancel={onHandleUp}
-                        >
-                            <GripVertical className="h-4 w-4" />
-                        </div>
-                    ) : (
-                        <div className="flex gap-1">
-                            <Button type="button" size="icon" variant="outline" className="size-9" disabled={saving || index === 0} onClick={() => onMove(-1)} aria-label="Subir">
-                                <ArrowUp className="h-4 w-4" />
-                            </Button>
-                            <Button type="button" size="icon" variant="outline" className="size-9" disabled={saving || index === total - 1} onClick={() => onMove(1)} aria-label="Bajar">
-                                <ArrowDown className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-            </div>
-
-            <div
-                className={`relative w-full select-none overflow-hidden rounded-[18px] bg-muted ${focusActive ? 'touch-none cursor-crosshair' : ''} ${!desktop ? 'mx-auto max-w-[17rem]' : ''}`}
-                style={{ aspectRatio: SLOT_RATIO[position] ?? '4 / 5' }}
-                onPointerDown={(e) => {
-                    if (!focusActive) return;
-                    picking.current = true;
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    setFocusFromPointer(e);
-                }}
-                onPointerMove={(e) => picking.current && focusActive && setFocusFromPointer(e)}
-                onPointerUp={() => (picking.current = false)}
-                onPointerCancel={() => (picking.current = false)}
-            >
-                <img
-                    src={item.preview ?? item.image_url}
-                    alt=""
-                    draggable={false}
-                    className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-                    style={{ objectPosition: `${item.focus_x}% ${item.focus_y}%` }}
-                />
-                {canEdit && (desktop || adjusting) && (
-                    <span
-                        className="pointer-events-none absolute flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-[#fa8232]/80 text-white shadow-md"
-                        style={{ left: `${item.focus_x}%`, top: `${item.focus_y}%` }}
-                    >
-                        <Crosshair className="h-4 w-4" />
-                    </span>
-                )}
-                {item.file && <span className="absolute left-2 top-2 rounded-full bg-[#fa8232] px-2 py-0.5 text-[11px] font-medium text-white">Nueva</span>}
-                {saving && (
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                    </span>
-                )}
-            </div>
-
-            <p className="px-1 text-xs text-muted-foreground">
-                Encuadre: {item.focus_x}% · {item.focus_y}%
-                {item.editor && (
-                    <span className="block truncate">
-                        Editado por {item.editor.name} · {formatDate(item.updated_at)}
-                    </span>
-                )}
-            </p>
-
-            {canEdit && (
-                <div className={`mt-auto grid gap-2 ${desktop ? '' : 'grid-cols-2'}`}>
-                    <input
-                        ref={fileRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        className="hidden"
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) onFile(file);
-                            e.target.value = '';
-                        }}
-                    />
-                    {!desktop && (
-                        <Button type="button" size="sm" variant={adjusting ? 'default' : 'outline'} disabled={saving} onClick={() => setAdjusting((v) => !v)}>
-                            <Crosshair className="mr-1.5 h-4 w-4" />
-                            {adjusting ? 'Listo' : 'Encuadre'}
-                        </Button>
-                    )}
-                    <Button type="button" variant="outline" size="sm" disabled={saving} onClick={() => fileRef.current?.click()}>
-                        <ImageUp className="mr-1.5 h-4 w-4" />
-                        Cambiar imagen
-                    </Button>
-                </div>
-            )}
-        </div>
     );
 }
 

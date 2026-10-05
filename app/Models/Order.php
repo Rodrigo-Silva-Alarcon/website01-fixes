@@ -19,6 +19,8 @@ class Order extends Model
         'customer_phone',
         'customer_email',
         'customer_address',
+        'customer_lat',
+        'customer_lng',
         'notes',
         'status',
         'payment_method',
@@ -26,6 +28,8 @@ class Order extends Model
 
     protected $casts = [
         'total' => 'decimal:2',
+        'customer_lat' => 'float',
+        'customer_lng' => 'float',
     ];
 
     /**

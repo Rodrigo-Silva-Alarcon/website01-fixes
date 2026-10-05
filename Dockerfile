@@ -37,6 +37,7 @@ COPY deploy/entrypoint.sh /entrypoint.sh
 COPY deploy/nginx.conf /etc/nginx/sites-available/default
 COPY deploy/supervisord.conf /etc/supervisord.conf
 COPY deploy/php-fpm-pool.conf /usr/local/etc/php-fpm.d/www.conf
+COPY deploy/php-uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN rm -rf node_modules \
     && chown -R www-data:www-data storage bootstrap/cache \
     && mkdir -p /persist \

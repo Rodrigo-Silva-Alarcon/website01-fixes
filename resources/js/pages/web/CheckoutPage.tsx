@@ -1,11 +1,12 @@
 import { Link, router, useForm, usePage } from "@inertiajs/react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Banknote,
   Check,
   ChevronRight,
   CircleAlert,
+  Crosshair,
   Landmark,
   Lock,
   MapPin,
@@ -15,6 +16,7 @@ import {
   Plus,
   Store,
   Truck,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import Layout from "./layouts/Layout";
@@ -23,6 +25,7 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 import { Cart, CartItem, PagePropsMessage } from "@/types/models";
 import { cartTotals, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { useCms } from "@/lib/cms";
+import DeliveryMap, { forwardGeocode, reverseGeocode, type LatLng } from "./components/DeliveryMap";
 
 type Mode = "delivery" | "pickup";
 
@@ -151,24 +154,85 @@ export default function CheckoutPage() {
   const count = useMemo(() => items.reduce((n, i) => n + i.amount, 0), [items]);
   const [qtyPending, setQtyPending] = useState(false);
   const [mode, setMode] = useState<Mode>("delivery");
-  const [mapQuery, setMapQuery] = useState("");
+  // `pinned`: el cliente marcó el punto en el mapa; a partir de ahí escribir no mueve el pin.
+  const [point, setPoint] = useState<LatLng | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const [geoBusy, setGeoBusy] = useState(false);
+  const reverseAbort = useRef<AbortController | null>(null);
 
   const { data, setData, post, processing, errors, transform } = useForm({
     customer_name: "",
     customer_phone: "",
     customer_email: "",
     customer_address: "",
+    customer_lat: null as number | null,
+    customer_lng: null as number | null,
     notes: "",
     payment_method: "transfer",
   });
 
   // El retiro en tienda no pide dirección, pero el backend la requiere.
-  transform((d) => (mode === "pickup" ? { ...d, customer_address: PICKUP_ADDRESS } : d));
+  transform((d) =>
+    mode === "pickup" ? { ...d, customer_address: PICKUP_ADDRESS, customer_lat: null, customer_lng: null } : d,
+  );
 
+  // Sin punto fijado, la dirección escrita centra el mapa de forma aproximada.
   useEffect(() => {
-    const t = setTimeout(() => setMapQuery(data.customer_address.trim()), 700);
-    return () => clearTimeout(t);
-  }, [data.customer_address]);
+    const q = data.customer_address.trim();
+    if (pinned || q.length < 5) return;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      forwardGeocode(`${q}, Bolivia`, ctrl.signal)
+        .then((p) => p && setPoint(p))
+        .catch(() => {});
+    }, 800);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [data.customer_address, pinned]);
+
+  const pickPoint = useCallback(
+    (p: LatLng) => {
+      const lat = Number(p.lat.toFixed(7));
+      const lng = Number(p.lng.toFixed(7));
+      setPoint({ lat, lng });
+      setPinned(true);
+      setData((d) => ({ ...d, customer_lat: lat, customer_lng: lng }));
+      reverseAbort.current?.abort();
+      const ctrl = new AbortController();
+      reverseAbort.current = ctrl;
+      reverseGeocode({ lat, lng }, ctrl.signal)
+        .then((addr) => addr && setData((d) => ({ ...d, customer_address: addr.slice(0, 250) })))
+        .catch(() => {});
+    },
+    [setData],
+  );
+
+  const clearPin = () => {
+    reverseAbort.current?.abort();
+    setPinned(false);
+    setData((d) => ({ ...d, customer_lat: null, customer_lng: null }));
+  };
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Tu navegador no permite obtener la ubicación.");
+      return;
+    }
+    setGeoBusy(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoBusy(false);
+        pickPoint({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => {
+        setGeoBusy(false);
+        toast.error("No pudimos obtener tu ubicación. Marca el punto en el mapa.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
 
   const changeQty = useCallback((item: CartItem, amount: number) => {
     if (amount < 1 || amount > 9999) return;
@@ -334,19 +398,39 @@ export default function CheckoutPage() {
                       className={inputCls}
                     />
                   </Field>
-                  <div className="relative overflow-hidden rounded-[18px] border border-[#eceef0] bg-[#f6f7f8]">
-                    {mapQuery ? (
-                      <iframe
-                        title="Mapa de ubicación de entrega"
-                        src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
-                        className="block h-48 w-full border-0 sm:h-60"
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                    ) : (
-                      <div className="flex h-32 flex-col items-center justify-center gap-2 px-4 text-center text-sm text-[#6b7076] sm:h-40">
-                        <MapPin size={22} aria-hidden />
-                        Escribe tu dirección y el mapa mostrará la ubicación.
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-[13px] text-[#6b7076]">
+                        <MapPin size={15} className="shrink-0 text-[#c2410c]" aria-hidden />
+                        Toca el mapa o arrastra el pin para marcar la ubicación exacta.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={useMyLocation}
+                        disabled={geoBusy}
+                        className="flex items-center gap-1.5 rounded-full border-[1.5px] border-[#dfe2e6] px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:border-[#fa8232] hover:text-[#c2410c] disabled:opacity-60"
+                      >
+                        <Crosshair size={15} aria-hidden />
+                        {geoBusy ? "Ubicando…" : "Usar mi ubicación"}
+                      </button>
+                    </div>
+                    <div className="relative isolate overflow-hidden rounded-[18px] border border-[#eceef0] bg-[#f6f7f8]">
+                      <DeliveryMap point={point} onPick={pickPoint} className="h-60 w-full sm:h-[300px]" />
+                    </div>
+                    {pinned && (
+                      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-[#fff4ec] px-4 py-2.5 text-[13px] text-[#3d4247]">
+                        <span className="flex items-center gap-1.5">
+                          <Check size={15} className="shrink-0 text-[#c2410c]" aria-hidden />
+                          Punto fijado. Puedes corregir la dirección (ej. número de casa) sin mover el pin.
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearPin}
+                          className="flex items-center gap-1 font-semibold text-[#c2410c] hover:underline"
+                        >
+                          <X size={14} aria-hidden />
+                          Quitar punto
+                        </button>
                       </div>
                     )}
                   </div>

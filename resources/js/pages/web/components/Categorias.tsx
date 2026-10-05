@@ -194,7 +194,7 @@ function CategoryTile({ slot, offset, hidden }: { slot: Slot; offset: number; hi
   );
 }
 
-export default function Categorias() {
+export default function Categorias({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
   const { categorias } = usePage<{ categorias: Category[] }>().props;
 
   if (!categorias || categorias.length === 0) return null;
@@ -208,8 +208,8 @@ export default function Categorias() {
     <section className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 pt-12 md:pt-16">
       <div className="flex flex-wrap items-end justify-between gap-4 px-4 sm:px-8 lg:px-16">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#fa8232]">Explora por categoría</span>
-          <h2 className="text-[clamp(28px,3vw,36px)] font-semibold tracking-[-.02em] text-[#191c1f]">Categorías</h2>
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#fa8232]">{subtitle || "Explora por categoría"}</span>
+          <h2 className="text-[clamp(28px,3vw,36px)] font-semibold tracking-[-.02em] text-[#191c1f]">{title || "Categorías"}</h2>
         </div>
         <Link
           href={route("products")}

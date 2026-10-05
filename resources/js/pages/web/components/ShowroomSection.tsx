@@ -1,7 +1,7 @@
 import { useCms } from "@/lib/cms";
 import { MapPin, Globe, Clock, MessageCircle, Navigation } from "lucide-react";
 
-export default function ShowroomSection() {
+export default function ShowroomSection({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
   const { text, lines, whatsappLocal, whatsappHref } = useCms();
 
   // Editables en Admin › Textos (cada párrafo de la dirección es una línea)
@@ -23,10 +23,10 @@ export default function ShowroomSection() {
       {/* Cabecera alineada con el resto de secciones */}
       <div className="flex flex-col gap-1">
         <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#155eef]">
-          Nuestro showroom
+          {subtitle || "Nuestro showroom"}
         </span>
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191c1f]">
-          Ven a conocer los productos en persona.
+          {title || "Ven a conocer los productos en persona."}
         </h2>
       </div>
 

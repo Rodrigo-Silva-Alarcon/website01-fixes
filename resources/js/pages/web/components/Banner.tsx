@@ -1,19 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Product } from "@/types/models";
-import { Link, usePage } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import { isOnOffer, productPrice } from "@/lib/product-enquiry";
 import { ArrowRight, Sparkles, Gamepad2, Refrigerator } from "lucide-react";
 
-export default function Destacados() {
-  const { destacados, populares } = usePage<{
-    destacados?: Product[];
-    populares?: Product[];
-  }>().props;
-
-  // Tomar los 2 productos destacados, o usar los primeros de populares como fallback
-  const items = (destacados && destacados.length > 0 ? destacados : populares || []).slice(0, 2);
+/** Tarjetas naranja y azul del inicio; los 2 productos se eligen en Admin › Página de inicio. */
+export default function Destacados({ products }: { products: Product[] }) {
+  const items = (products || []).slice(0, 2);
 
   const card1 = items[0];
   const card2 = items.length > 1 ? items[1] : items[0];
@@ -103,13 +98,14 @@ export default function Destacados() {
             <ArrowRight className="size-4" />
           </Link>
         </div>
+        {/* La imagen entra completa (object-contain) y el fondo blanco de la foto se funde con el color de la tarjeta */}
         <Link
           href={data.productUrl}
-          className="relative w-full h-56 shrink-0 overflow-hidden rounded-2xl sm:rounded-none sm:h-auto sm:w-[45%] sm:self-stretch sm:-my-10 sm:-mr-10 lg:-my-7 lg:-mr-7 xl:-my-10 xl:-mr-10"
+          className="relative w-full h-56 shrink-0 sm:h-auto sm:min-h-[240px] sm:w-[48%] sm:self-stretch"
         >
           <ResponsiveImg
             alt={product.name}
-            className="absolute inset-0 size-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 size-full object-contain object-center mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
             src={product.image_url}
             webpSrc={product.image_webp_url}
             thumbWebpSrc={product.image_thumbs_webp_url}

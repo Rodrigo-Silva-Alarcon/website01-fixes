@@ -6,6 +6,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 import { Toaster } from '@/components/ui/sonner';
 import NavigationLoader from '@/components/navigation-loader';
+import { registerHttpErrorToasts } from '@/lib/http-errors';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -36,3 +37,5 @@ createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
+
+registerHttpErrorToasts();

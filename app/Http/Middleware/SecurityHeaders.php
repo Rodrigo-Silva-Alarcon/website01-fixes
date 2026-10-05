@@ -27,7 +27,7 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set(
             'Permissions-Policy',
-            'camera=(), microphone=(), geolocation=(), payment=()'
+            'camera=(), microphone=(), geolocation=(self), payment=()'
         );
 
         $contentType = (string) $response->headers->get('Content-Type', '');
@@ -35,7 +35,7 @@ class SecurityHeaders
             $styleSrc = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net";
             $fontSrc = "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net";
             $scriptSrc = "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
-            $connectSrc = "connect-src 'self' ws: wss:";
+            $connectSrc = "connect-src 'self' ws: wss: https://nominatim.openstreetmap.org";
 
             // Vite HMR: public/hot existe solo en local
             $hotFile = public_path('hot');
@@ -58,7 +58,7 @@ class SecurityHeaders
                 $scriptSrc,
                 $styleSrc,
                 $fontSrc,
-                "img-src 'self' data: blob:",
+                "img-src 'self' data: blob: https://tile.openstreetmap.org",
                 "media-src 'self'",
                 "frame-src 'self' https://www.google.com https://maps.google.com https://maps.googleapis.com",
                 $connectSrc,

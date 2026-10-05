@@ -7,6 +7,7 @@ use App\Models\AboutPage;
 use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\HomeSection;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Subcategory;
@@ -44,7 +45,7 @@ class WebContentService
      */
     public static function flushCache(): void
     {
-        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about'] as $key) {
+        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about', 'web_home_sections'] as $key) {
             Cache::forget($key);
         }
         foreach (self::BANNER_PAGES as $page) {
@@ -145,6 +146,108 @@ class WebContentService
             'external' => (string) $b->type === '3' && filled($b->url)
                 && ! str_starts_with($b->url, '/') && ! str_starts_with($b->url, rtrim(url('/'), '/')),
         ])->filter(fn (array $b) => filled($b['image_url']))->values();
+    }
+
+    /**
+     * Secciones visibles de la página de inicio, en orden, con los productos ya resueltos
+     * (solo campos de tarjeta). Lo que no tiene productos para mostrar se omite.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function homeSections(): array
+    {
+        return Cache::remember('web_home_sections', 60, function (): array {
+            $sections = HomeSection::where('active', true)->orderBy('position')->orderBy('id')->get();
+            $result = [];
+
+            foreach ($sections as $section) {
+                $item = [
+                    'id' => $section->id,
+                    'type' => $section->type,
+                    'title' => $section->title,
+                    'subtitle' => $section->subtitle,
+                ];
+
+                if ($section->type === 'products') {
+                    $item['products'] = $this->sectionProducts($section)->values()->all();
+                    $item['link'] = $this->sectionLink($section);
+                    if (empty($item['products'])) {
+                        continue;
+                    }
+                } elseif ($section->type === 'promo') {
+                    $products = $this->productsByIds($section->productIds());
+                    if ($products->count() < 2) {
+                        // Si falta alguno (despublicado o eliminado) se completa como antes: destacados y luego populares
+                        $fill = $this->destacados()->concat($this->populares())->unique('id')
+                            ->reject(fn (Product $p) => $products->contains('id', $p->id));
+                        $products = $products->concat($fill)->take(2);
+                    }
+                    if ($products->isEmpty()) {
+                        continue;
+                    }
+                    $item['products'] = $products->values()->all();
+                }
+
+                $result[] = $item;
+            }
+
+            return $result;
+        });
+    }
+
+    /** Productos de una sección de tipo "products" según su origen. */
+    public function sectionProducts(HomeSection $section): Collection
+    {
+        $settings = $section->settings ?? [];
+        $source = $settings['source'] ?? 'popular';
+        $limit = max(1, min(HomeSection::MAX_PRODUCTS, (int) ($settings['limit'] ?? 8)));
+
+        if ($source === 'manual') {
+            return $this->productsByIds(array_slice($section->productIds(), 0, HomeSection::MAX_PRODUCTS));
+        }
+
+        $today = now()->toDateString();
+        $query = Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true);
+
+        match ($source) {
+            'featured' => $query->where('featured', true)->orderBy('order')->orderByDesc('id'),
+            'offers' => $query->whereHas('inventory', fn ($i) => $i->where('offer_amount', '>', 0)
+                ->where(fn ($w) => $w->whereNotNull('ini')->orWhereNotNull('fin'))
+                ->where(fn ($w) => $w->whereNull('ini')->orWhere('ini', '<=', $today))
+                ->where(fn ($w) => $w->whereNull('fin')->orWhere('fin', '>=', $today)))
+                ->orderBy('order')->orderByDesc('id'),
+            'latest' => $query->orderByDesc('id'),
+            'category' => $query->where('category_id', (int) ($settings['category_id'] ?? 0))->orderBy('order')->orderByDesc('id'),
+            default => $query->where('pop', true)->orderBy('order')->orderByDesc('id'),
+        };
+
+        return $this->forCards($query->limit($limit)->get());
+    }
+
+    /** Productos publicados en el orden exacto de los ids recibidos. */
+    private function productsByIds(array $ids): Collection
+    {
+        if (empty($ids)) {
+            return collect();
+        }
+
+        $products = Product::with(['inventory', 'category', 'subcategory', 'brand'])
+            ->where('active', true)->whereIn('id', $ids)->get()->keyBy('id');
+
+        return $this->forCards(collect($ids)->map(fn ($id) => $products->get($id))->filter()->values());
+    }
+
+    /** Destino del botón "Ver más" de una sección de productos. */
+    private function sectionLink(HomeSection $section): ?string
+    {
+        $settings = $section->settings ?? [];
+
+        return match ($settings['source'] ?? null) {
+            'category' => ($slug = Category::whereKey((int) ($settings['category_id'] ?? 0))->value('slug'))
+                ? route('category', ['category' => $slug], false) : null,
+            'offers' => route('products', ['offers' => 1], false),
+            default => null,
+        };
     }
 
     public function categoriesHome(): Collection

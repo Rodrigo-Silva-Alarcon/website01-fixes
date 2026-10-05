@@ -16,13 +16,15 @@ class WebController extends Controller{
 
     public function homepage(){  
 
+        $sections = $this->webContent()->homeSections();
+        $types = array_column($sections, 'type');
+
+        // Solo se cargan los datos de las secciones que están visibles
         return Inertia::render('web/HomePage', [
-            'banners' => $this->get_banners('1'),
-            'populares' => $this->get_populares(),
-            'categorias' => $this->get_categories_home(),
-            'categories' => $this->get_categories_home_all(),
-            'destacados' => $this->get_destacados(),
-            'brands' => $this->get_marcas(),
+            'sections' => $sections,
+            'banners' => in_array('hero', $types, true) ? $this->get_banners('1') : [],
+            'categorias' => in_array('categories', $types, true) ? $this->get_categories_home() : [],
+            'brands' => in_array('brands', $types, true) ? $this->get_marcas() : [],
         ]);
     }
 

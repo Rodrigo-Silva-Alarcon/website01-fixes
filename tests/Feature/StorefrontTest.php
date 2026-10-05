@@ -71,7 +71,10 @@ it('matches product reorder before the resource update route', function () {
 it('keeps unpublished products out of category listings', function () {
     $category = Category::create(['name' => 'Cameras', 'active' => true]);
     Product::create(['name' => 'Draft camera', 'category_id' => $category->id, 'active' => false]);
-    $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page->has('categories.0.products', 0));
+    App\Models\HomeSection::create(['type' => 'products', 'title' => 'Cameras', 'position' => 99, 'settings' => ['source' => 'category', 'category_id' => $category->id]]);
+    // Sin productos publicados la sección de la categoría no se envía
+    $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->where('sections', fn ($sections) => collect($sections)->where('title', 'Cameras')->isEmpty()));
 });
 
 it('includes inventory price data for product listing cards', function () {

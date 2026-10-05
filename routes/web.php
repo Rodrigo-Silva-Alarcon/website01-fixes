@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\AboutController;
+use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\InventoryController;
@@ -113,11 +114,25 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/about', [AboutController::class, 'index'])->name('admin.about.index');
         Route::middleware('permission:edit_about')->group(function () {
             Route::put('/about/texts', [AboutController::class, 'updateTexts'])->name('admin.about.texts');
-            Route::post('/about/gallery', [AboutController::class, 'saveGallery'])->name('admin.about.gallery');
             Route::put('/about/images/reorder', [AboutController::class, 'reorder'])->name('admin.about.images.reorder');
+            Route::post('/about/images/gallery', [AboutController::class, 'saveGallery'])->name('admin.about.images.gallery');
             Route::post('/about/images/{image}', [AboutController::class, 'replaceImage'])->name('admin.about.images.replace');
             Route::patch('/about/images/{image}', [AboutController::class, 'updateImage'])->name('admin.about.images.update');
         });
+    });
+    // Página de inicio: secciones (orden, visibilidad, contenido)
+    Route::middleware('permission:view_home')->group(function () {
+        Route::get('/home-sections', [HomeSectionController::class, 'index'])->name('admin.home.index');
+        Route::get('/home-sections/products', [HomeSectionController::class, 'products'])->name('admin.home.products');
+        Route::post('/home-sections', [HomeSectionController::class, 'store'])->middleware('permission:create_home')->name('admin.home.store');
+        Route::middleware('permission:edit_home')->group(function () {
+            Route::put('/home-sections/reorder', [HomeSectionController::class, 'reorder'])->name('admin.home.reorder');
+            Route::put('/home-sections/{section}', [HomeSectionController::class, 'update'])->name('admin.home.update');
+            Route::patch('/home-sections/{section}/toggle', [HomeSectionController::class, 'toggle'])->name('admin.home.toggle');
+            Route::post('/home-sections/categories/{category}/image', [HomeSectionController::class, 'categoryImage'])->name('admin.home.category-image');
+            Route::delete('/home-sections/categories/{category}/image', [HomeSectionController::class, 'destroyCategoryImage'])->name('admin.home.category-image.destroy');
+        });
+        Route::delete('/home-sections/{section}', [HomeSectionController::class, 'destroy'])->middleware('permission:delete_home')->name('admin.home.destroy');
     });
     // Marcas
     Route::middleware('permission:view_brands')->group(function () {

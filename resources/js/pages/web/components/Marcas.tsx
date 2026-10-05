@@ -3,7 +3,7 @@ import { Link, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import ResponsiveImg from "@/components/ResponsiveImg";
 
-export default function MarcasLogos() {
+export default function MarcasLogos({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
   const { brands } = usePage<{ brands?: Brand[] }>().props;
 
   // Solo marcas activas; si no hay ninguna, la sección no se muestra
@@ -17,9 +17,9 @@ export default function MarcasLogos() {
   return (
     <section className="w-full pt-12 md:pt-16 flex flex-col gap-7 overflow-hidden">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 flex flex-col gap-1">
-        <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#fa8232]">Aliados</span>
+        <span className="text-xs font-bold uppercase tracking-[0.14em] text-[#fa8232]">{subtitle || "Aliados"}</span>
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#191c1f]">
-          Marcas con las que trabajamos
+          {title || "Marcas con las que trabajamos"}
         </h2>
       </div>
 

@@ -266,3 +266,34 @@ it('shows ordered items on the success page', function () {
             ->where('order.order_items.0.name', 'Refrigeradora Samsung 400L')
             ->where('order.order_items.0.quantity', 2));
 });
+
+it('stores the exact map location picked by the customer', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'customer_address' => 'Calle 21 #845, Calacoto, La Paz',
+            'customer_lat' => -16.5401234,
+            'customer_lng' => -68.0789012,
+            'payment_method' => 'cash',
+        ])
+        ->assertRedirect();
+
+    $order = Order::first();
+    expect($order->customer_lat)->toBe(-16.5401234);
+    expect($order->customer_lng)->toBe(-68.0789012);
+});
+
+it('rejects out-of-range map coordinates', function () {
+    $this->withSession(['shop' => 'checkout-cart'])
+        ->post('/checkout', [
+            'customer_name' => 'Ana Perez',
+            'customer_phone' => '70000000',
+            'customer_address' => 'Calle 21',
+            'customer_lat' => 120,
+            'customer_lng' => -68.07,
+            'payment_method' => 'cash',
+        ])
+        ->assertSessionHasErrors(['customer_lat']);
+    expect(Order::count())->toBe(0);
+});

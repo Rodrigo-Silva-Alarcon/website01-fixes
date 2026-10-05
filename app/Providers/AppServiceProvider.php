@@ -50,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
             \App\Models\Product::class,
             \App\Models\Inventory::class,
             \App\Models\Text::class,
+            \App\Models\HomeSection::class,
         ];
         foreach ($models as $model) {
             $model::saved(fn () => WebContentService::flushCache());

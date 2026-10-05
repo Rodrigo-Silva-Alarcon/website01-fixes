@@ -112,26 +112,36 @@ test('replacing an image stores webp + jpg and keeps the old path in the log', f
     File::delete([public_path($image->image), public_path($image->fallback)]);
 });
 
-test('general gallery save applies order, focus and new photo in one request', function () {
+test('saving the whole gallery applies photo, focus, alt and order in one request', function () {
     $images = AboutImage::orderBy('position')->get();
-    $payload = [
-        ['id' => $images[1]->id, 'focus_x' => 50, 'focus_y' => 50],
-        ['id' => $images[0]->id, 'focus_x' => 20, 'focus_y' => 80],
-        ['id' => $images[2]->id, 'focus_x' => $images[2]->focus_x, 'focus_y' => $images[2]->focus_y, 'image' => UploadedFile::fake()->image('nueva.png', 1600, 2000)],
-        ['id' => $images[3]->id, 'focus_x' => $images[3]->focus_x, 'focus_y' => $images[3]->focus_y],
-    ];
+    $payload = $images->map(fn ($img) => ['id' => $img->id, 'focus_x' => $img->focus_x, 'focus_y' => $img->focus_y, 'alt' => $img->alt])->all();
+    // Nueva foto en la posición 2 con encuadre propio, alt en la 3 y se intercambian 1 y 4
+    $payload[1]['file'] = UploadedFile::fake()->image('nueva.jpg', 1400, 1800);
+    $payload[1]['focus_y'] = 30;
+    $payload[2]['alt'] = 'Refrigeradores en exhibición';
+    [$payload[0], $payload[3]] = [$payload[3], $payload[0]];
 
     $this->actingAs(aboutAdmin())
-        ->post(route('admin.about.gallery'), ['images' => $payload])
+        ->post(route('admin.about.images.gallery'), ['images' => $payload])
         ->assertRedirect()
         ->assertSessionHasNoErrors();
 
-    expect(AboutImage::orderBy('position')->pluck('id')->all())->toBe([$images[1]->id, $images[0]->id, $images[2]->id, $images[3]->id]);
-    expect($images[0]->fresh()->only(['focus_x', 'focus_y']))->toBe(['focus_x' => 20, 'focus_y' => 80]);
-    expect(AboutLog::pluck('action')->unique()->sort()->values()->all())->toBe(['image_focus', 'image_moved', 'image_replaced']);
+    expect(AboutImage::orderBy('position')->pluck('id')->all())->toBe(array_column($payload, 'id'));
+    $replaced = $images[1]->fresh();
+    expect($replaced->image)->not->toBe($images[1]->image)->and($replaced->focus_y)->toBe(30);
+    expect($images[2]->fresh()->alt)->toBe('Refrigeradores en exhibición');
+    expect(AboutLog::pluck('action')->sort()->values()->all())->toBe(['image_alt', 'image_moved', 'image_replaced']);
 
-    $new = $images[2]->fresh();
-    File::delete([public_path($new->image), public_path($new->fallback)]);
+    File::delete([public_path($replaced->image), public_path($replaced->fallback)]);
+});
+
+test('saving an unchanged gallery logs nothing', function () {
+    $payload = AboutImage::orderBy('position')->get()
+        ->map(fn ($img) => ['id' => $img->id, 'focus_x' => $img->focus_x, 'focus_y' => $img->focus_y, 'alt' => $img->alt])->all();
+
+    $this->actingAs(aboutAdmin())->post(route('admin.about.images.gallery'), ['images' => $payload])->assertRedirect();
+
+    expect(AboutLog::count())->toBe(0);
 });
 
 test('users with view_about but without edit_about cannot change anything', function () {

@@ -34,6 +34,8 @@ class CheckoutController extends Controller
             'customer_phone' => ['required', 'string', 'max:40', 'regex:/^[0-9+\s\-()]{6,40}$/'],
             'customer_email' => 'nullable|email|max:200',
             'customer_address' => ['required_unless:payment_method,whatsapp', 'string', 'max:250'],
+            'customer_lat' => 'nullable|numeric|between:-90,90|required_with:customer_lng',
+            'customer_lng' => 'nullable|numeric|between:-180,180|required_with:customer_lat',
             'notes' => 'nullable|string|max:1000',
             'payment_method' => 'required|string|in:transfer,cash,whatsapp',
         ], [
@@ -76,6 +78,8 @@ class CheckoutController extends Controller
                     'customer_phone' => $data['customer_phone'],
                     'customer_email' => $data['customer_email'] ?? null,
                     'customer_address' => $data['customer_address'] ?? null,
+                    'customer_lat' => $data['customer_lat'] ?? null,
+                    'customer_lng' => $data['customer_lng'] ?? null,
                     'notes' => $data['notes'] ?? null,
                     'payment_method' => $data['payment_method'],
                     'status' => 'pending',

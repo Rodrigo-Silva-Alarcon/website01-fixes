@@ -235,8 +235,20 @@ export interface Order {
     customer_phone: string;
     customer_email: string | null;
     customer_address: string | null;
+    customer_lat: number | null;
+    customer_lng: number | null;
     notes: string | null;
     status: string;
     payment_method: string | null;
     order_items?: OrderItem[];
+}
+
+/** Sección pública de la página de inicio (Admin › Página de inicio). */
+export interface HomeSectionData {
+    id: number;
+    type: 'hero' | 'features' | 'categories' | 'products' | 'promo' | 'brands' | 'showroom';
+    title: string | null;
+    subtitle: string | null;
+    products?: Product[];
+    link?: string | null;
 }

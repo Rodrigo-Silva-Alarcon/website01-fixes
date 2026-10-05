@@ -70,6 +70,7 @@ class PermissionSeeder extends Seeder
         $this->createSectorPermissions('brands', 'marcas');
         $this->createSectorPermissions('banners', 'banners');
         $this->createSectorPermissions('about', 'Nosotros');
+        $this->createSectorPermissions('home', 'secciones de inicio');
         $this->createSectorPermissions('inventories', 'inventarios');
         $this->createSectorPermissions('carts', 'carritos');
     }

@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLogoIcon from '@/components/app-logo-icon';
@@ -21,6 +21,12 @@ export function AppSidebar() {
             href: route('admin.dashboard'),
             icon: LayoutGrid,
             permission: 'access_dashboard',
+        },
+        {
+            title: 'Página de inicio',
+            href: route('admin.home.index'),
+            icon: LayoutTemplate,
+            permission: 'view_home',
         },
         {
             title: 'Banners',
