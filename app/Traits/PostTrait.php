@@ -227,7 +227,7 @@ trait PostTrait
         // Procesar hashes
         if ($this->hashFields) {
             foreach ($this->hashFields as $field) {
-                if (isset($record->{$field}) && !empty($record->{$field})) {
+                if (!empty($record->{$field}) && !Hash::isHashed($record->{$field})) {
                     $record->{$field} = Hash::make($record->{$field});
                 }
             }
@@ -327,7 +327,7 @@ trait PostTrait
         // Procesar hashes
         if ($this->hashFields) {
             foreach ($this->hashFields as $field) {
-                if (isset($model->{$field}) && !empty($model->{$field})) {
+                if (!empty($model->{$field}) && !Hash::isHashed($model->{$field})) {
                     $model->{$field} = Hash::make($model->{$field});
                 }
             }
