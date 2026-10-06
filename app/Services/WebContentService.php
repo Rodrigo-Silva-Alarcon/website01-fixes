@@ -24,6 +24,12 @@ class WebContentService
     public const BANNER_PAGES = ['1'];
 
     /**
+     * Claves de Admin › Textos que lee la tienda (useCms().text()). Solo estas viajan en
+     * el HTML de cada página: un texto publicado que la web no usa no engorda la carga.
+     */
+    public const PUBLIC_TEXT_KEYS = ['topbar_1', 'topbar_2'];
+
+    /**
      * Campos que solo usa la ficha del producto. En listados y tarjetas se ocultan
      * para no inflar el HTML/JSON inicial de cada página (sobre todo en móvil).
      */
@@ -126,8 +132,10 @@ class WebContentService
 
     public function marcas(): Collection
     {
+        // El carrusel y el filtro solo usan id, nombre, active y las URLs del logo
         return Cache::remember('web_marcas', 60, fn (): Collection => Brand::where('active', true)
-            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(10)->get());
+            ->orderBy('order', 'ASC')->orderBy('id', 'DESC')->limit(10)->get())
+            ->each(fn (Brand $b) => $b->makeHidden(['image', 'order', 'created_at', 'updated_at', 'image_url_thumbs']));
     }
 
     public function banners(string $page): Collection
@@ -259,14 +267,15 @@ class WebContentService
         };
     }
 
+    /** Mosaico «Explora por categoría»: nombre, resumen, imagen y número de productos. */
     public function categoriesHome(): Collection
     {
-        return Category::with('subcategories')
-            ->withCount(['products' => fn ($query) => $query->where('active', true)])
+        return Category::withCount(['products' => fn ($query) => $query->where('active', true)])
             ->where('active', true)
             ->orderBy('order', 'ASC')
             ->orderBy('id', 'DESC')
-            ->get();
+            ->get()
+            ->each(fn (Category $c) => $c->makeHidden(['image', 'icon', 'active', 'order', 'created_at', 'updated_at']));
     }
 
     public function categoriesHomeAll(): Collection
@@ -389,6 +398,24 @@ class WebContentService
         return $products;
     }
 
+    /**
+     * «También te puede interesar»: primero de la misma categoría y, si faltan, otros productos.
+     * Solo campos de tarjeta (sin descripción ni relaciones completas).
+     */
+    public function relatedProducts(Product $product, int $limit = 4): Collection
+    {
+        $query = fn () => Product::with(['inventory', 'category', 'subcategory', 'brand'])
+            ->where('active', true)->where('id', '!=', $product->id);
+
+        $related = $query()->where('category_id', $product->category_id)->limit($limit)->get();
+        if ($related->count() < $limit) {
+            $related = $related->concat($query()->where('category_id', '!=', $product->category_id)
+                ->limit($limit - $related->count())->get());
+        }
+
+        return $this->forCards($related->values());
+    }
+
     public function productDetail(string $product, string $category, ?string $subcategory = null): ?Product
     {
         return Product::with(['images', 'inventory', 'category', 'subcategory', 'brand'])
@@ -411,6 +438,7 @@ class WebContentService
         return Cache::remember('web_cms_texts', 60, function (): array {
             return Text::query()
                 ->where('publish', true)
+                ->whereIn('name', self::PUBLIC_TEXT_KEYS)
                 ->get(['name', 'content'])
                 ->filter(fn (Text $t) => filled($t->content))
                 ->mapWithKeys(fn (Text $t) => [$t->name => (string) $t->content])

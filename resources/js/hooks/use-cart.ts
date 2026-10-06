@@ -32,10 +32,9 @@ export function listCents(item: CartItem): number | null {
  * cantidades optimistas, eliminación animada y totales.
  */
 export function useCart() {
-  const { cart, cartSuggestions, populares = [] } = usePage<{
+  const { cart, cartSuggestions = [] } = usePage<{
     cart: (Cart & { cartItems?: CartItem[] }) | null;
     cartSuggestions?: Product[];
-    populares?: Product[];
   }>().props;
   const serverItems: CartItem[] = cart?.cart_items ?? cart?.cartItems ?? [];
 
@@ -105,8 +104,8 @@ export function useCart() {
   const subtotal = single ? totals[single] + saved : 0;
 
   const inCart = new Set(serverItems.map((it) => it.product_id));
-  // el servidor ya trae populares + otros con stock (mín. 5); populares queda como respaldo
-  const suggestions = (cartSuggestions ?? populares).filter((p) => !inCart.has(p.id) && (p.inventory?.stock ?? 0) > 0);
+  // el servidor trae populares + otros con stock (mín. 5); llegan diferidas, justo después de cargar
+  const suggestions = cartSuggestions.filter((p) => !inCart.has(p.id) && (p.inventory?.stock ?? 0) > 0);
 
   return {
     items,

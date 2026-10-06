@@ -10,17 +10,17 @@ it('shares published CMS texts with public Inertia pages', function () {
     Text::query()->delete();
 
     Text::create([
-        'name' => 'footer_email',
+        'name' => 'topbar_1',
         'date' => now()->toDateString(),
         'gender' => 'male',
         'type' => ['article'],
         'print_view' => 'a4',
-        'content' => 'hola@smarthouse.test',
+        'content' => 'Envío gratis',
         'publish' => true,
     ]);
 
     Text::create([
-        'name' => 'hidden_key',
+        'name' => 'topbar_2',
         'date' => now()->toDateString(),
         'gender' => 'male',
         'type' => ['article'],
@@ -33,8 +33,8 @@ it('shares published CMS texts with public Inertia pages', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->has('cmsTexts', 1)
-            ->where('cmsTexts.footer_email', 'hola@smarthouse.test')
-            ->missing('cmsTexts.hidden_key'));
+            ->where('cmsTexts.topbar_1', 'Envío gratis')
+            ->missing('cmsTexts.topbar_2'));
 });
 
 it('does not share CMS texts on admin routes', function () {
@@ -60,18 +60,9 @@ it('redirects legacy mixed-case paths with 301', function () {
     }
 });
 
-it('shares footer contact CMS keys for conditional footer buttons', function () {
-    $keys = [
-        'footer_whatsapp' => '59170000000',
-        'footer_email' => 'contacto@smarthouse.test',
-        'footer_maps' => 'https://maps.app.goo.gl/xyz',
-        'footer_facebook' => 'https://facebook.com/smarthouse',
-        'footer_instagram' => 'https://instagram.com/smarthouse',
-        'footer_twitter' => 'https://x.com/smarthouse',
-        'footer_address' => 'Av. Siempre Viva 742, La Paz',
-    ];
-
-    foreach ($keys as $name => $content) {
+it('only shares the texts the store reads, not every published text', function () {
+    // Textos de demostración o claves antiguas (ahora en Admin › Contacto) no viajan en cada página
+    foreach (['Artículo de demostración' => '<h1>Demo</h1>', 'footer_email' => 'viejo@smarthouse.test', 'topbar_2' => 'Promos'] as $name => $content) {
         Text::create([
             'name' => $name,
             'date' => now()->toDateString(),
@@ -86,11 +77,7 @@ it('shares footer contact CMS keys for conditional footer buttons', function () 
     $this->get('/')
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->where('cmsTexts.footer_whatsapp', '59170000000')
-            ->where('cmsTexts.footer_email', 'contacto@smarthouse.test')
-            ->where('cmsTexts.footer_maps', 'https://maps.app.goo.gl/xyz')
-            ->where('cmsTexts.footer_facebook', 'https://facebook.com/smarthouse')
-            ->where('cmsTexts.footer_instagram', 'https://instagram.com/smarthouse')
-            ->where('cmsTexts.footer_twitter', 'https://x.com/smarthouse')
-            ->where('cmsTexts.footer_address', 'Av. Siempre Viva 742, La Paz'));
+            ->where('cmsTexts.topbar_2', 'Promos')
+            ->missing('cmsTexts.footer_email')
+            ->missing('cmsTexts.Artículo de demostración'));
 });

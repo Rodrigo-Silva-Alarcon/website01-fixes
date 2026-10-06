@@ -285,12 +285,45 @@ it('sends product cards with labels and slugs but without the full relations', f
     App\Models\Inventory::create(['product_id' => $p->id, 'amount' => 100, 'stock' => 3, 'money' => 'Bs.']);
 
     $this->get('/productos')->assertOk()->assertInertia(fn (Assert $page) => $page
-        ->where('populares.0.category_slug', $category->slug)
-        ->where('populares.0.category_label', 'Audio')
-        ->missing('populares.0.category')
-        ->missing('populares.0.brand')
-        ->missing('populares.0.inventory.created_at')
+        ->where('products.data.0.category_slug', $category->slug)
+        ->where('products.data.0.category_label', 'Audio')
+        ->missing('products.data.0.category')
+        ->missing('products.data.0.brand')
+        ->missing('products.data.0.description')
+        ->missing('products.data.0.inventory.created_at')
         ->etc());
+});
+
+it('keeps shared and page props light (no populares, quote or duplicated categories)', function () {
+    $category = Category::create(['name' => 'Audio', 'active' => true]);
+    $category->subcategories()->create(['name' => 'Parlantes', 'active' => true]);
+    $p = Product::create(['name' => 'Parlante', 'category_id' => $category->id, 'active' => true, 'description' => '<p>Larga</p>']);
+    $other = Product::create(['name' => 'Otro', 'category_id' => $category->id, 'active' => true, 'description' => '<p>Larga</p>']);
+    \App\Models\Brand::create(['name' => 'Sony', 'active' => true]);
+    \App\Models\HomeSection::where('type', 'categories')->update(['active' => true]);
+    \App\Models\HomeSection::where('type', 'brands')->update(['active' => true]);
+
+    $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->missing('populares')
+        ->missing('quote')
+        ->where('categorias.0.name', 'Audio')
+        ->missing('categorias.0.subcategories')
+        ->missing('categorias.0.created_at')
+        ->where('brands.0.name', 'Sony')
+        ->missing('brands.0.created_at')
+        ->etc());
+
+    $this->get('/productos')->assertOk()->assertInertia(fn (Assert $page) => $page->missing('categorias')->has('categories')->etc());
+
+    $this->get(route('product', [$category->slug, 'All', $p->slug]))->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->where('products.0.id', $other->id)
+        ->missing('products.0.description')
+        ->missing('products.0.category')
+        ->where('product.description', '<p>Larga</p>')
+        ->etc());
+
+    // El login sigue mostrando su frase
+    $this->get('/login')->assertInertia(fn (Assert $page) => $page->has('quote')->etc());
 });
 
 it('sends the product gallery images in their configured order to the detail page', function () {

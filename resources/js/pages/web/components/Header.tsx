@@ -3,7 +3,7 @@ import svgPaths from "../imports/svg-51k8givoxg";
 import { img } from "../imports/svg-5wjm2";
 import { Link, usePage, router} from "@inertiajs/react";
 import { route } from 'ziggy-js';
-import { MenuItem, Product, Cart } from "@/types/models";
+import { MenuItem, Cart } from "@/types/models";
 import { toast } from 'sonner';
 import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
@@ -18,7 +18,7 @@ interface PageProps {
   };
 }
 
-export default function Header({ populares, cart}:{ populares:Product[];cart:Cart;}) {
+export default function Header({ cart }: { cart: Cart }) {
 
   // el carrito es una página propia (/carrito)
   const openCart = () => router.visit(route('cart'));

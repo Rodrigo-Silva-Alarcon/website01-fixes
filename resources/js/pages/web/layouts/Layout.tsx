@@ -10,7 +10,7 @@ import CategoriasMenuImport from "@/pages/web/imports/CategoriasMenu";
 
 
 import { usePage } from "@inertiajs/react";
-import { Cart, Product, MenuItem } from "@/types/models";
+import { Cart, MenuItem } from "@/types/models";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,7 +18,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   
-  const { populares } = usePage<{ populares: Product[] }>().props;
   const { cart } = usePage<{ cart: Cart }>().props;
   const { menu } = usePage<{ menu: MenuItem[] }>().props;
   
@@ -26,10 +25,7 @@ export default function Layout({ children }: LayoutProps) {
     <div className="storefront flex flex-col justify-center">      
       <Info />    
       
-      <Header 
-        populares={populares}
-        cart={cart}
-        />
+      <Header cart={cart} />
       
       <CategoriasMenuImport 
         menu={menu}/>

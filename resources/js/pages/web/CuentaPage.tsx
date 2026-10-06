@@ -22,7 +22,7 @@ export default function CuentaPage() {
 
       {/* Header */}
       <div className="h-[82px] md:h-[82.635px]">
-        <Header populares={shared.populares} cart={shared.cart} />
+        <Header cart={shared.cart} />
       </div>
 
       {/* Main Content */}

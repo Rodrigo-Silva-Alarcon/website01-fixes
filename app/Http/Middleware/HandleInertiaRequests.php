@@ -69,15 +69,12 @@ class HandleInertiaRequests extends Middleware
             }
         }
 
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-
         // Solo cargar datos de tienda en rutas públicas (evita queries en admin)
         $isPublic = ! $request->is('admin*', 'login', 'register', 'password*', 'up');
 
         $base = [
             ...parent::share($request),
             'name' => config('app.name'),
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user() ? $request->user()->load('roles.permissions') : null,
             ],
@@ -110,10 +107,9 @@ class HandleInertiaRequests extends Middleware
             $base['uaDevice'] = preg_match('/iPad|Tablet|Android(?!.*Mobile)/i', $ua) ? 'tablet'
                 : (preg_match('/Mobi|iPhone|Android/i', $ua) ? 'phone' : 'desktop');
             $base['menu'] = $this->get_menu();
-            $base['populares'] = $this->get_populares();
             $base['cart'] = $cart = $this->get_shop_cart();
-            // Diferido: solo se usa al abrir el carrito, así no engorda el HTML inicial.
-            // Mientras llega, use-cart muestra "populares" como respaldo.
+            // Diferido: solo se usa al abrir el carrito, así no engorda el HTML inicial
+            // (llega justo después de cargar la página).
             $base['cartSuggestions'] = Inertia::defer(fn () => app(\App\Services\WebContentService::class)
                 ->cartSuggestions($cart ? $cart->cartItems->pluck('product_id')->all() : []));
             $base['cates'] = $cateories;
@@ -124,8 +120,10 @@ class HandleInertiaRequests extends Middleware
             $base['contact'] = $this->webContent()->contactInfo();
             $base['footer'] = $this->webContent()->footerInfo();
         } else {
+            // Frase del panel de inicio de sesión (auth-split-layout); la tienda no la usa
+            [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+            $base['quote'] = ['message' => trim($message), 'author' => trim($author)];
             $base['menu'] = [];
-            $base['populares'] = [];
             $base['cart'] = null;
             $base['cartSuggestions'] = [];
             $base['cates'] = [];

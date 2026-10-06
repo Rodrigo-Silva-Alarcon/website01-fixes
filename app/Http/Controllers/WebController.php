@@ -91,7 +91,6 @@ class WebController extends Controller{
         $products = $this->webContent()->products($categories, $subcategory_id, $brands, $find, $subcategories, $offers, $sort);
 
         return Inertia::render('web/ProductosPage', [
-            'categorias' => $this->get_categories_home(),
             'categories' => $this->webContent()->categoryTree(),
             'products' => $products,
             'brands' => $this->get_marcas(),
@@ -111,17 +110,9 @@ class WebController extends Controller{
         
         abort_unless($product, 404);
 
-        // Relacionados: primero de la misma categoria y, si faltan, se completa con otros productos.
-        $related = Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('id', '!=', $product->id)->where('category_id', $product->category_id)->limit(4)->get();
-        if ($related->count() < 4) {
-            $related = $related->concat(
-                Product::with(['inventory', 'category', 'subcategory', 'brand'])->where('active', true)->where('id', '!=', $product->id)->where('category_id', '!=', $product->category_id)->limit(4 - $related->count())->get()
-            );
-        }
-
         return Inertia::render('web/ProductDetailPage', [
             'product' => $product,
-            'products' => $related->values(),
+            'products' => $this->webContent()->relatedProducts($product),
         ]);
     }
 
