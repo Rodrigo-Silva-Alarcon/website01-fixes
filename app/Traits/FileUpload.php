@@ -38,8 +38,8 @@ trait FileUpload
     private function processFile($file, string $field): string
     {
         // Validar tipo de archivo
-        $extension = $file->getClientOriginalExtension();
-        if (!in_array($extension, $this->allowedFileTypes)) {
+        $extension = strtolower($file->getClientOriginalExtension());
+        if (!in_array($extension, $this->allowedFileTypes, true)) {
             throw new \Exception("Tipo de archivo no permitido: {$extension}");
         }
 

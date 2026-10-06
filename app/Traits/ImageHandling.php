@@ -44,12 +44,27 @@ trait ImageHandling
     }
 
     /**
+     * Extensión según el contenido real del archivo, nunca la que manda el navegador
+     * (una imagen válida llamada "x.php" se guardaría como .php dentro de public/).
+     */
+    public static function imageExtension($file): string
+    {
+        return match ($file->getMimeType()) {
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            default => throw new \Exception('El archivo debe ser una imagen válida (JPEG, PNG, GIF, WEBP)'),
+        };
+    }
+
+    /**
      * Procesar imagen con redimensionamiento y thumbnail
      */
     private function processImage($file, string $field): string
     {
         try {
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . self::imageExtension($file);
             $publicPath = $this->imagePath;
             $fullPath = public_path($publicPath);
 

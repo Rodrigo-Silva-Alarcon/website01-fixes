@@ -34,7 +34,7 @@ class BannerRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:250',
-            'image' => 'nullable|file',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'type' => 'nullable',
             'url' => 'nullable|string|max:250',
             'product_id' => 'nullable|integer|exists:products,id',
@@ -55,20 +55,29 @@ class BannerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name' => 'nombre',
-            'image' => 'imagen',
-            'type' => 'tipo',
-            'url' => 'url',
-            'product_id' => 'producto',
-            'page_id' => 'pagina',
-            'summary' => 'resumen',
-            'active' => 'publico',
             'pages.required' => 'Selecciona al menos una página donde se mostrará el banner.',
             'pages.min' => 'Selecciona al menos una página donde se mostrará el banner.',
             'pages.*.in' => 'Página no válida.',
             'start_date.date' => 'La fecha de inicio debe ser válida.',
             'end_date.date' => 'La fecha de fin debe ser válida.',
             'end_date.after_or_equal' => 'La fecha de fin debe ser posterior o igual a la de inicio.',
+        ];
+    }
+
+    /**
+     * Nombres de los campos en los mensajes de error.
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'image' => 'imagen',
+            'type' => 'tipo',
+            'url' => 'url',
+            'product_id' => 'producto',
+            'page_id' => 'página',
+            'summary' => 'resumen',
+            'active' => 'público',
         ];
     }
 }

@@ -24,15 +24,15 @@ class BrandRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:250',
-            'image' => 'nullable|file',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'active' => 'nullable|string|max:2',
         ];
     }
 
     /**
-     * Get custom messages for validator errors.
+     * Nombres de los campos en los mensajes de error.
      */
-    public function messages(): array
+    public function attributes(): array
     {
         return [
             'name' => 'nombre',

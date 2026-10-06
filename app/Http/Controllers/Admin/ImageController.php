@@ -27,7 +27,17 @@ class ImageController extends Controller
     {
         try {
             $file = $request->file('image');
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            // Extensión según el contenido, no la del navegador
+            $extension = match ($file->getMimeType()) {
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/gif' => 'gif',
+                default => null,
+            };
+            if (! $extension) {
+                return response()->json(['error' => 'Tipo de imagen no válido'], 422);
+            }
+            $filename = Str::uuid() . '.' . $extension;
             $publicPath = 'data/images/';
             $fullPath = public_path($publicPath);
 

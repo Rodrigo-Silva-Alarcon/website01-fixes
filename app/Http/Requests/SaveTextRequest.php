@@ -21,7 +21,7 @@ class SaveTextRequest extends FormRequest
             'type' => 'required|array|min:1',
             'type.*' => 'in:report,article,news',
             'print_view' => 'required|in:letter,a4,legal,legal_size',
-            'image' => 'nullable|file|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'delete_image' => 'nullable|boolean',
             'summary' => 'nullable|string|max:200',
             'content' => 'nullable|string',
