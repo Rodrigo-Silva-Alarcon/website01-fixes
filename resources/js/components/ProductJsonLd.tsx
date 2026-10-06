@@ -45,10 +45,9 @@ export default function ProductJsonLd({ product }: { product: Product }) {
   };
 
   if (price !== null && product.inventory) {
-    const currency =
-      product.inventory.money === "Bo" || product.inventory.money === "Bs"
-        ? "BOB"
-        : product.inventory.money;
+    // priceCurrency debe ser un código ISO 4217: "Bs.", "Bs" o "Bo" son bolivianos
+    const money = (product.inventory.money ?? "").trim().toUpperCase();
+    const currency = /^[A-Z]{3}$/.test(money) ? money : "BOB";
     data.offers = {
       "@type": "Offer",
       priceCurrency: currency,
@@ -64,7 +63,8 @@ export default function ProductJsonLd({ product }: { product: Product }) {
 
   return (
     <Head>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
+      {/* "<" escapado: un nombre con "</script>" no puede cerrar la etiqueta */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />
     </Head>
   );
 }

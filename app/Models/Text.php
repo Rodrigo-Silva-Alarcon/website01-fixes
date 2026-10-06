@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Support\RichText;
 
 class Text extends Model
 {
@@ -25,6 +26,12 @@ class Text extends Model
         'type' => 'array',
         'publish' => 'boolean',
     ];
+
+    // HTML del editor: se guarda ya saneado (el panel lo muestra tal cual en el detalle)
+    public function setContentAttribute($value)
+    {
+        $this->attributes['content'] = RichText::clean($value);
+    }
 
     public function getSectorLabelAttribute()
     {

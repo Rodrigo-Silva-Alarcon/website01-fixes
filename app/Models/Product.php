@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Support\RichText;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -59,6 +60,15 @@ class Product extends Model
     public function setNameAttribute($value){
         $this->attributes['name'] = $value;
         $this->attributes['slug'] = ucwords(Str::slug($value));
+    }
+
+    // HTML del editor: se guarda ya saneado porque la ficha lo pinta tal cual
+    public function setDescriptionAttribute($value){
+        $this->attributes['description'] = RichText::clean($value);
+    }
+
+    public function setTechnicalInfoAttribute($value){
+        $this->attributes['technical_info'] = RichText::clean($value);
     }
     
     public function category(): BelongsTo
