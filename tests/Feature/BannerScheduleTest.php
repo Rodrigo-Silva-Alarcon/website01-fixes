@@ -58,29 +58,34 @@ it('shows panel banners on the homepage and reflects toggles immediately', funct
         ->assertInertia(fn ($page) => $page->has('banners', 0));
 });
 
-it('requires at least one page when saving a banner from the panel', function () {
+it('always saves panel banners on the homepage', function () {
     seedRbac();
     $admin = \App\Models\User::factory()->create();
     $admin->assignRole('admin');
 
+    // Aunque llegue otra página (formulario antiguo), el banner queda en Inicio
     $this->actingAs($admin)
-        ->post(route('banners.store'), ['name' => 'sin página', 'active' => '1'])
-        ->assertSessionHasErrors('pages');
-
-    expect(Banner::where('name', 'sin página')->exists())->toBeFalse();
-});
-
-it('saves unchecking pages on edit instead of keeping the old ones', function () {
-    seedRbac();
-    $admin = \App\Models\User::factory()->create();
-    $admin->assignRole('admin');
-    $banner = makeBanner(['image' => 'a.jpg', 'pages' => ['1', '2']]);
-
-    $this->actingAs($admin)
-        ->put(route('banners.update', $banner), ['name' => 'Banner test', 'pages' => ['2'], 'active' => '1'])
+        ->post(route('banners.store'), ['name' => 'sin página', 'pages' => ['2'], 'active' => '1'])
         ->assertRedirect(route('banners.index'));
 
-    expect($banner->fresh()->pages)->toBe(['2']);
+    expect(Banner::where('name', 'sin página')->first()->pages)->toBe(['1']);
+});
 
-    $this->get('/')->assertInertia(fn ($page) => $page->has('banners', 0));
+it('only shows banners on the homepage', function () {
+    makeBanner(['name' => 'portada', 'image' => 'a.jpg', 'pages' => ['1']]);
+
+    $this->get(route('about'))->assertOk()->assertInertia(fn ($page) => $page->missing('banners'));
+    $this->get(route('contact'))->assertOk()->assertInertia(fn ($page) => $page->missing('banners'));
+    $this->get(route('products', ['offers' => 1]))->assertOk()->assertInertia(fn ($page) => $page->missing('banners'));
+    $this->get('/')->assertOk()->assertInertia(fn ($page) => $page->has('banners', 1));
+});
+
+it('drops the old about, offers and contact pages from existing banners', function () {
+    $home = makeBanner(['name' => 'inicio y nosotros', 'pages' => ['1', '2']]);
+    $about = makeBanner(['name' => 'solo nosotros', 'pages' => ['2', '4']]);
+
+    (require database_path('migrations/2026_10_08_000000_keep_banners_only_on_home.php'))->up();
+
+    expect($home->fresh()->pages)->toBe(['1'])
+        ->and($about->fresh()->pages)->toBe([]);
 });

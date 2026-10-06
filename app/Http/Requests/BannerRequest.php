@@ -15,12 +15,10 @@ class BannerRequest extends FormRequest
     }
 
     /**
-     * FormData no envía arrays vacíos: si se desmarcan todas las páginas el campo
-     * no llega y se quedarían las anteriores. Se normaliza para que el guardado sea real.
+     * Los banners solo se muestran en el carrusel de Inicio: el panel ya no deja elegir página.
      */
     protected function prepareForValidation(): void
     {
-        // Los banners solo se muestran en el hero de Inicio.
         $this->merge([
             'pages' => ['1'],
         ]);

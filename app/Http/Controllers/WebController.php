@@ -30,7 +30,6 @@ class WebController extends Controller{
 
     public function about(){        
         return Inertia::render('web/AboutPage', [
-            'banners' => $this->get_banners('2'),
             'about' => $this->webContent()->aboutContent(),
         ]);
     }
@@ -104,8 +103,6 @@ class WebController extends Controller{
             'find' => $find ?? '',
             'activeCategory' => $activeCategory,
             'activeSubcategory' => $activeSubcategory,
-            // Banners asignados a "Ofertas" en el panel: solo en el listado de ofertas.
-            'banners' => $offers ? $this->get_banners('3') : [],
         ]);
     }
 
@@ -137,9 +134,7 @@ class WebController extends Controller{
     }
 
     public function contact(){
-        return Inertia::render('web/ContactoPage', [
-            'banners' => $this->get_banners('4'),
-        ]);
+        return Inertia::render('web/ContactoPage');
     }
 
     public function store(Request $request){

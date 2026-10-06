@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Check, ChevronRight, Mail, MapPin, MessageCircle, Navigation, Phone, Send } from "lucide-react";
-import { Link, useForm, usePage } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 import { useCms } from "@/lib/cms";
 import { groupSchedule, scheduleNow } from "@/lib/schedule";
-import HeroCarousel from "@/pages/web/components/HeroCarousel";
-import { BannerSlide } from "@/types/models";
 
 type FieldKey = "name" | "phone" | "email" | "message";
 
@@ -60,7 +58,6 @@ function ChannelRow({ href, icon, label, value, external, small }: {
 }
 
 export default function ContactoPage() {
-  const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
   const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, schedule: days, whatsappIntl, whatsappHref } = useCms();
 
   // Textos por sección editables en Admin › Contacto
@@ -130,9 +127,6 @@ export default function ContactoPage() {
         title={t.heroTitle}
         description="¿Tienes dudas o necesitas ayuda? Contáctanos y te responderemos pronto. Estamos aquí para ayudarte."
       />
-      {/* Banners asignados a "Contáctanos" en el panel */}
-      <HeroCarousel banners={banners} fallback={false} />
-
       <main className="flex flex-1 flex-col pb-[clamp(64px,8vw,96px)] font-dm_sans text-[#191c1f]">
         {/* Hero */}
         <section className="relative overflow-hidden">

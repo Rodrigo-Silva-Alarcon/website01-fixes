@@ -20,8 +20,8 @@ use Illuminate\Support\Collection;
 
 class WebContentService
 {
-    /** Páginas del CMS a las que se puede asignar un banner (TYPE_PAGES del panel). */
-    public const BANNER_PAGES = ['1', '2', '3', '4'];
+    /** Los banners solo se muestran en el carrusel de Inicio (BannerRequest fuerza pages = ['1']). */
+    public const BANNER_PAGES = ['1'];
 
     /**
      * Campos que solo usa la ficha del producto. En listados y tarjetas se ocultan

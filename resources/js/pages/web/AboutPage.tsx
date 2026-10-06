@@ -4,8 +4,6 @@ import { CreditCard, Headphones, MessageCircle, Navigation, Package, Trophy, typ
 import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
 import { useCms } from "@/lib/cms";
-import HeroCarousel from "@/pages/web/components/HeroCarousel";
-import { BannerSlide } from "@/types/models";
 
 /** Contenido editable desde Admin › Nosotros (null antes de migrar: se usan los valores por defecto). */
 type AboutGalleryImage = { position: number; webp: string; src: string; alt: string; focus: string };
@@ -226,7 +224,7 @@ function AboutGallery({ gallery }: { gallery: AboutGalleryImage[] }) {
 }
 
 export default function AboutPage() {
-  const { banners = [], about: aboutProp } = usePage<{ banners?: BannerSlide[]; about?: AboutContent | null }>().props;
+  const { about: aboutProp } = usePage<{ about?: AboutContent | null }>().props;
   const about = aboutProp ?? DEFAULT_ABOUT;
   // Teléfono, dirección y mapa de Admin › Contacto
   const { address, mapsHref, whatsappIntl, whatsappHref: waHref } = useCms();
@@ -243,8 +241,6 @@ export default function AboutPage() {
         title="Sobre nosotros"
         description="Conoce SmartHouse: misión, visión y características. Tu tienda de confianza en tecnología y electrodomésticos."
       />
-      {/* Banners asignados a "Nosotros" en el panel */}
-      <HeroCarousel banners={banners} fallback={false} />
       <div ref={rootRef} className="about-page flex flex-col pb-[clamp(64px,8vw,96px)] font-dm_sans text-[#191c1f]">
         {/* Hero con fondo de color animado */}
         <section ref={heroRef} className="about-hero relative overflow-hidden">
