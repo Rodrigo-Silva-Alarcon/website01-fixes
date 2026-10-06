@@ -37,7 +37,7 @@ const PAYMENT_OPTIONS: { value: string; label: string; icon: LucideIcon }[] = [
 ];
 
 const MODE_OPTIONS: { value: Mode; label: string; sub: string; icon: LucideIcon }[] = [
-  { value: "delivery", label: "Delivery a domicilio", sub: "Gratis · entrega en 24 h", icon: Truck },
+  { value: "delivery", label: "Delivery a domicilio", sub: "Delivery seguro", icon: Truck },
   { value: "pickup", label: "Retiro en tienda", sub: "Showroom en La Paz", icon: Store },
 ];
 
@@ -519,10 +519,6 @@ export default function CheckoutPage() {
             <div className="flex justify-between text-[15px] text-[#5b6066]">
               <span>Productos ({count})</span>
             </div>
-            <div className="flex justify-between text-[15px] text-[#5b6066]">
-              <span>{delivery ? "Delivery" : "Retiro en tienda"}</span>
-              <span className="font-semibold text-[#c2410c]">Gratis</span>
-            </div>
             <div className="h-px bg-[#eceef0]" />
             {totalEntries.map(([money, cents]) => (
               <div key={money} className="flex items-baseline justify-between gap-3">
@@ -559,7 +555,7 @@ export default function CheckoutPage() {
             <ul className="flex flex-col gap-3 pt-1.5 text-sm text-[#3d4247]">
               <li className="flex items-center gap-2.5">
                 <Truck size={20} className="shrink-0 text-[#c2410c]" aria-hidden />
-                Delivery gratuito, entrega en 24 h
+                Delivery seguro
               </li>
               <li className="flex items-center gap-2.5">
                 <Lock size={20} className="shrink-0 text-[#c2410c]" aria-hidden />

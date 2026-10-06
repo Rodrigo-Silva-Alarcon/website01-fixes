@@ -94,6 +94,9 @@ return new class extends Migration
             'schedule' => json_encode(ContactSetting::DEFAULT_SCHEDULE),
             'schedule_summary' => $plain('business_hours') ?: 'Atención de lunes a sábado',
             ...ContactSetting::DEFAULT_TEXTS,
+            // El formulario se quitó después (2026_10_11_000000_replace_contact_form_with_map)
+            'form_title' => 'Envíanos un mensaje',
+            'form_success' => 'El mensaje fue enviado exitosamente.',
             'created_at' => $now,
             'updated_at' => $now,
         ]);

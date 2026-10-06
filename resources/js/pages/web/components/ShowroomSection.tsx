@@ -1,7 +1,22 @@
 import { useCms } from "@/lib/cms";
 import { MapPin, Globe, Clock, MessageCircle, Navigation } from "lucide-react";
+import ResponsiveImg from "@/components/ResponsiveImg";
+import type { HomeShowroomPhoto } from "@/types/models";
 
-export default function ShowroomSection({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
+/** Fotos por defecto (las mismas que rellena la migración). */
+const DEFAULT_PHOTOS: HomeShowroomPhoto[] = [
+  { src: "/images/about-hero-smarthouse.jpg", webp: "/images/about-hero-smarthouse-480.webp", thumb: null, alt: "Showroom SmartHouse", mirror: false },
+  { src: "/data/banners/025f7828-6a10-44a4-979c-35b0eaffacd4.jpg", webp: "/images/showroom-productos.webp", thumb: null, alt: "Productos SmartHouse", mirror: false },
+  { src: "/images/about-hero-smarthouse.jpg", webp: "/images/about-hero-smarthouse-480.webp", thumb: null, alt: "Instalaciones SmartHouse", mirror: true },
+];
+
+interface Props {
+  title?: string | null;
+  subtitle?: string | null;
+  photos?: HomeShowroomPhoto[];
+}
+
+export default function ShowroomSection({ title, subtitle, photos }: Props) {
   // Editables en Admin › Contacto (cada renglón de la dirección es una línea)
   const { addressLines, website, scheduleSummary: hours, mapsHref, whatsappIntl, whatsappHref } = useCms();
 
@@ -79,49 +94,23 @@ export default function ShowroomSection({ title, subtitle }: { title?: string | 
           </div>
         </div>
 
-        {/* Columna Derecha: Galería de Fotos del Showroom */}
+        {/* Columna Derecha: Galería de Fotos del Showroom (editable en Admin › Página de inicio) */}
         <div className="lg:col-span-5 grid grid-cols-3 gap-4">
-          <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-sm">
-            <picture className="block w-full h-full">
-              <source srcSet="/images/about-hero-smarthouse-480.webp" type="image/webp" />
-              <img
-                src="/images/about-hero-smarthouse.jpg"
-                alt="Showroom SmartHouse"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
+          {(photos?.length ? photos : DEFAULT_PHOTOS).map((photo, idx) => (
+            <div
+              key={idx}
+              className={`rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 ${idx === 1 ? "shadow-md" : "shadow-sm"}`}
+            >
+              <ResponsiveImg
+                src={photo.src}
+                webpSrc={photo.webp}
+                thumbWebpSrc={photo.thumb}
+                sizes="(min-width: 1024px) 180px, 30vw"
+                alt={photo.alt}
+                className={`w-full h-full object-cover ${photo.mirror ? "scale-x-[-1]" : ""}`}
               />
-            </picture>
-          </div>
-
-          <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-md">
-            <picture className="block w-full h-full">
-              <source srcSet="/images/showroom-productos.webp" type="image/webp" />
-              <img
-                src="/data/banners/025f7828-6a10-44a4-979c-35b0eaffacd4.jpg"
-                alt="Productos SmartHouse"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/about-hero-smarthouse.jpg";
-                }}
-              />
-            </picture>
-          </div>
-
-          <div className="rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 shadow-sm">
-            <picture className="block w-full h-full">
-              <source srcSet="/images/about-hero-smarthouse-480.webp" type="image/webp" />
-              <img
-                src="/images/about-hero-smarthouse.jpg"
-                alt="Instalaciones SmartHouse"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover scale-x-[-1]"
-              />
-            </picture>
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

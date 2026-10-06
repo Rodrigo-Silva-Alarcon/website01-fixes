@@ -46,7 +46,7 @@ function renderSection(section: HomeSectionData, banners: BannerSlide[]) {
     case "hero":
       return <HeroCarousel banners={banners} />;
     case "features":
-      return <FeaturesBar />;
+      return <FeaturesBar items={section.items} />;
     case "categories":
       return <Categorias title={section.title} subtitle={section.subtitle} />;
     case "products":
@@ -56,7 +56,7 @@ function renderSection(section: HomeSectionData, banners: BannerSlide[]) {
     case "brands":
       return <MarcasLogos title={section.title} subtitle={section.subtitle} />;
     case "showroom":
-      return <ShowroomSection title={section.title} subtitle={section.subtitle} />;
+      return <ShowroomSection title={section.title} subtitle={section.subtitle} photos={section.photos} />;
     default:
       return null;
   }

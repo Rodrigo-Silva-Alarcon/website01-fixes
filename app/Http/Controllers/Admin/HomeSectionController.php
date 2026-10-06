@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -23,6 +24,12 @@ class HomeSectionController extends Controller
 {
     use PostTrait;
 
+    /** Ancho máximo de las fotos del showroom (las tarjetas miden ~170px; la web usa la miniatura WebP de 480px). */
+    private const SHOWROOM_WIDTH = 1200;
+
+    /** Fotos del showroom reemplazadas en este guardado: se borran del disco una vez guardado. */
+    private array $replacedFiles = [];
+
     public function index(): Response
     {
         $sections = HomeSection::orderBy('position')->orderBy('id')->get();
@@ -34,7 +41,11 @@ class HomeSectionController extends Controller
         return Inertia::render('admin/home/Index', [
             'sections' => $sections->map(fn (HomeSection $s) => [
                 ...$s->only(['id', 'type', 'title', 'subtitle', 'position', 'active', 'locked']),
-                'settings' => (object) ($s->settings ?? []),
+                'settings' => (object) match ($s->type) {
+                    'features' => ['items' => $s->featureItems()],
+                    'showroom' => ['photos' => $s->showroomPhotosForWeb()],
+                    default => $s->settings ?? [],
+                },
                 'products' => collect($s->productIds())->map(fn ($id) => $products->get($id))->filter()->values(),
             ]),
             'categories' => Category::orderBy('order')->orderByDesc('id')->get(['id', 'name', 'active', 'image'])
@@ -45,17 +56,23 @@ class HomeSectionController extends Controller
             'types' => HomeSection::TYPES,
             'sources' => HomeSection::SOURCES,
             'maxProducts' => HomeSection::MAX_PRODUCTS,
+            // Para una sección nueva de beneficios o showroom
+            'defaults' => [
+                'features' => (new HomeSection)->featureItems(),
+                'showroom' => (new HomeSection)->showroomPhotosForWeb(),
+            ],
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $this->validated($request);
-        $type = $data['type'];
-
-        if (HomeSection::TYPES[$type]['single'] && HomeSection::where('type', $type)->exists()) {
+        // Antes de validar: así no se procesan fotos de una sección que no se va a crear
+        $type = $request->input('type');
+        if (is_string($type) && (HomeSection::TYPES[$type]['single'] ?? false) && HomeSection::where('type', $type)->exists()) {
             return back()->with('error', 'Esa sección ya está en la página de inicio.');
         }
+
+        $data = $this->validated($request);
 
         HomeSection::create([
             ...$data,
@@ -74,6 +91,7 @@ class HomeSectionController extends Controller
         }
 
         $section->update($data);
+        $this->deletePhotoFiles($this->replacedFiles);
 
         return back()->with('success', 'Sección actualizada.');
     }
@@ -85,6 +103,7 @@ class HomeSectionController extends Controller
         }
 
         $section->delete();
+        $this->deletePhotoFiles($section->settings['photos'] ?? []);
 
         return back()->with('success', 'Sección eliminada.');
     }
@@ -205,6 +224,18 @@ class HomeSectionController extends Controller
                 'settings.product_ids' => ['required', 'array', 'size:2'],
                 'settings.product_ids.*' => ['integer', 'distinct', 'exists:products,id'],
             ];
+        } elseif ($type === 'features') {
+            $rules += [
+                'settings.items' => ['required', 'array', 'size:'.count(HomeSection::DEFAULT_FEATURES)],
+                'settings.items.*.title' => ['required', 'string', 'max:60'],
+                'settings.items.*.subtitle' => ['nullable', 'string', 'max:80'],
+            ];
+        } elseif ($type === 'showroom') {
+            $rules += [
+                'settings.photos' => ['required', 'array', 'size:'.count(HomeSection::DEFAULT_SHOWROOM_PHOTOS)],
+                'settings.photos.*.alt' => ['required', 'string', 'max:150'],
+                'settings.photos.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:8192'],
+            ];
         }
 
         $data = $request->validate($rules, [
@@ -212,6 +243,16 @@ class HomeSectionController extends Controller
             'settings.product_ids.size' => 'Elige un producto para cada tarjeta.',
             'settings.product_ids.*.distinct' => 'No repitas el mismo producto.',
             'settings.category_id.required_if' => 'Elige una categoría.',
+            // :position = número del beneficio o de la foto, para que nunca aparezca "settings.items.0.title"
+            'settings.items.*.title.required' => 'El beneficio :position necesita un título.',
+            'settings.items.*.title.max' => 'El título del beneficio :position no debe superar los 60 caracteres.',
+            'settings.items.*.subtitle.max' => 'El texto del beneficio :position no debe superar los 80 caracteres.',
+            'settings.photos.*.alt.required' => 'La foto :position necesita un texto alternativo.',
+            'settings.photos.*.alt.max' => 'El texto alternativo de la foto :position no debe superar los 150 caracteres.',
+            'settings.photos.*.file.image' => 'La foto :position debe ser una imagen.',
+            'settings.photos.*.file.mimes' => 'La foto :position tiene un formato no admitido: usa JPG, PNG o WebP.',
+            'settings.photos.*.file.max' => 'La foto :position supera el máximo de 8 MB.',
+            'settings.photos.*.file.uploaded' => 'No se pudo subir la foto :position: supera el tamaño que admite el servidor. Comprímela e intenta de nuevo.',
         ], [
             'title' => 'título',
             'settings.source' => 'origen',
@@ -233,11 +274,71 @@ class HomeSectionController extends Controller
             }
         } elseif ($type === 'promo') {
             $settings = ['product_ids' => array_map('intval', $data['settings']['product_ids'])];
+        } elseif ($type === 'features') {
+            $items = array_values($data['settings']['items']);
+            $settings = ['items' => array_map(fn (array $item, int $i) => [
+                'title' => trim($item['title']),
+                // El 4.º siempre muestra el WhatsApp de Admin › Contacto
+                'subtitle' => $i === 3 || blank($item['subtitle'] ?? null) ? null : trim($item['subtitle']),
+            ], $items, array_keys($items))];
+        } elseif ($type === 'showroom') {
+            $settings = ['photos' => $this->showroomPhotos($request, $section, array_values($data['settings']['photos']))];
         }
 
         unset($data['settings']);
 
         return [...$data, 'settings' => $settings];
+    }
+
+    /** Fotos del showroom: las nuevas se guardan como el resto de imágenes (original + WebP + miniatura WebP de 480px). */
+    private function showroomPhotos(Request $request, ?HomeSection $section, array $input): array
+    {
+        $current = ($section ?? new HomeSection)->showroomPhotos();
+        $folder = config('variables.folder_home');
+        $this->configureImages(['image'], $folder, self::SHOWROOM_WIDTH, null, true, 480, null);
+
+        $photos = [];
+        foreach ($current as $i => $photo) {
+            $alt = trim($input[$i]['alt']);
+            $file = $request->file("settings.photos.{$i}.file");
+
+            if ($file) {
+                try {
+                    $filename = $this->processImage($file, 'image');
+                } catch (\Throwable $e) {
+                    throw $this->uploadError("settings.photos.{$i}.file", $e);
+                }
+                $this->replacedFiles[] = $photo;
+                $base = pathinfo($filename, PATHINFO_FILENAME);
+                $photo = [
+                    'image' => $folder.$filename,
+                    'webp' => $folder.$base.'.webp',
+                    'thumb' => $folder.config('variables.thumbs').$base.'.webp',
+                    'mirror' => false,
+                ];
+            }
+
+            $photos[] = [...$photo, 'alt' => $alt];
+        }
+
+        return $photos;
+    }
+
+    /** Borra del disco fotos subidas desde el panel (nunca las de por defecto de /images o /data/banners). */
+    private function deletePhotoFiles(array $photos): void
+    {
+        $folder = config('variables.folder_home');
+        $thumbs = $folder.config('variables.thumbs');
+
+        foreach ($photos as $photo) {
+            $image = $photo['image'] ?? null;
+            if (! is_string($image) || ! str_starts_with($image, $folder)) {
+                continue;
+            }
+            $name = basename($image);
+            $base = pathinfo($name, PATHINFO_FILENAME);
+            File::delete(array_map('public_path', [$folder.$name, $folder.$base.'.webp', $thumbs.$name, $thumbs.$base.'.webp']));
+        }
     }
 
     private function pickerQuery()

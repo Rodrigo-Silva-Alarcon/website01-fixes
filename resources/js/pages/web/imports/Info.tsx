@@ -64,7 +64,7 @@ export default function Info() {
 
   // Mensajes editables en Admin › Textos (topbar_1..2); el horario sale de Admin › Contacto
   const slides = [
-    <TextoDelivery key="delivery" label={text("topbar_1", "Delivery gratuito")} />,
+    <TextoDelivery key="delivery" label={text("topbar_1", "Delivery seguro")} />,
     <TextoPromo key="promo" label={text("topbar_2", "Promociones y descuentos exclusivos")} />,
     <TextoSchedule key="schedule" label={scheduleSummary} />
   ];

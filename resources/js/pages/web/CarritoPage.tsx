@@ -180,10 +180,6 @@ export default function CarritoPage() {
                 <span>—</span>
               </div>
             )}
-            <div className="flex justify-between text-[15px] text-[#5b6066]">
-              <span>{store("delivery_label")}</span>
-              <span className="font-semibold text-[#155eef]">{store("delivery_value")}</span>
-            </div>
             <div className="h-px bg-[#eceef0]" />
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-[17px] font-bold">Total</span>

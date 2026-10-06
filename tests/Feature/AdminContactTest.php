@@ -121,6 +121,30 @@ test('contact page texts are editable and shared with the public site', function
         ->where('contact.hours_note', 'Feriados: cerrado'));
 });
 
+test('the showroom map can be hidden from Contáctanos and the change is logged', function () {
+    $texts = ContactSetting::firstOrFail()->only(array_keys(ContactSetting::TEXT_FIELDS));
+    expect($texts['show_map'])->toBeTrue();
+
+    $this->actingAs(contactAdmin())
+        ->put(route('admin.contact.texts'), [...$texts, 'show_map' => false])
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
+
+    $log = ContactLog::where('field', 'show_map')->first();
+    expect($log->old_value['v'])->toBe('Visible')
+        ->and($log->new_value['v'])->toBe('Oculto');
+
+    $this->get('/contactanos')->assertInertia(fn ($page) => $page->where('contact.show_map', false));
+});
+
+test('the contact form recipient is no longer editable', function () {
+    $this->actingAs(contactAdmin())
+        ->put(route('admin.contact.data'), contactData(['form_recipient' => 'otro@smarthouse.test']))
+        ->assertSessionHasNoErrors();
+
+    expect(\Illuminate\Support\Facades\Schema::hasColumn('contact_settings', 'form_recipient'))->toBeFalse();
+});
+
 test('whatsapp must include the country code, a space and the number', function () {
     $this->actingAs(contactAdmin())
         ->put(route('admin.contact.data'), contactData(['whatsapp' => '59170001234']))

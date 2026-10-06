@@ -26,7 +26,7 @@ const FALLBACK_SLIDES: Slide[] = [
   {
     key: "fallback-2",
     src: "/images/hero/hero-2.webp",
-    alt: "Smart House — Delivery gratis, garantía oficial de marca. Consolas, audio y línea blanca.",
+    alt: "Smart House — Delivery seguro, garantía oficial de marca. Consolas, audio y línea blanca.",
   },
 ];
 

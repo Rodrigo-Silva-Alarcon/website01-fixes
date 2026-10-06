@@ -1,42 +1,17 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Check, ChevronRight, Mail, MapPin, MessageCircle, Navigation, Phone, Send } from "lucide-react";
-import { Link, useForm } from "@inertiajs/react";
-import { toast } from "sonner";
+import { ArrowUpRight, ChevronRight, Mail, MapPin, Navigation, Phone } from "lucide-react";
+import WhatsAppIcon from "@/pages/web/components/WhatsAppIcon";
+import { Link } from "@inertiajs/react";
 import Layout from "./layouts/Layout";
 import Seo from "@/components/Seo";
 import { useCms } from "@/lib/cms";
 import { groupSchedule, scheduleNow } from "@/lib/schedule";
-
-type FieldKey = "name" | "phone" | "email" | "message";
-
-const inputClass =
-  "w-full rounded-2xl border-[1.5px] border-[#dfe2e6] bg-white px-[18px] text-base text-[#191c1f] outline-none transition-[border-color,box-shadow] duration-[180ms] placeholder:text-[#8a8f94] focus:border-[#fa8232] focus:shadow-[0_0_0_4px_rgba(250,130,50,.15)]";
 
 const pillOutline =
   "flex items-center gap-2 rounded-full border-[1.5px] border-[#fa8232] bg-white px-[22px] py-3.5 font-semibold text-[#c2410c] transition-colors duration-200 hover:bg-[#fa8232] hover:text-white";
 
 const pillSolid =
   "flex items-center gap-2 rounded-full bg-[#fa8232] font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]";
-
-/** Validación en el navegador con los mismos mensajes del diseño; el servidor vuelve a validar. */
-function validate(data: Record<FieldKey, string>): Partial<Record<FieldKey, string>> {
-  const err: Partial<Record<FieldKey, string>> = {};
-  if (!data.name.trim()) err.name = "Ingresa tu nombre.";
-  if (!data.phone.trim()) err.phone = "Ingresa tu teléfono.";
-  if (!/^\S+@\S+\.\S+$/.test(data.email.trim())) err.email = "Ingresa un email válido.";
-  if (!data.message.trim()) err.message = "Escribe tu mensaje.";
-  return err;
-}
-
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-semibold">{label}</span>
-      {children}
-      {error && <span role="alert" className="text-[13px] text-[#d9534f]">{error}</span>}
-    </label>
-  );
-}
 
 function ChannelRow({ href, icon, label, value, external, small }: {
   href: string; icon: React.ReactNode; label: string; value: string; external?: boolean; small?: boolean;
@@ -58,19 +33,18 @@ function ChannelRow({ href, icon, label, value, external, small }: {
 }
 
 export default function ContactoPage() {
-  const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, schedule: days, whatsappIntl, whatsappHref } = useCms();
+  const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, mapEmbedSrc, schedule: days, whatsappIntl, whatsappHref } = useCms();
 
   // Textos por sección editables en Admin › Contacto
   const t = {
     heroTitle: contact?.hero_title || "Contáctanos",
     heroSubtitle: contact?.hero_subtitle ?? "Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos pronto.",
-    formTitle: contact?.form_title || "Envíanos un mensaje",
-    formSubtitle: contact?.form_subtitle ?? "Los campos marcados con * son obligatorios.",
-    formSuccess: contact?.form_success || "El mensaje fue enviado exitosamente.",
     hoursTitle: contact?.hours_title || "Horario de atención",
     hoursNote: contact?.hours_note ?? "",
   };
   const hours = groupSchedule(days);
+  // El mapa del showroom se activa o desactiva en Admin › Contacto; sin él, el lateral queda centrado
+  const showMap = contact?.show_map ?? true;
 
   // "Abierto ahora" / "HOY" dependen de la hora actual: se calculan solo en el navegador
   const hoursKey = JSON.stringify(days);
@@ -82,41 +56,6 @@ export default function ContactoPage() {
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoursKey]);
-
-  const [sentTo, setSentTo] = useState<string | null>(null);
-  const { data, setData, post, processing, errors, reset, clearErrors, setError } = useForm({
-    name: "", email: "", phone: "", company: "", message: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const err = validate(data);
-    if (Object.keys(err).length) {
-      setError(err);
-      return;
-    }
-    const firstName = data.name.trim().split(/\s+/)[0];
-    post("/enviar", {
-      preserveScroll: true,
-      onSuccess: () => {
-        reset();
-        setSentTo(firstName);
-        toast.success(t.formSuccess);
-      },
-      onError: () => toast.error("Revisa los campos del formulario e inténtalo de nuevo."),
-    });
-  };
-
-  const bind = (k: FieldKey) => ({
-    id: k,
-    name: k,
-    value: data[k],
-    "aria-invalid": errors[k] ? true : undefined,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setData(k, e.target.value);
-      if (errors[k]) clearErrors(k);
-    },
-  });
 
   const orb = "absolute aspect-square rounded-full blur-[90px]";
   const openColor = schedule?.open ? "#c2410c" : "#6b7076";
@@ -153,7 +92,7 @@ export default function ContactoPage() {
             )}
             <div className="flex flex-wrap justify-center gap-3 pt-1.5">
               <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className={`${pillSolid} px-[22px] py-3.5`}>
-                <MessageCircle className="size-5" />
+                <WhatsAppIcon className="size-5" />
                 {whatsappIntl}
               </a>
               <a href={`mailto:${contactEmail}`} className={pillOutline}>
@@ -168,68 +107,26 @@ export default function ContactoPage() {
           </div>
         </section>
 
-        <section className="mx-auto flex w-full max-w-[1440px] flex-wrap items-start gap-[clamp(20px,3vw,40px)] px-[clamp(16px,4.4vw,64px)] pt-[clamp(40px,5vw,64px)]">
-          {/* Formulario */}
-          <div className="flex min-w-[min(100%,300px)] flex-[1_1_560px] flex-col gap-6 rounded-[28px] border border-[#eceef0] p-[clamp(24px,3.2vw,44px)]">
-            {sentTo !== null ? (
-              <div role="status" className="flex flex-col items-center gap-3.5 px-3 py-12 text-center">
-                <span className="flex size-[72px] items-center justify-center rounded-full bg-[#fff4ec] text-[#fa8232]">
-                  <Check className="size-8" />
-                </span>
-                <span className="text-2xl font-bold tracking-[-.02em]">¡Gracias{sentTo ? `, ${sentTo}` : ""}!</span>
-                <span className="text-[15px] text-[#6b7076]">{t.formSuccess}</span>
-                <button
-                  type="button"
-                  onClick={() => setSentTo(null)}
-                  className="mt-1 cursor-pointer rounded-full border-[1.5px] border-[#fa8232] bg-white px-[22px] py-3 text-[15px] font-semibold text-[#c2410c] transition-colors hover:bg-[#fff4ec]"
-                >
-                  Enviar otro mensaje
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
-                <div className="flex flex-col gap-1.5">
-                  <h2 className="m-0 text-[clamp(26px,2.8vw,34px)] font-bold tracking-[-.03em]">{t.formTitle}</h2>
-                  {t.formSubtitle && <p className="m-0 text-[15px] text-[#6b7076]">{t.formSubtitle}</p>}
-                </div>
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-[18px]">
-                  <Field label="Nombre completo *" error={errors.name}>
-                    <input type="text" autoComplete="name" placeholder="Tu nombre" className={`${inputClass} h-[52px]`} {...bind("name")} />
-                  </Field>
-                  <Field label="Teléfono / WhatsApp *" error={errors.phone}>
-                    <input type="tel" autoComplete="tel" placeholder="Tu teléfono" className={`${inputClass} h-[52px]`} {...bind("phone")} />
-                  </Field>
-                </div>
-                <Field label="Email *" error={errors.email}>
-                  <input type="email" autoComplete="email" placeholder="tu@email.com" className={`${inputClass} h-[52px]`} {...bind("email")} />
-                </Field>
-                <Field label="Mensaje *" error={errors.message}>
-                  <textarea rows={6} placeholder="Escribe tu mensaje aquí..." className={`${inputClass} resize-y py-3.5 leading-[1.55]`} {...bind("message")} />
-                </Field>
-                <div className="flex flex-wrap items-center gap-4">
-                  <button
-                    type="submit"
-                    disabled={processing}
-                    className={`${pillSolid} cursor-pointer px-[26px] py-[15px] text-base disabled:cursor-progress disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none`}
-                  >
-                    <Send className="size-5" />
-                    {processing ? "Enviando..." : "Enviar mensaje"}
-                  </button>
-                  <span className="text-sm text-[#6b7076]">
-                    ¿Prefieres hablar ahora?{" "}
-                    <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#c2410c] hover:text-[#9a3412]">
-                      Escríbenos por WhatsApp
-                    </a>
-                  </span>
-                </div>
-              </form>
-            )}
-          </div>
+        <section
+          className={`mx-auto flex w-full max-w-[1440px] flex-wrap gap-[clamp(20px,3vw,40px)] px-[clamp(16px,4.4vw,64px)] pt-[clamp(40px,5vw,64px)] ${showMap ? "items-stretch" : "justify-center"}`}
+        >
+          {/* Mapa del showroom */}
+          {showMap && (
+            <div className="flex min-h-[360px] min-w-[min(100%,300px)] flex-[1_1_560px] overflow-hidden rounded-[28px] border border-[#eceef0] bg-[#f4f5f6]">
+              <iframe
+                src={mapEmbedSrc}
+                title={`Mapa del showroom: ${contactAddress}`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="block min-h-[360px] w-full flex-1 border-0"
+              />
+            </div>
+          )}
 
           {/* Lateral */}
-          <aside className="flex min-w-[min(100%,300px)] flex-[1_1_340px] flex-col gap-4">
+          <aside className={`flex min-w-[min(100%,300px)] flex-col gap-4 ${showMap ? "flex-[1_1_340px]" : "w-full max-w-[560px]"}`}>
             <div className="flex flex-col rounded-[28px] border border-[#eceef0] p-2">
-              <ChannelRow external href={whatsappHref()} icon={<MessageCircle className="size-6" />} label="WhatsApp" value={whatsappIntl} />
+              <ChannelRow external href={whatsappHref()} icon={<WhatsAppIcon className="size-6" />} label="WhatsApp" value={whatsappIntl} />
               <div className="mx-4 h-px bg-[#eceef0]" />
               {phone && (
                 <>

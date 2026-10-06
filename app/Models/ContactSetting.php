@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Datos de contacto, horario de atención y textos de Contáctanos (una sola fila).
+ * `show_map` muestra u oculta el mapa del showroom en Contáctanos.
  * Es la fuente única de teléfono, correo, dirección y horario para toda la web.
  *
  * Horario: un elemento por día (1 = lunes … 7 = domingo) con uno de tres modos:
@@ -33,9 +34,6 @@ class ContactSetting extends Model
     public const DEFAULT_TEXTS = [
         'hero_title' => 'Contáctanos',
         'hero_subtitle' => 'Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos pronto.',
-        'form_title' => 'Envíanos un mensaje',
-        'form_subtitle' => 'Los campos marcados con * son obligatorios.',
-        'form_success' => 'El mensaje fue enviado exitosamente.',
         'hours_title' => 'Horario de atención',
         'hours_note' => null,
     ];
@@ -45,7 +43,6 @@ class ContactSetting extends Model
         'whatsapp' => 'WhatsApp',
         'phone' => 'Teléfono fijo',
         'email' => 'Correo',
-        'form_recipient' => 'Correo que recibe el formulario',
         'address' => 'Dirección',
         'city' => 'Ciudad',
         'maps_url' => 'Enlace de Google Maps',
@@ -56,26 +53,25 @@ class ContactSetting extends Model
         'tiktok' => 'TikTok',
     ];
 
-    /** Textos de la página Contáctanos, con su etiqueta para el historial. */
+    /** Textos y opciones de la página Contáctanos, con su etiqueta para el historial. */
     public const TEXT_FIELDS = [
         'hero_title' => 'Título principal',
         'hero_subtitle' => 'Descripción del encabezado',
-        'form_title' => 'Título del formulario',
-        'form_subtitle' => 'Indicación del formulario',
-        'form_success' => 'Mensaje al enviar',
+        'show_map' => 'Mapa del showroom',
         'hours_title' => 'Título del horario',
         'hours_note' => 'Nota del horario',
     ];
 
     protected $fillable = [
-        ...['whatsapp', 'phone', 'email', 'form_recipient', 'address', 'city', 'maps_url', 'website', 'facebook', 'instagram', 'twitter', 'tiktok'],
+        ...['whatsapp', 'phone', 'email', 'address', 'city', 'maps_url', 'website', 'facebook', 'instagram', 'twitter', 'tiktok'],
         'schedule', 'schedule_summary',
-        ...['hero_title', 'hero_subtitle', 'form_title', 'form_subtitle', 'form_success', 'hours_title', 'hours_note'],
+        ...['hero_title', 'hero_subtitle', 'show_map', 'hours_title', 'hours_note'],
         'updated_by',
     ];
 
     protected $casts = [
         'schedule' => 'array',
+        'show_map' => 'boolean',
     ];
 
     public function editor(): BelongsTo

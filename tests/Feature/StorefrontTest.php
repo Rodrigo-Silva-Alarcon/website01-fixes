@@ -56,7 +56,7 @@ it('validates contact and sends a message', function () {
     $this->post('/enviar', [])->assertSessionHasErrors(['name', 'email', 'phone']);
     Mail::assertNothingSent();
     $this->post('/enviar', ['name' => 'Test', 'email' => 'test@example.com', 'phone' => '12345678'])
-        ->assertRedirect('/contactanos')->assertSessionHas('status');
+        ->assertRedirect('/contactanos')->assertSessionHasNoErrors();
     Mail::assertSent(MessageReceived::class, function ($mail) {
         expect($mail->render())->toContain('Test');
         return true;

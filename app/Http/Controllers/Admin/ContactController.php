@@ -35,7 +35,6 @@ class ContactController extends Controller
             'days' => ContactSetting::DAYS,
             'filters' => ['action' => $request->input('action', '')],
             'tab' => $request->input('tab', 'data'),
-            'formRecipientFallback' => config('contact.email'),
         ]);
     }
 
@@ -52,7 +51,6 @@ class ContactController extends Controller
             'whatsapp' => ['required', 'max:20', 'regex:/^\+\d{1,4} \d{6,12}$/'],
             'phone' => ['nullable', 'string', 'max:40', 'regex:/^[0-9+\s\-()]+$/'],
             'email' => ['required', 'email', 'max:255'],
-            'form_recipient' => ['nullable', 'email', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
             'city' => ['nullable', 'string', 'max:120'],
             'maps_url' => ['nullable', 'url', 'max:500'],
@@ -78,12 +76,11 @@ class ContactController extends Controller
         $validated = $request->validate([
             'hero_title' => ['required', 'string', 'max:80'],
             'hero_subtitle' => ['nullable', 'string', 'max:300'],
-            'form_title' => ['required', 'string', 'max:80'],
-            'form_subtitle' => ['nullable', 'string', 'max:160'],
-            'form_success' => ['required', 'string', 'max:160'],
+            'show_map' => ['required', 'boolean'],
             'hours_title' => ['required', 'string', 'max:60'],
             'hours_note' => ['nullable', 'string', 'max:200'],
         ], [], ContactSetting::TEXT_FIELDS);
+        $validated['show_map'] = $request->boolean('show_map');
 
         return $this->saveFields($validated, ContactSetting::TEXT_FIELDS, 'text_updated', 'Textos de Contáctanos actualizados.');
     }
@@ -150,10 +147,13 @@ class ContactController extends Controller
         $changes = 0;
 
         DB::transaction(function () use ($contact, $validated, $fields, $action, &$changes) {
+            // Los interruptores se guardan en el historial como texto legible
+            $readable = fn ($value) => is_bool($value) ? ($value ? 'Visible' : 'Oculto') : $value;
+
             foreach (array_keys($fields) as $field) {
                 $new = $validated[$field] ?? null;
                 if ((string) $contact->$field !== (string) $new) {
-                    ContactLog::record($action, $field, $contact->$field, $new);
+                    ContactLog::record($action, $field, $readable($contact->$field), $readable($new));
                     $changes++;
                 }
             }

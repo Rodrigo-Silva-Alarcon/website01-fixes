@@ -149,3 +149,129 @@ test('category image upload rejects non images', function () {
         ->post(route('admin.home.category-image', $category), ['image' => \Illuminate\Http\UploadedFile::fake()->create('doc.pdf', 10, 'application/pdf')])
         ->assertSessionHasErrors('image');
 });
+
+test('the migration fills the features and showroom sections with the current texts and photos', function () {
+    $features = HomeSection::where('type', 'features')->firstOrFail();
+    $showroom = HomeSection::where('type', 'showroom')->firstOrFail();
+
+    expect($features->settings['items'])->toBe(HomeSection::DEFAULT_FEATURES)
+        ->and($showroom->settings['photos'])->toBe(HomeSection::DEFAULT_SHOWROOM_PHOTOS);
+
+    $this->get('/')->assertInertia(fn (Assert $page) => $page->where('sections', function ($sections) {
+        $items = collect($sections)->firstWhere('type', 'features')['items'];
+        $photos = collect($sections)->firstWhere('type', 'showroom')['photos'];
+
+        return $items[0]['title'] === 'Delivery seguro' && $items[3]['subtitle'] === null
+            && $photos[0]['webp'] === '/images/about-hero-smarthouse-480.webp' && $photos[2]['mirror'] === true;
+    }));
+});
+
+test('features texts are saved and shown on a homepage that was already cached', function () {
+    $admin = homeAdmin();
+    $features = HomeSection::where('type', 'features')->firstOrFail();
+
+    // Visita previa: deja la portada en caché
+    $this->get('/')->assertOk();
+
+    $this->actingAs($admin)->put(route('admin.home.update', $features), ['settings' => ['items' => [
+        ['title' => 'Envío express', 'subtitle' => 'En 12 h'],
+        ['title' => 'Garantía', 'subtitle' => ''],
+        ['title' => 'Pago seguro', 'subtitle' => 'Tu dinero está protegido'],
+        ['title' => 'Asesoría', 'subtitle' => 'esto se ignora'],
+    ]]])->assertSessionHas('success');
+
+    expect($features->fresh()->settings['items'][1]['subtitle'])->toBeNull()
+        ->and($features->fresh()->settings['items'][3]['subtitle'])->toBeNull();
+
+    $this->get('/')->assertInertia(fn (Assert $page) => $page->where('sections', function ($sections) {
+        $items = collect($sections)->firstWhere('type', 'features')['items'];
+
+        // Un texto vacío vuelve al de por defecto; el 4.º lo completa la web con el WhatsApp
+        return $items[0] === ['title' => 'Envío express', 'subtitle' => 'En 12 h']
+            && $items[1]['subtitle'] === 'Devolución del 100% del dinero'
+            && $items[3] === ['title' => 'Asesoría', 'subtitle' => null];
+    }));
+});
+
+test('features need four items with a title', function () {
+    $admin = homeAdmin();
+    $features = HomeSection::where('type', 'features')->firstOrFail();
+
+    $this->actingAs($admin)->put(route('admin.home.update', $features), ['settings' => ['items' => [
+        ['title' => 'Uno'], ['title' => ''], ['title' => 'Tres'], ['title' => 'Cuatro'],
+    ]]])->assertSessionHasErrors(['settings.items.1.title' => 'El beneficio 2 necesita un título.']);
+
+    $this->actingAs($admin)->put(route('admin.home.update', $features), ['settings' => ['items' => [['title' => 'Uno']]]])
+        ->assertSessionHasErrors('settings.items');
+});
+
+test('a showroom photo can be replaced and is shown on a homepage that was already cached', function () {
+    $admin = homeAdmin();
+    $showroom = HomeSection::where('type', 'showroom')->firstOrFail();
+    $folder = config('variables.folder_home');
+
+    $this->get('/')->assertOk();
+
+    $this->actingAs($admin)->post(route('admin.home.update', $showroom), [
+        '_method' => 'put',
+        'settings' => ['photos' => [
+            ['alt' => 'Fachada'],
+            ['alt' => 'Vitrina', 'file' => \Illuminate\Http\UploadedFile::fake()->image('vitrina.jpg', 1600, 2400)],
+            ['alt' => 'Instalaciones SmartHouse'],
+        ]],
+    ])->assertSessionHas('success');
+
+    $photos = $showroom->fresh()->settings['photos'];
+    $new = $photos[1];
+    expect($photos[0]['image'])->toBe('images/about-hero-smarthouse.jpg')
+        ->and($photos[0]['alt'])->toBe('Fachada')
+        ->and($photos[2]['mirror'])->toBeTrue()
+        ->and($new['image'])->toStartWith($folder)
+        ->and($new['mirror'])->toBeFalse();
+    foreach (['image', 'webp', 'thumb'] as $key) {
+        expect(is_file(public_path($new[$key])))->toBeTrue();
+    }
+    expect(getimagesize(public_path($new['thumb']))[0])->toBe(480);
+
+    $this->get('/')->assertInertia(fn (Assert $page) => $page->where('sections', function ($sections) use ($new) {
+        $photo = collect($sections)->firstWhere('type', 'showroom')['photos'][1];
+
+        return $photo['thumb'] === '/'.$new['thumb'] && $photo['webp'] === '/'.$new['webp'] && $photo['alt'] === 'Vitrina';
+    }));
+
+    // Reemplazarla otra vez borra los archivos de la anterior (nunca los de por defecto)
+    $this->actingAs($admin)->post(route('admin.home.update', $showroom), [
+        '_method' => 'put',
+        'settings' => ['photos' => [
+            ['alt' => 'Fachada'],
+            ['alt' => 'Vitrina', 'file' => \Illuminate\Http\UploadedFile::fake()->image('otra.png', 600, 900)],
+            ['alt' => 'Instalaciones SmartHouse'],
+        ]],
+    ])->assertSessionHas('success');
+
+    foreach (['image', 'webp', 'thumb'] as $key) {
+        expect(is_file(public_path($new[$key])))->toBeFalse();
+    }
+    expect(is_file(public_path('images/about-hero-smarthouse.jpg')))->toBeTrue();
+
+    // Limpieza: eliminar la sección borra sus fotos subidas
+    $latest = $showroom->fresh()->settings['photos'][1];
+    $this->actingAs($admin)->delete(route('admin.home.destroy', $showroom))->assertSessionHas('success');
+    expect(is_file(public_path($latest['image'])))->toBeFalse();
+});
+
+test('showroom photos require an alt text and reject non images', function () {
+    $admin = homeAdmin();
+    $showroom = HomeSection::where('type', 'showroom')->firstOrFail();
+
+    $this->actingAs($admin)->post(route('admin.home.update', $showroom), [
+        '_method' => 'put',
+        'settings' => ['photos' => [
+            ['alt' => ''],
+            ['alt' => 'Vitrina', 'file' => \Illuminate\Http\UploadedFile::fake()->create('doc.pdf', 10, 'application/pdf')],
+            ['alt' => 'Otra'],
+        ]],
+    ])->assertSessionHasErrors(['settings.photos.0.alt', 'settings.photos.1.file']);
+
+    expect($showroom->fresh()->settings['photos'])->toBe(HomeSection::DEFAULT_SHOWROOM_PHOTOS);
+});

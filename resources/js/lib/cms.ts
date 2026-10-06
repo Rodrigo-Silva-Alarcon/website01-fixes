@@ -89,9 +89,7 @@ export interface ContactInfo {
     schedule_summary: string | null;
     hero_title: string;
     hero_subtitle: string | null;
-    form_title: string;
-    form_subtitle: string | null;
-    form_success: string;
+    show_map: boolean;
     hours_title: string;
     hours_note: string | null;
 }
@@ -100,14 +98,12 @@ const DEFAULT_ADDRESS = ['Av. 20 de Octubre', 'Esq. Rosendo Gutierrez', 'Edif. G
 
 /** Admin › Textos de la tienda. Mismos valores por defecto que StoreSetting::FIELDS. */
 export const STORE_TEXT_DEFAULTS = {
-    delivery_label: 'Delivery',
-    delivery_value: 'Gratis',
     order_button: 'Solicitar pedido por WhatsApp',
-    cart_perk_delivery: 'Delivery gratuito, entrega en 24 h',
+    cart_perk_delivery: 'Delivery seguro',
     cart_perk_payment: 'Pago seguro: transferencia, QR o efectivo',
     pickup_label: 'Retira en tienda',
-    pdp_delivery_title: 'Delivery gratuito',
-    pdp_delivery_text: 'Entrega en 24 h',
+    pdp_delivery_title: 'Delivery seguro',
+    pdp_delivery_text: 'Entrega a domicilio',
     pdp_payment_title: 'Pago seguro',
     pdp_payment_text: 'Transferencia, QR o efectivo contra entrega',
     pdp_condition_default: 'Producto original con garantía oficial',
@@ -155,6 +151,8 @@ export function useCms() {
             contact?.maps_url ||
             text('footer_maps') ||
             `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address} La Paz Bolivia`)}`,
+        // Mapa embebido (sin API key) con la dirección exacta del showroom
+        mapEmbedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(`${address}, ${(contact?.city ?? text('footer_address')) || 'La Paz, Bolivia'}`)}&z=17&output=embed`,
         website: contact?.website ?? text('site_url', 'www.smarthousebo.com'),
         facebook: contact ? contact.facebook || '' : text('footer_facebook'),
         instagram: contact ? contact.instagram || '' : text('footer_instagram'),

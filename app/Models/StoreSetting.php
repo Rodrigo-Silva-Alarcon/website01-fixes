@@ -20,10 +20,8 @@ class StoreSetting extends Model
         'cart' => [
             'title' => 'Carrito',
             'fields' => [
-                'delivery_label' => ['Envío en el resumen del pedido', 30, 'Delivery'],
-                'delivery_value' => ['Costo del envío', 30, 'Gratis'],
                 'order_button' => ['Botón para enviar el pedido', 60, 'Solicitar pedido por WhatsApp'],
-                'cart_perk_delivery' => ['Ventaja: envío', 120, 'Delivery gratuito, entrega en 24 h'],
+                'cart_perk_delivery' => ['Ventaja: envío', 120, 'Delivery seguro'],
                 'cart_perk_payment' => ['Ventaja: forma de pago', 120, 'Pago seguro: transferencia, QR o efectivo'],
                 'pickup_label' => ['Retiro en tienda (la dirección sale de Contacto)', 60, 'Retira en tienda'],
             ],
@@ -31,8 +29,8 @@ class StoreSetting extends Model
         'product' => [
             'title' => 'Ficha de producto',
             'fields' => [
-                'pdp_delivery_title' => ['Ventaja de envío: título', 60, 'Delivery gratuito'],
-                'pdp_delivery_text' => ['Ventaja de envío: detalle', 120, 'Entrega en 24 h'],
+                'pdp_delivery_title' => ['Ventaja de envío: título', 60, 'Delivery seguro'],
+                'pdp_delivery_text' => ['Ventaja de envío: detalle', 120, 'Entrega a domicilio'],
                 'pdp_payment_title' => ['Ventaja de pago: título', 60, 'Pago seguro'],
                 'pdp_payment_text' => ['Ventaja de pago: detalle', 120, 'Transferencia, QR o efectivo contra entrega'],
                 'pdp_condition_default' => ['Condición (producto sin descripción)', 120, 'Producto original con garantía oficial'],

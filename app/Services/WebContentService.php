@@ -186,7 +186,11 @@ class WebContentService
                     'subtitle' => $section->subtitle,
                 ];
 
-                if ($section->type === 'products') {
+                if ($section->type === 'features') {
+                    $item['items'] = $section->featureItems();
+                } elseif ($section->type === 'showroom') {
+                    $item['photos'] = $section->showroomPhotosForWeb();
+                } elseif ($section->type === 'products') {
                     $item['products'] = $this->sectionProducts($section)->values()->all();
                     $item['link'] = $this->sectionLink($section);
                     if (empty($item['products'])) {
@@ -476,7 +480,7 @@ class WebContentService
 
     /**
      * Datos de contacto, horario y textos de Contáctanos (Admin › Contacto), compartidos con
-     * toda la web pública. No incluye el correo interno que recibe el formulario.
+     * toda la web pública.
      *
      * @return array<string, mixed>|null
      */
@@ -489,7 +493,7 @@ class WebContentService
             }
 
             return [
-                ...$contact->only(array_diff(array_keys(ContactSetting::DATA_FIELDS), ['form_recipient'])),
+                ...$contact->only(array_keys(ContactSetting::DATA_FIELDS)),
                 ...$contact->only(array_keys(ContactSetting::TEXT_FIELDS)),
                 'schedule' => $contact->schedule,
                 'schedule_summary' => $contact->schedule_summary,

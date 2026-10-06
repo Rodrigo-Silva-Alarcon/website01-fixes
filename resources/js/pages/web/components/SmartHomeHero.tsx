@@ -153,7 +153,7 @@ export default function SmartHomeHero({ categorias = [] }: SmartHomeHeroProps) {
 
         {/* Subtítulo */}
         <p className="text-base sm:text-lg text-[#5b6066] leading-relaxed">
-          Televisores, cocina, audio, electrodomésticos, celulares y consolas de marcas líderes, con delivery gratuito.
+          Televisores, cocina, audio, electrodomésticos, celulares y consolas de marcas líderes, con delivery seguro.
         </p>
 
         {/* Botones de Acción */}

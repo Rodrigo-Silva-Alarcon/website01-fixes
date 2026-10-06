@@ -1,31 +1,26 @@
 import { Truck, ShieldCheck, CreditCard, Headphones } from "lucide-react";
 import { useCms } from "@/lib/cms";
+import type { HomeFeatureItem } from "@/types/models";
 
-export default function FeaturesBar() {
+const ICONS = [Truck, ShieldCheck, CreditCard, Headphones];
+
+/** Textos por defecto (los mismos que rellena la migración). */
+const DEFAULTS: HomeFeatureItem[] = [
+  { title: "Delivery seguro", subtitle: "Entrega a domicilio" },
+  { title: "Garantía", subtitle: "Devolución del 100% del dinero" },
+  { title: "Pago seguro", subtitle: "Tu dinero está protegido" },
+  { title: "Atención personalizada", subtitle: null },
+];
+
+/** Títulos y textos editables en Admin › Página de inicio; el 4.º muestra el WhatsApp de Admin › Contacto. */
+export default function FeaturesBar({ items }: { items?: HomeFeatureItem[] }) {
   const { whatsappIntl } = useCms();
 
-  const features = [
-    {
-      icon: Truck,
-      title: "Delivery gratuito",
-      desc: "Entrega en 24 h",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Garantía",
-      desc: "Devolución del 100% del dinero",
-    },
-    {
-      icon: CreditCard,
-      title: "Pago seguro",
-      desc: "Tu dinero está protegido",
-    },
-    {
-      icon: Headphones,
-      title: "Atención personalizada",
-      desc: `WhatsApp ${whatsappIntl}`,
-    },
-  ];
+  const features = DEFAULTS.map((fallback, idx) => ({
+    icon: ICONS[idx],
+    title: items?.[idx]?.title || fallback.title,
+    desc: idx === 3 ? `WhatsApp ${whatsappIntl}` : items?.[idx]?.subtitle || fallback.subtitle,
+  }));
 
   return (
     <section className="w-full border-y border-[#eceef0] bg-white mt-12 md:mt-16">

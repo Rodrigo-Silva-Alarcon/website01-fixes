@@ -253,4 +253,21 @@ export interface HomeSectionData {
     subtitle: string | null;
     products?: Product[];
     link?: string | null;
+    /** features: los 4 beneficios (el subtítulo del 4.º lo pone la web con el WhatsApp) */
+    items?: HomeFeatureItem[];
+    /** showroom: las 3 fotos */
+    photos?: HomeShowroomPhoto[];
+}
+
+export interface HomeFeatureItem {
+    title: string;
+    subtitle: string | null;
+}
+
+export interface HomeShowroomPhoto {
+    src: string;
+    webp: string | null;
+    thumb: string | null;
+    alt: string;
+    mirror: boolean;
 }

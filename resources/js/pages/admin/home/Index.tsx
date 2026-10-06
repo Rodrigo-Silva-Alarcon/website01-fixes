@@ -63,11 +63,26 @@ interface PickerProduct {
     brand: string | null;
 }
 
+interface FeatureItem {
+    title: string;
+    subtitle: string | null;
+}
+
+interface ShowroomPhoto {
+    src: string;
+    webp: string | null;
+    thumb: string | null;
+    alt: string;
+    mirror: boolean;
+}
+
 interface Settings {
     source?: string;
     category_id?: number | null;
     limit?: number;
     product_ids?: number[];
+    items?: FeatureItem[];
+    photos?: ShowroomPhoto[];
 }
 
 interface Section {
@@ -94,6 +109,7 @@ interface Props {
     types: Record<SectionType, TypeInfo>;
     sources: Record<string, string>;
     maxProducts: number;
+    defaults: { features: FeatureItem[]; showroom: ShowroomPhoto[] };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -104,12 +120,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 /** Icono, color y explicación de cada tipo de sección. */
 const TYPE_META: Record<SectionType, { icon: LucideIcon; tone: string; hint: string }> = {
     hero: { icon: GalleryHorizontal, tone: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300', hint: 'Carrusel principal. Las imágenes se gestionan en Banners (página Inicio).' },
-    features: { icon: Award, tone: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300', hint: 'Barra de envíos, garantía y formas de pago.' },
+    features: { icon: Award, tone: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300', hint: 'Cuatro beneficios con título y texto (envíos, garantía, pago y atención por WhatsApp).' },
     categories: { icon: LayoutGrid, tone: 'bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300', hint: 'Mosaico con las categorías publicadas. Sección fija: no se puede eliminar.' },
     products: { icon: ShoppingBag, tone: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300', hint: 'Fila de productos: elegidos a mano, populares, en oferta o de una categoría.' },
     promo: { icon: Sparkles, tone: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300', hint: 'Dos tarjetas grandes (naranja y azul) con el producto que elijas en cada una.' },
     brands: { icon: Award, tone: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300', hint: 'Cinta con los logos de las marcas publicadas.' },
-    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Dirección, horario, WhatsApp y mapa (datos en Admin › Contacto).' },
+    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Tres fotos de la tienda, con dirección, horario, WhatsApp y mapa (datos en Admin › Contacto).' },
 };
 
 /** Tipos cuyo título y subtítulo se ven en la web. */
@@ -131,7 +147,7 @@ const flash = (page: Page) => {
     if (messages?.error) toast.error(messages.error);
 };
 
-export default function HomeSectionsIndex({ sections, categories, types, sources, maxProducts }: Props) {
+export default function HomeSectionsIndex({ sections, categories, types, sources, maxProducts, defaults }: Props) {
     const { hasPermission } = usePermissions();
     const canCreate = hasPermission('create_home');
     const canEdit = hasPermission('edit_home');
@@ -316,6 +332,7 @@ export default function HomeSectionsIndex({ sections, categories, types, sources
                             sources={sources}
                             categories={categories}
                             maxProducts={maxProducts}
+                            defaults={defaults}
                             readOnly={'position' in editing ? !canEdit : !canCreate}
                             onDone={() => setEditing(null)}
                         />
@@ -358,6 +375,7 @@ function summary(section: Section, sources: Props['sources'], categories: Props[
         return `${sources[s.source ?? 'popular'] ?? s.source} · hasta ${s.limit ?? 8}`;
     }
     if (section.type === 'promo') return section.products.map((p) => p.name).join(' / ') || 'Sin productos elegidos';
+    if (section.type === 'features' && s.items?.length) return s.items.map((i) => i.title).join(' · ');
     return TYPE_META[section.type]?.hint ?? '';
 }
 
@@ -495,17 +513,36 @@ interface FormProps {
     sources: Props['sources'];
     categories: Props['categories'];
     maxProducts: number;
+    defaults: Props['defaults'];
     readOnly: boolean;
     onDone: () => void;
 }
 
-function SectionForm({ section, type, types, sources, categories, maxProducts, readOnly, onDone }: FormProps) {
+/** Foto del showroom en el editor: la actual (src/webp) o la nueva elegida (file + vista previa local). */
+type PhotoDraft = ShowroomPhoto & { file: File | null; preview: string | null };
+
+function SectionForm({ section, type, types, sources, categories, maxProducts, defaults, readOnly, onDone }: FormProps) {
     const settings = section?.settings ?? {};
     const [picked, setPicked] = useState<PickerProduct[]>(section?.products ?? []);
     const [promo, setPromo] = useState<(PickerProduct | null)[]>(
         type === 'promo' ? [section?.products[0] ?? null, section?.products[1] ?? null] : [],
     );
     const [promoSlot, setPromoSlot] = useState<number | null>(null);
+    const [features, setFeatures] = useState<FeatureItem[]>(() => (settings.items?.length ? settings.items : defaults.features).map((i) => ({ ...i })));
+    const [photos, setPhotos] = useState<PhotoDraft[]>(() =>
+        (settings.photos?.length ? settings.photos : defaults.showroom).map((p) => ({ ...p, file: null, preview: null })),
+    );
+
+    // Libera las vistas previas locales al cerrar el editor
+    const previews = useRef<string[]>([]);
+    useEffect(() => () => previews.current.forEach((url) => URL.revokeObjectURL(url)), []);
+
+    const pickPhoto = (index: number, file: File | undefined) => {
+        if (!file) return;
+        const preview = URL.createObjectURL(file);
+        previews.current.push(preview);
+        setPhotos((list) => list.map((p, i) => (i === index ? { ...p, file, preview } : p)));
+    };
 
     const { data, setData, transform, post, put, processing, errors } = useForm({
         type,
@@ -532,7 +569,13 @@ function SectionForm({ section, type, types, sources, categories, maxProducts, r
                   }
                 : type === 'promo'
                   ? { product_ids: promo.filter(Boolean).map((p) => p!.id) }
-                  : {},
+                  : type === 'features'
+                    ? { items: features.map((i) => ({ title: i.title.trim(), subtitle: i.subtitle?.trim() || null })) }
+                    : type === 'showroom'
+                      ? { photos: photos.map((p) => ({ alt: p.alt.trim(), ...(p.file ? { file: p.file } : {}) })) }
+                      : {},
+        // Con fotos se envía como multipart: PHP solo lo lee en POST, así que la edición viaja como POST + _method
+        ...(type === 'showroom' && section ? { _method: 'put' } : {}),
     }));
 
     const submit: FormEventHandler = (e) => {
@@ -546,7 +589,11 @@ function SectionForm({ section, type, types, sources, categories, maxProducts, r
             },
             onError: () => toast.error('Por favor corrige los errores en el formulario'),
         };
-        if (section) put(route('admin.home.update', section.id), options);
+        if (type === 'showroom') {
+            // indices: settings[photos][0][alt] (con «brackets» cada campo llegaría como una foto distinta)
+            const upload = { ...options, forceFormData: true, queryStringArrayFormat: 'indices' as const };
+            post(section ? route('admin.home.update', section.id) : route('admin.home.store'), upload);
+        } else if (section) put(route('admin.home.update', section.id), options);
         else post(route('admin.home.store'), options);
     };
 
@@ -760,7 +807,100 @@ function SectionForm({ section, type, types, sources, categories, maxProducts, r
 
                 {type === 'categories' && section && <CategoryImages categories={categories} readOnly={readOnly} />}
 
-                {!HAS_TITLE.includes(type) && type !== 'promo' && (
+                {type === 'features' && (
+                    <div className="grid gap-3">
+                        {features.map((item, i) => (
+                            <div key={i} className="grid gap-3 rounded-xl border p-3 sm:grid-cols-2">
+                                <Field label={`Beneficio ${i + 1} · título *`} htmlFor={`feature-${i}-title`} error={err[`settings.items.${i}.title`]}>
+                                    <Input
+                                        id={`feature-${i}-title`}
+                                        value={item.title}
+                                        maxLength={60}
+                                        onChange={(e) => setFeatures((list) => list.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))}
+                                    />
+                                </Field>
+                                {i === 3 ? (
+                                    <div className="grid gap-2">
+                                        <span className="text-sm font-medium">Texto</span>
+                                        <p className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">
+                                            Automático: «WhatsApp» y el número de Admin › Contacto.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <Field label="Texto" htmlFor={`feature-${i}-subtitle`} error={err[`settings.items.${i}.subtitle`]}>
+                                        <Input
+                                            id={`feature-${i}-subtitle`}
+                                            value={item.subtitle ?? ''}
+                                            maxLength={80}
+                                            placeholder="Opcional"
+                                            onChange={(e) => setFeatures((list) => list.map((x, j) => (j === i ? { ...x, subtitle: e.target.value } : x)))}
+                                        />
+                                    </Field>
+                                )}
+                            </div>
+                        ))}
+                        {err['settings.items'] && <p className="text-sm text-red-500">{err['settings.items']}</p>}
+                    </div>
+                )}
+
+                {type === 'showroom' && (
+                    <div className="grid gap-3">
+                        <div className="grid gap-0.5">
+                            <h3 className="text-sm font-medium">Fotos</h3>
+                            <p className="text-xs text-muted-foreground">
+                                Tres fotos verticales, de izquierda a derecha. JPG, PNG o WebP, máx. 8 MB; se optimizan al guardar.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            {photos.map((photo, i) => (
+                                <div key={i} className="grid content-start gap-2">
+                                    <div className="relative aspect-[3/5] overflow-hidden rounded-lg border bg-muted">
+                                        <img
+                                            src={photo.preview ?? photo.thumb ?? photo.webp ?? photo.src}
+                                            alt=""
+                                            className={`size-full object-cover ${photo.mirror && !photo.file ? 'scale-x-[-1]' : ''}`}
+                                        />
+                                        <span className="absolute top-1.5 left-1.5 flex size-5 items-center justify-center rounded-full bg-background text-[10px] font-semibold">
+                                            {i + 1}
+                                        </span>
+                                    </div>
+                                    {!readOnly && (
+                                        <Button type="button" variant="outline" size="sm" className="h-8" asChild>
+                                            <label className={processing ? 'pointer-events-none opacity-50' : 'cursor-pointer'}>
+                                                <ImagePlus className="h-4 w-4 sm:mr-1.5" />
+                                                <span className="hidden sm:inline">Cambiar</span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/png,image/jpeg,image/webp"
+                                                    className="sr-only"
+                                                    aria-label={`Cambiar foto ${i + 1}`}
+                                                    onChange={(e) => {
+                                                        pickPhoto(i, e.target.files?.[0]);
+                                                        e.target.value = '';
+                                                    }}
+                                                />
+                                            </label>
+                                        </Button>
+                                    )}
+                                    {err[`settings.photos.${i}.file`] && <p className="text-xs text-red-500">{err[`settings.photos.${i}.file`]}</p>}
+                                </div>
+                            ))}
+                        </div>
+                        {photos.map((photo, i) => (
+                            <Field key={i} label={`Texto alternativo de la foto ${i + 1} *`} htmlFor={`photo-${i}-alt`} error={err[`settings.photos.${i}.alt`]}>
+                                <Input
+                                    id={`photo-${i}-alt`}
+                                    value={photo.alt}
+                                    maxLength={150}
+                                    placeholder="Describe la foto para lectores de pantalla"
+                                    onChange={(e) => setPhotos((list) => list.map((x, j) => (j === i ? { ...x, alt: e.target.value } : x)))}
+                                />
+                            </Field>
+                        ))}
+                    </div>
+                )}
+
+                {!HAS_TITLE.includes(type) && type !== 'promo' && type !== 'features' && (
                     <p className="rounded-lg border border-dashed px-3 py-2.5 text-sm text-muted-foreground">
                         Esta sección no tiene opciones propias: solo puedes moverla, ocultarla o eliminarla.
                         {type === 'hero' && ' Las imágenes del carrusel se cambian en Banners.'}

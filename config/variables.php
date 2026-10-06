@@ -24,6 +24,8 @@ return [
     'folder_video' => 'data/videos/',
     // Fotos de la galería de "Nosotros" subidas desde el panel
     'folder_about' => 'data/about/',
+    // Fotos del showroom de la página de inicio subidas desde el panel
+    'folder_home' => 'data/home/',
     // Logos del footer (modo claro / oscuro) subidos desde el panel
     'folder_footer' => 'data/footer/',
 

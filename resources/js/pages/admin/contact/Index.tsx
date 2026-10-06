@@ -26,6 +26,8 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -42,7 +44,6 @@ interface ContactData {
     whatsapp: string;
     phone: string | null;
     email: string;
-    form_recipient: string | null;
     address: string;
     city: string | null;
     maps_url: string | null;
@@ -55,9 +56,7 @@ interface ContactData {
     schedule_summary: string | null;
     hero_title: string;
     hero_subtitle: string | null;
-    form_title: string;
-    form_subtitle: string | null;
-    form_success: string;
+    show_map: boolean;
     hours_title: string;
     hours_note: string | null;
     updated_at: string | null;
@@ -89,7 +88,6 @@ interface Props {
     fields: Record<string, string>;
     filters: { action: string };
     tab: string;
-    formRecipientFallback: string | null;
 }
 
 const TABS = ['data', 'schedule', 'texts', 'history'];
@@ -105,7 +103,7 @@ const ACTION_STYLE: Record<string, string> = {
     text_updated: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
 };
 
-export default function ContactIndex({ contact, logs, actions, fields, filters, tab: initialTab, formRecipientFallback }: Props) {
+export default function ContactIndex({ contact, logs, actions, fields, filters, tab: initialTab }: Props) {
     const { hasPermission } = usePermissions();
     const canEdit = hasPermission('edit_contact');
     const [tab, setTab] = useState(TABS.includes(initialTab) ? initialTab : 'data');
@@ -197,7 +195,6 @@ export default function ContactIndex({ contact, logs, actions, fields, filters, 
                                 <DataForm
                                     contact={contact}
                                     canEdit={canEdit}
-                                    formRecipientFallback={formRecipientFallback}
                                     onDirtyChange={(v) => setDirty((d) => (d.data === v ? d : { ...d, data: v }))}
                                 />
                             </TabsContent>
@@ -320,19 +317,9 @@ function useSection<T extends FormDataType<T>>(initial: T, url: string, what: st
 /** Igual que la validación del backend: "+591 68210861". */
 const WHATSAPP_FORMAT = /^\+?\d{1,4} \d{6,12}$/;
 
-const DATA_KEYS = ['whatsapp', 'phone', 'email', 'form_recipient', 'address', 'city', 'maps_url', 'website', 'facebook', 'instagram', 'twitter', 'tiktok'] as const;
+const DATA_KEYS = ['whatsapp', 'phone', 'email', 'address', 'city', 'maps_url', 'website', 'facebook', 'instagram', 'twitter', 'tiktok'] as const;
 
-function DataForm({
-    contact,
-    canEdit,
-    formRecipientFallback,
-    onDirtyChange,
-}: {
-    contact: ContactData;
-    canEdit: boolean;
-    formRecipientFallback: string | null;
-    onDirtyChange: (dirty: boolean) => void;
-}) {
+function DataForm({ contact, canEdit, onDirtyChange }: { contact: ContactData; canEdit: boolean; onDirtyChange: (dirty: boolean) => void }) {
     const initial = Object.fromEntries(DATA_KEYS.map((k) => [k, contact[k] ?? ''])) as Record<(typeof DATA_KEYS)[number], string>;
     const { data, setData, errors, processing, isDirty, submit, askDiscard, discardDialog } = useSection(
         initial,
@@ -376,10 +363,6 @@ function DataForm({
                             <Input {...bind('email')} type="email" placeholder="contacto@empresa.com" />
                             <Hint>Se muestra en el footer y en Contáctanos.</Hint>
                         </Field>
-                        <Field label="Correo que recibe los mensajes del formulario (opcional)" htmlFor="form_recipient" error={errors.form_recipient}>
-                            <Input {...bind('form_recipient')} type="email" placeholder={formRecipientFallback ?? 'ventas@empresa.com'} />
-                            <Hint>No se muestra en la web. Si queda vacío se usa el configurado en el servidor.</Hint>
-                        </Field>
                     </Section>
                 </div>
 
@@ -387,7 +370,10 @@ function DataForm({
                     <div className="grid gap-4 sm:grid-cols-2">
                         <Field label="Dirección del showroom" htmlFor="address" error={errors.address}>
                             <Textarea {...bind('address')} rows={3} placeholder={'Av. 20 de Octubre\nEsq. Rosendo Gutierrez'} />
-                            <Hint>Un renglón por línea. En el showroom se ve en renglones; en otros lugares, separada por comas.</Hint>
+                            <Hint>
+                                Un renglón por línea. En el showroom se ve en renglones; en otros lugares, separada por comas. El mapa de
+                                Contáctanos busca esta dirección.
+                            </Hint>
                         </Field>
                         <div className="grid content-start gap-4">
                             <Field label="Ciudad / país" htmlFor="city" error={errors.city}>
@@ -434,7 +420,7 @@ function DataForm({
                         {[
                             ['WhatsApp', 'Footer, barra de beneficios, showroom, Nosotros, Contáctanos, carrito, checkout y fichas de producto.'],
                             ['Correo', 'Footer y Contáctanos.'],
-                            ['Dirección y mapa', 'Showroom de inicio, Nosotros, carrito y Contáctanos.'],
+                            ['Dirección y mapa', 'Showroom de inicio, Nosotros, carrito y Contáctanos (mapa incluido).'],
                             ['Ciudad', 'Pie de página.'],
                             ['Redes', 'Botones del footer.'],
                         ].map(([what, where]) => (
@@ -680,10 +666,13 @@ function TimeRange({
 
 /* ─────────────────────────────── Textos ─────────────────────────────── */
 
-const TEXT_KEYS = ['hero_title', 'hero_subtitle', 'form_title', 'form_subtitle', 'form_success', 'hours_title', 'hours_note'] as const;
+const TEXT_KEYS = ['hero_title', 'hero_subtitle', 'hours_title', 'hours_note'] as const;
 
 function TextsForm({ contact, canEdit, onDirtyChange }: { contact: ContactData; canEdit: boolean; onDirtyChange: (dirty: boolean) => void }) {
-    const initial = Object.fromEntries(TEXT_KEYS.map((k) => [k, contact[k] ?? ''])) as Record<(typeof TEXT_KEYS)[number], string>;
+    const initial = {
+        ...(Object.fromEntries(TEXT_KEYS.map((k) => [k, contact[k] ?? ''])) as Record<(typeof TEXT_KEYS)[number], string>),
+        show_map: contact.show_map ?? true,
+    };
     const { data, setData, errors, processing, isDirty, submit, askDiscard, discardDialog } = useSection(
         initial,
         route('admin.contact.texts'),
@@ -712,10 +701,17 @@ function TextsForm({ contact, canEdit, onDirtyChange }: { contact: ContactData; 
                     {input('hero_subtitle', 'Descripción', 300, { area: true, placeholder: 'Opcional' })}
                 </Section>
                 <div className="grid gap-6 xl:grid-cols-2">
-                    <Section title="Formulario">
-                        {input('form_title', 'Título', 80)}
-                        {input('form_subtitle', 'Indicación', 160, { placeholder: 'Opcional' })}
-                        {input('form_success', 'Mensaje al enviar', 160)}
+                    <Section title="Mapa" icon={<MapPin className="h-4 w-4" />}>
+                        <div className="flex items-start justify-between gap-4">
+                            <Label htmlFor="show_map" className="grid gap-1 font-normal">
+                                <span className="font-medium">Mostrar mapa del showroom</span>
+                                <Hint>
+                                    Google Maps con la dirección de la pestaña Datos, a la izquierda del horario. Si lo desactivas, los datos de
+                                    contacto y el horario quedan centrados.
+                                </Hint>
+                            </Label>
+                            <Switch id="show_map" checked={data.show_map} onCheckedChange={(v) => setData('show_map', v)} />
+                        </div>
                     </Section>
                     <Section title="Horario">
                         {input('hours_title', 'Título del recuadro', 60)}
@@ -732,18 +728,17 @@ function TextsForm({ contact, canEdit, onDirtyChange }: { contact: ContactData; 
                     <h2 className="text-[30px] font-bold leading-none tracking-[-.04em] [text-wrap:balance]">{data.hero_title || 'Título'}</h2>
                     {data.hero_subtitle && <p className="mt-3 text-[13px] leading-relaxed text-[#3d4247]">{data.hero_subtitle}</p>}
                 </div>
-                <div className="mt-3 rounded-2xl border p-4 text-[#191c1f]">
-                    <p className="text-lg font-bold tracking-[-.02em]">{data.form_title || 'Título del formulario'}</p>
-                    {data.form_subtitle && <p className="text-xs text-[#6b7076]">{data.form_subtitle}</p>}
-                    <div className="mt-3 grid gap-2">
-                        <span className="h-7 rounded-lg border bg-white" />
-                        <span className="h-7 rounded-lg border bg-white" />
+                <div className={`mt-3 flex gap-3 ${data.show_map ? '' : 'justify-center'}`}>
+                    {data.show_map && (
+                        <div className="flex min-h-24 flex-1 items-center justify-center rounded-2xl border bg-[#f4f5f6] text-xs text-[#6b7076]">
+                            <MapPin className="mr-1 h-4 w-4 text-[#c2410c]" />
+                            Mapa
+                        </div>
+                    )}
+                    <div className="w-1/2 rounded-2xl border border-[#fde3cf] bg-[#fff4ec] p-4 text-[#191c1f]">
+                        <p className="font-bold">{data.hours_title || 'Horario'}</p>
+                        {data.hours_note && <p className="mt-1 text-xs text-[#6b7076]">{data.hours_note}</p>}
                     </div>
-                    <p className="mt-3 rounded-lg bg-[#fff4ec] px-3 py-2 text-xs text-[#c2410c]">Al enviar: {data.form_success || '—'}</p>
-                </div>
-                <div className="mt-3 rounded-2xl border border-[#fde3cf] bg-[#fff4ec] p-4 text-[#191c1f]">
-                    <p className="font-bold">{data.hours_title || 'Horario'}</p>
-                    {data.hours_note && <p className="mt-1 text-xs text-[#6b7076]">{data.hours_note}</p>}
                 </div>
             </aside>
             {discardDialog}

@@ -348,10 +348,6 @@ export default function CartDrawer() {
                   )}
                 </>
               )}
-              <div className="flex justify-between text-[15px] text-[#5b6066]">
-                <span>{store("delivery_label")}</span>
-                <span className="font-semibold text-[#155eef]">{store("delivery_value")}</span>
-              </div>
               <div className="flex items-baseline justify-between pt-1.5">
                 <span className="text-[17px] font-bold">Total</span>
                 <span className="flex flex-col items-end">
