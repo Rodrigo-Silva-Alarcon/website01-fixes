@@ -94,15 +94,15 @@ function CartLine({ item, qty, busy, removing, onQty, onRemove }: {
 }
 
 export default function CarritoPage() {
-  const { whatsapp, addressLines } = useCms();
+  const { whatsapp, addressLines, store } = useCms();
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, clear } =
     useCart();
   const upsell = suggestions.slice(0, 4);
   const address = addressLines.slice(0, 2).join(", ");
   const perks = [
-    { icon: Truck, t: "Delivery gratuito, entrega en 24 h" },
-    { icon: Lock, t: "Pago seguro: transferencia, QR o efectivo" },
-    { icon: Store, t: `Retira en tienda: ${address}` },
+    { icon: Truck, t: store("cart_perk_delivery") },
+    { icon: Lock, t: store("cart_perk_payment") },
+    { icon: Store, t: `${store("pickup_label")}: ${address}` },
   ];
 
   return (
@@ -181,8 +181,8 @@ export default function CarritoPage() {
               </div>
             )}
             <div className="flex justify-between text-[15px] text-[#5b6066]">
-              <span>Delivery</span>
-              <span className="font-semibold text-[#155eef]">Gratis</span>
+              <span>{store("delivery_label")}</span>
+              <span className="font-semibold text-[#155eef]">{store("delivery_value")}</span>
             </div>
             <div className="h-px bg-[#eceef0]" />
             <div className="flex items-baseline justify-between gap-3">
@@ -201,18 +201,18 @@ export default function CarritoPage() {
             {/* El pedido se cierra por WhatsApp; /checkout queda sin enlaces hasta eliminarlo */}
             {hasItems ? (
               <a
-                href={whatsappCartUrl(live, whatsapp)}
+                href={whatsappCartUrl(live, whatsapp, store("wa_order_intro"))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
               >
                 <WhatsAppIcon className="size-5" />
-                Solicitar pedido por WhatsApp
+                {store("order_button")}
               </a>
             ) : (
               <span className="flex cursor-not-allowed items-center justify-center gap-2 rounded-full bg-[#d5d9de] px-[22px] py-[15px] text-base font-bold text-white" aria-disabled="true">
                 <WhatsAppIcon className="size-5" />
-                Solicitar pedido por WhatsApp
+                {store("order_button")}
               </span>
             )}
 

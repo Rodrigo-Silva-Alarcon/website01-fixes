@@ -98,8 +98,35 @@ export interface ContactInfo {
 
 const DEFAULT_ADDRESS = ['Av. 20 de Octubre', 'Esq. Rosendo Gutierrez', 'Edif. Guadalquivir #2332'];
 
+/** Admin › Textos de la tienda. Mismos valores por defecto que StoreSetting::FIELDS. */
+export const STORE_TEXT_DEFAULTS = {
+    delivery_label: 'Delivery',
+    delivery_value: 'Gratis',
+    order_button: 'Solicitar pedido por WhatsApp',
+    cart_perk_delivery: 'Delivery gratuito, entrega en 24 h',
+    cart_perk_payment: 'Pago seguro: transferencia, QR o efectivo',
+    pickup_label: 'Retira en tienda',
+    pdp_delivery_title: 'Delivery gratuito',
+    pdp_delivery_text: 'Entrega en 24 h',
+    pdp_payment_title: 'Pago seguro',
+    pdp_payment_text: 'Transferencia, QR o efectivo contra entrega',
+    pdp_condition_default: 'Producto original con garantía oficial',
+    pdp_warranty: 'Oficial del fabricante',
+    pdp_condition: 'Nuevo, sellado',
+    wa_order_intro: 'Hola, quiero hacer el siguiente pedido:',
+    wa_product_intro: 'Hola, quisiera más información sobre este producto:',
+    wa_product_no_price: 'Quisiera consultar el precio y la disponibilidad.',
+    wa_restock: 'Hola, quisiera consultar sobre la disponibilidad y reingreso de productos',
+};
+
+export type StoreTextKey = keyof typeof STORE_TEXT_DEFAULTS;
+
 export function useCms() {
-    const { cmsTexts, contact } = usePage<{ cmsTexts?: Record<string, string>; contact?: ContactInfo | null }>().props;
+    const { cmsTexts, contact, storeTexts } = usePage<{
+        cmsTexts?: Record<string, string>;
+        contact?: ContactInfo | null;
+        storeTexts?: Partial<Record<StoreTextKey, string>>;
+    }>().props;
     const texts = cmsTexts ?? {};
 
     /** Texto plano del panel o el valor por defecto. */
@@ -146,5 +173,7 @@ export function useCms() {
         whatsapp,
         whatsappIntl: formatWhatsappIntl(whatsappRaw),
         whatsappHref: (message?: string) => whatsappLink(whatsapp, message),
+        /** Texto de Admin › Textos de la tienda o su valor por defecto. */
+        store: (key: StoreTextKey): string => storeTexts?.[key] || STORE_TEXT_DEFAULTS[key],
     };
 }

@@ -40,6 +40,7 @@ return [
         'banners' => 'Banners',
         'about' => 'Nosotros',
         'footer' => 'Footer',
+        'store_texts' => 'Textos de la tienda',
         'inventories' => 'Inventarios',
         'carts' => 'Carritos',
         'configuracion' => 'Configuración',

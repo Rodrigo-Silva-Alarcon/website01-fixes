@@ -25,6 +25,7 @@ import ResponsiveImg from "@/components/ResponsiveImg";
 import { Cart, CartItem, PagePropsMessage } from "@/types/models";
 import { cartTotals, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { useCms } from "@/lib/cms";
+import { groupSchedule } from "@/lib/schedule";
 import DeliveryMap, { forwardGeocode, reverseGeocode, type LatLng } from "./components/DeliveryMap";
 
 type Mode = "delivery" | "pickup";
@@ -39,10 +40,6 @@ const MODE_OPTIONS: { value: Mode; label: string; sub: string; icon: LucideIcon 
   { value: "delivery", label: "Delivery a domicilio", sub: "Gratis · entrega en 24 h", icon: Truck },
   { value: "pickup", label: "Retiro en tienda", sub: "Showroom en La Paz", icon: Store },
 ];
-
-const SHOWROOM = "Av. 20 de Octubre esq. Rosendo Gutierrez, Edif. Guadalquivir #2332";
-const PICKUP_ADDRESS = `Retiro en tienda: ${SHOWROOM}`;
-const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOWROOM + ", La Paz, Bolivia")}`;
 
 const inputCls =
   "h-[52px] w-full rounded-2xl border-[1.5px] border-[#dfe2e6] bg-white px-[18px] text-base text-[#191c1f] outline-none transition-[border-color,box-shadow] placeholder:text-[#8a8f94] focus:border-[#fa8232] focus:shadow-[0_0_0_4px_rgba(250,130,50,.15)]";
@@ -147,7 +144,13 @@ const SummaryItem = memo(function SummaryItem({
 });
 
 export default function CheckoutPage() {
-  const { whatsapp } = useCms();
+  // Dirección, mapa y horario del showroom: Admin › Contacto
+  const { whatsapp, address: showroom, mapsHref, schedule } = useCms();
+  const pickupAddress = `Retiro en tienda: ${showroom}`;
+  const hoursLine = groupSchedule(schedule)
+    .filter((g) => !g.closed)
+    .map((g) => `${g.label}: ${g.hours.join(" y ")}`)
+    .join(" · ");
   const { cart, flash } = usePage<{ cart: Cart | null; flash: PagePropsMessage["flash"] }>().props;
   const items: CartItem[] = useMemo(() => cart?.cart_items ?? [], [cart]);
   const totals = useMemo(() => cartTotals(items), [items]);
@@ -173,7 +176,7 @@ export default function CheckoutPage() {
 
   // El retiro en tienda no pide dirección, pero el backend la requiere.
   transform((d) =>
-    mode === "pickup" ? { ...d, customer_address: PICKUP_ADDRESS, customer_lat: null, customer_lng: null } : d,
+    mode === "pickup" ? { ...d, customer_address: pickupAddress, customer_lat: null, customer_lng: null } : d,
   );
 
   // Sin punto fijado, la dirección escrita centra el mapa de forma aproximada.
@@ -439,13 +442,11 @@ export default function CheckoutPage() {
                 <div className="flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-[#fde3cf] bg-[#fff4ec] px-5 py-[18px]">
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="font-bold">Showroom Smart House</span>
-                    <span className="text-sm text-[#3d4247]">{SHOWROOM}</span>
-                    <span className="text-[13px] text-[#6b7076]">
-                      Lunes - Viernes: 9:00 AM - 6:00 PM · Sábado: 10:00 AM - 4:00 PM
-                    </span>
+                    <span className="text-sm text-[#3d4247]">{showroom}</span>
+                    {hoursLine && <span className="text-[13px] text-[#6b7076]">{hoursLine}</span>}
                   </div>
                   <a
-                    href={MAPS_LINK}
+                    href={mapsHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 rounded-full border-[1.5px] border-[#fa8232] bg-white px-[18px] py-2.5 text-sm font-semibold text-[#c2410c] transition-colors hover:bg-[#fa8232] hover:text-white"

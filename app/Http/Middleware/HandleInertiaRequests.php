@@ -119,6 +119,8 @@ class HandleInertiaRequests extends Middleware
             $base['cmsTexts'] = $this->get_cms_texts();
             $base['contact'] = $this->webContent()->contactInfo();
             $base['footer'] = $this->webContent()->footerInfo();
+            // ~1 KB: los usa el carrito lateral (en todas las páginas) y la ficha
+            $base['storeTexts'] = $this->webContent()->storeTexts();
         } else {
             // Frase del panel de inicio de sesión (auth-split-layout); la tienda no la usa
             [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
@@ -133,6 +135,7 @@ class HandleInertiaRequests extends Middleware
             $base['cmsTexts'] = [];
             $base['contact'] = null;
             $base['footer'] = null;
+            $base['storeTexts'] = [];
         }
 
         return $base;

@@ -186,7 +186,7 @@ function SuggestionsRail({ products, onAdd }: { products: Product[]; onAdd: (p: 
  * El botón "ampliar" del panel lleva a la versión 2 (/carrito).
  */
 export default function CartDrawer() {
-  const { whatsapp } = useCms();
+  const { whatsapp, store } = useCms();
   const { component } = usePage();
   const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, clear, add } =
     useCart();
@@ -349,8 +349,8 @@ export default function CartDrawer() {
                 </>
               )}
               <div className="flex justify-between text-[15px] text-[#5b6066]">
-                <span>Delivery</span>
-                <span className="font-semibold text-[#155eef]">Gratis</span>
+                <span>{store("delivery_label")}</span>
+                <span className="font-semibold text-[#155eef]">{store("delivery_value")}</span>
               </div>
               <div className="flex items-baseline justify-between pt-1.5">
                 <span className="text-[17px] font-bold">Total</span>
@@ -362,13 +362,13 @@ export default function CartDrawer() {
               </div>
               {/* El pedido se cierra por WhatsApp; /checkout queda sin enlaces hasta eliminarlo */}
               <a
-                href={whatsappCartUrl(live, whatsapp)}
+                href={whatsappCartUrl(live, whatsapp, store("wa_order_intro"))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
               >
                 <WhatsAppIcon className="size-5" />
-                Solicitar pedido por WhatsApp
+                {store("order_button")}
               </a>
             </div>
           )}

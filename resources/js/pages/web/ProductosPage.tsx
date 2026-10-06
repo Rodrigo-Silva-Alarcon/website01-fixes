@@ -481,7 +481,7 @@ function PaginationNav({ products }: { products: Pagination<Product> }) {
 }
 
 function EmptyState({ props, f, onClear }: { props: PageProps; f: Filters; onClear: () => void }) {
-  const { whatsappHref } = useCms();
+  const { whatsappHref, store } = useCms();
   const { activeCategory, activeSubcategory } = props;
   let title = "No encontramos productos";
   let description = "Prueba con otra categoría o quita algunos filtros.";
@@ -499,7 +499,7 @@ function EmptyState({ props, f, onClear }: { props: PageProps; f: Filters; onCle
 
   const hasFilters = f.cs.length + f.ss.length + f.ms.length > 0 || f.offers || !!f.find;
   const whatsappUrl = whatsappHref(
-    `Hola, quisiera consultar sobre la disponibilidad y reingreso de productos${
+    `${store("wa_restock")}${
       activeSubcategory ? ` en la subcategoría ${activeSubcategory.name}` : activeCategory ? ` en ${activeCategory.name}` : ""
     }.`,
   );

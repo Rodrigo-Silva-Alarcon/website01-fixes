@@ -12,6 +12,7 @@ use App\Models\FooterSetting;
 use App\Models\HomeSection;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\StoreSetting;
 use App\Models\Subcategory;
 use App\Models\Text;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -59,7 +60,7 @@ class WebContentService
      */
     public static function flushCache(): void
     {
-        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about', 'web_home_sections', 'web_contact', 'web_footer'] as $key) {
+        foreach (['web_menu', 'web_populares', 'web_destacados', 'web_marcas', 'web_cms_texts', 'web_about', 'web_home_sections', 'web_contact', 'web_footer', 'web_store_texts'] as $key) {
             Cache::forget($key);
         }
         foreach (self::BANNER_PAGES as $page) {
@@ -494,6 +495,17 @@ class WebContentService
                 'schedule_summary' => $contact->schedule_summary,
             ];
         });
+    }
+
+    /**
+     * Textos del carrito, la ficha y los mensajes de WhatsApp (Admin › Textos de la tienda).
+     * Siempre completos: lo que falte toma el valor por defecto.
+     *
+     * @return array<string, string>
+     */
+    public function storeTexts(): array
+    {
+        return Cache::remember('web_store_texts', 3600, fn (): array => StoreSetting::first()?->values() ?? StoreSetting::defaults());
     }
 
     /**

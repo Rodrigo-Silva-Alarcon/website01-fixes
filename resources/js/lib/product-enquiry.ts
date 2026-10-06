@@ -1,4 +1,4 @@
-import { DEFAULT_WHATSAPP, whatsappLink } from '@/lib/cms';
+import { DEFAULT_WHATSAPP, STORE_TEXT_DEFAULTS, whatsappLink } from '@/lib/cms';
 
 type InventoryPrice = {
     amount: number | string | null;
@@ -32,13 +32,16 @@ export function productEnquiryUrl(product: {
     name: string;
     brand_label?: string | null;
     inventory?: InventoryPrice | null;
-}, productUrl: string, phone: string = DEFAULT_WHATSAPP): string {
+}, productUrl: string, phone: string = DEFAULT_WHATSAPP, texts: { intro: string; noPrice: string } = {
+    intro: STORE_TEXT_DEFAULTS.wa_product_intro,
+    noPrice: STORE_TEXT_DEFAULTS.wa_product_no_price,
+}): string {
     const price = productPrice(product.inventory);
     const message = [
-        'Hola, quisiera más información sobre este producto:',
+        texts.intro,
         `Producto: ${product.name}`,
         product.brand_label ? `Marca: ${product.brand_label}` : '',
-        price !== null ? `Precio: ${product.inventory?.money} ${price.toFixed(2)}` : 'Quisiera consultar el precio y la disponibilidad.',
+        price !== null ? `Precio: ${product.inventory?.money} ${price.toFixed(2)}` : texts.noPrice,
         `Enlace: ${productUrl}`,
     ].filter(Boolean).join('\n');
     return whatsappLink(phone, message);

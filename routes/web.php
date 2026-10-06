@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\FooterController;
+use App\Http\Controllers\Admin\StoreTextController;
 use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
@@ -157,6 +158,11 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::middleware('permission:view_footer')->group(function () {
         Route::get('/footer', [FooterController::class, 'index'])->name('admin.footer.index');
         Route::post('/footer', [FooterController::class, 'update'])->middleware('permission:edit_footer')->name('admin.footer.update');
+    });
+    // Textos de la tienda: carrito, ficha de producto y mensajes de WhatsApp
+    Route::middleware('permission:view_store_texts')->group(function () {
+        Route::get('/store-texts', [StoreTextController::class, 'index'])->name('admin.store-texts.index');
+        Route::put('/store-texts', [StoreTextController::class, 'update'])->middleware('permission:edit_store_texts')->name('admin.store-texts.update');
     });
     // Página de inicio: secciones (orden, visibilidad, contenido)
     Route::middleware('permission:view_home')->group(function () {

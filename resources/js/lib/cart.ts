@@ -1,4 +1,4 @@
-import { DEFAULT_WHATSAPP, whatsappLink } from '@/lib/cms';
+import { DEFAULT_WHATSAPP, STORE_TEXT_DEFAULTS, whatsappLink } from '@/lib/cms';
 
 type CartLine = {
     name: string;
@@ -24,7 +24,7 @@ export function cartTotals(items: CartLine[]): Record<string, number> {
     }, {});
 }
 
-export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATSAPP): string {
+export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATSAPP, intro: string = STORE_TEXT_DEFAULTS.wa_order_intro): string {
     const lines = items.map((item, i) => {
         const money = currencyLabel(item.money);
         const brand = item.product?.brand_label;
@@ -39,7 +39,7 @@ export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATS
     const units = items.reduce((sum, item) => sum + item.amount, 0);
     const totals = Object.entries(cartTotals(items)).map(([money, cents]) => `*TOTAL: ${money} ${(cents / 100).toFixed(2)}*`);
     const message = [
-        'Hola, quiero hacer el siguiente pedido:',
+        intro,
         '',
         lines.join('\n\n'),
         '',

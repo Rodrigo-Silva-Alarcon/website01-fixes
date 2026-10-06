@@ -18,11 +18,6 @@ import { useCms } from "@/lib/cms";
 
 const MAX_QTY = 9;
 
-const PERKS: { icon: LucideIcon; title: string; text: string }[] = [
-  { icon: Truck, title: "Delivery gratuito", text: "Entrega en 24 h" },
-  { icon: Landmark, title: "Pago seguro", text: "Transferencia, QR o efectivo contra entrega" },
-  { icon: Store, title: "Retira en tienda", text: "Av. 20 de Octubre esq. Rosendo Gutierrez" },
-];
 
 function formatAmount(value: number): string {
   return value.toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -206,7 +201,13 @@ function Spec({ k, v }: { k: string; v: string }) {
 }
 
 export default function ProductDetailPage({ product }: { product: Product }) {
-  const { whatsapp, whatsappIntl } = useCms();
+  const { whatsapp, whatsappIntl, addressLines, store } = useCms();
+  // Ventajas bajo la compra: textos de Admin › Textos de la tienda y dirección de Admin › Contacto
+  const perks: { icon: LucideIcon; title: string; text: string }[] = [
+    { icon: Truck, title: store("pdp_delivery_title"), text: store("pdp_delivery_text") },
+    { icon: Landmark, title: store("pdp_payment_title"), text: store("pdp_payment_text") },
+    { icon: Store, title: store("pickup_label"), text: addressLines.slice(0, 2).join(", ") },
+  ];
   const { products: related = [] } = usePage<{ products: Product[] }>().props;
 
   const images = [product.image_url, ...(product.images ?? []).map((i) => i.image_url)].filter(Boolean) as string[];
@@ -234,7 +235,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
     subcategory: product.subcategory_slug || "All",
     product: product.slug,
   });
-  const whatsappUrl = productEnquiryUrl(product, productUrl, whatsapp);
+  const whatsappUrl = productEnquiryUrl(product, productUrl, whatsapp, { intro: store("wa_product_intro"), noPrice: store("wa_product_no_price") });
 
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
@@ -392,7 +393,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
             </button>
 
             <div className="flex flex-col rounded-[22px] border border-[#eceef0]">
-              {PERKS.map(({ icon: Icon, title, text }, i) => (
+              {perks.map(({ icon: Icon, title, text }, i) => (
                 <div key={title} className={`flex items-center gap-3.5 px-[18px] py-4 ${i ? "border-t border-[#eceef0]" : ""}`}>
                   <span className="flex size-10 flex-none items-center justify-center rounded-full bg-[#eef3ff] text-[#155eef]">
                     <Icon className="size-5" />
@@ -413,7 +414,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
                   <>
                     {brand && <Spec k="Marca" v={brand} />}
                     {categoryName && <Spec k="Categoría" v={subcategoryName ? `${categoryName} › ${subcategoryName}` : categoryName} />}
-                    <Spec k="Condición" v="Producto original con garantía oficial" />
+                    <Spec k="Condición" v={store("pdp_condition_default")} />
                   </>
                 )}
               </Accordion>
@@ -422,8 +423,8 @@ export default function ProductDetailPage({ product }: { product: Product }) {
                   <div className="content_product text-[15px] leading-[1.6] text-[#3d4247]" dangerouslySetInnerHTML={{ __html: product.technical_info }} />
                 ) : (
                   <>
-                    <Spec k="Garantía" v="Oficial del fabricante" />
-                    <Spec k="Condición" v="Nuevo, sellado" />
+                    <Spec k="Garantía" v={store("pdp_warranty")} />
+                    <Spec k="Condición" v={store("pdp_condition")} />
                   </>
                 )}
               </Accordion>

@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom, MessageSquareText } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLogoIcon from '@/components/app-logo-icon';
@@ -51,6 +51,12 @@ export function AppSidebar() {
             href: route('admin.footer.index'),
             icon: PanelBottom,
             permission: 'view_footer',
+        },
+        {
+            title: 'Textos de la tienda',
+            href: route('admin.store-texts.index'),
+            icon: MessageSquareText,
+            permission: 'view_store_texts',
         },
         {
             title: 'Marcas',

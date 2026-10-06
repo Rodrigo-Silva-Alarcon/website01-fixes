@@ -72,6 +72,7 @@ class PermissionSeeder extends Seeder
         $this->createSectorPermissions('about', 'Nosotros');
         $this->createSectorPermissions('contact', 'Contacto');
         $this->createSectorPermissions('footer', 'Footer');
+        $this->createSectorPermissions('store_texts', 'Textos de la tienda');
         $this->createSectorPermissions('home', 'secciones de inicio');
         $this->createSectorPermissions('inventories', 'inventarios');
         $this->createSectorPermissions('carts', 'carritos');
