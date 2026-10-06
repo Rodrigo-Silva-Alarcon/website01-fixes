@@ -118,8 +118,12 @@ test('middleware de permiso funciona correctamente', function () {
 
     $this->actingAs($user);
 
-    $response = $this->get('/admin/users/create');
-    $response->assertStatus(200);
+    // Ver usuarios no basta para crear: hace falta create_users
+    $this->get('/admin/users')->assertStatus(200);
+    $this->get('/admin/users/create')->assertStatus(403);
+
+    $role->permissions()->attach(Permission::create(['name' => 'create_users', 'description' => 'Crear usuarios'])->id);
+    $this->get('/admin/users/create')->assertStatus(200);
 });
 
 test('usuario sin rol no puede acceder a rutas protegidas', function () {

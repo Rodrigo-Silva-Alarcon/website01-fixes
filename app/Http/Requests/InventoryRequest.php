@@ -27,9 +27,9 @@ class InventoryRequest extends FormRequest
             'product_id' => 'required|integer|exists:products,id',
             'amount' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0', // null → 0 en controller/model
-            'offer_amount'  => 'nullable|numeric|min:0',
+            'offer_amount'  => 'nullable|numeric|min:0|lte:amount',
             'ini'  => 'nullable|date',
-            'fin'  => 'nullable|date',
+            'fin'  => ['nullable', 'date', \Illuminate\Validation\Rule::when($this->filled('ini'), 'after_or_equal:ini')],
             'money' => 'required|string|max:10',
         ];
     }
@@ -49,6 +49,8 @@ class InventoryRequest extends FormRequest
             'stock.min' => 'El stock debe ser mayor o igual a 0.',
             'money.required' => 'La moneda es obligatoria.',
             'money.max' => 'La moneda no puede tener más de 10 caracteres.',
+            'offer_amount.lte' => 'El precio de oferta no puede ser mayor que el precio normal.',
+            'fin.after_or_equal' => 'La fecha de fin de la oferta debe ser igual o posterior a la de inicio.',
         ];
     }
 }

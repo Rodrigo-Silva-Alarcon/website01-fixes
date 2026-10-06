@@ -35,11 +35,12 @@ class BannerRequest extends FormRequest
         return [
             'name' => 'required|string|max:250',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
-            'type' => 'nullable',
-            'url' => 'nullable|string|max:250',
+            'type' => 'nullable|in:0,1,2,3',
+            // Enlace externo (https://…) o ruta de la propia web (/productos…); nunca javascript:
+            'url' => ['nullable', 'string', 'max:200', 'regex:#^(https?://|/)#i'],
             'product_id' => 'nullable|integer|exists:products,id',
             'page_id' => 'nullable|integer',
-            'summary' => 'nullable|string',
+            'summary' => 'nullable|string|max:200',
             'pages' => 'required|array|min:1',
             'pages.*' => 'in:'.implode(',', \App\Services\WebContentService::BANNER_PAGES),
             'active' => 'nullable|string|max:2',
@@ -55,6 +56,7 @@ class BannerRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'url.regex' => 'La URL debe empezar con https:// o con / (página de esta web).',
             'pages.required' => 'Selecciona al menos una página donde se mostrará el banner.',
             'pages.min' => 'Selecciona al menos una página donde se mostrará el banner.',
             'pages.*.in' => 'Página no válida.',

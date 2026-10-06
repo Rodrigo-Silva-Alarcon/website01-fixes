@@ -89,3 +89,19 @@ it('drops the old about, offers and contact pages from existing banners', functi
     expect($home->fresh()->pages)->toBe(['1'])
         ->and($about->fresh()->pages)->toBe([]);
 });
+
+it('only accepts banner links to https pages or to this website', function () {
+    seedRbac();
+    $admin = \App\Models\User::factory()->create();
+    $admin->assignRole('admin');
+    $this->actingAs($admin);
+
+    $this->post(route('banners.store'), ['name' => 'malo', 'type' => '3', 'url' => 'javascript:alert(1)', 'active' => '1'])
+        ->assertSessionHasErrors('url');
+    $this->post(route('banners.store'), ['name' => 'tipo', 'type' => '9', 'active' => '1'])
+        ->assertSessionHasErrors('type');
+    $this->post(route('banners.store'), ['name' => 'externo', 'type' => '3', 'url' => 'https://example.com/promo', 'active' => '1'])
+        ->assertSessionHasNoErrors();
+    $this->post(route('banners.store'), ['name' => 'interno', 'type' => '3', 'url' => '/productos?offers=1', 'active' => '1'])
+        ->assertSessionHasNoErrors();
+});

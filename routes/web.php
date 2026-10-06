@@ -64,12 +64,18 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:access_dashboard')
         ->name('admin.dashboard');
 
-    // Rutas de usuarios (§5.1.1)
+    // Rutas de usuarios (§5.1.1). Ver da acceso al listado; crear, editar y borrar
+    // necesitan su propio permiso también en el servidor (no solo en la interfaz).
     Route::middleware('permission:view_users')->group(function () {
-        Route::resource('/users', UserController::class)->except('show')->names('admin.users');
+        Route::resource('/users', UserController::class)->except('show')->names('admin.users')
+        ->middlewareFor(['create', 'store'], 'permission:create_users')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_users')
+        ->middlewareFor('destroy', 'permission:delete_users');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-        Route::get('/users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password.edit');
-        Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
+        Route::middleware('permission:edit_users')->group(function () {
+            Route::get('/users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password.edit');
+            Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
+        });
     });
 
     // Rutas de roles (solo para administradores)
@@ -84,33 +90,48 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
 
     // Rutas de textos (§5.1.1)
     Route::middleware('permission:view_texts')->group(function () {
-        Route::resource('/texts', TextController::class)->names('admin.texts');
-        Route::patch('/texts/{text}/toggle-publish', [TextController::class, 'togglePublish'])->name('admin.texts.toggle-publish');
+        Route::resource('/texts', TextController::class)->names('admin.texts')
+        ->middlewareFor(['create', 'store'], 'permission:create_texts')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_texts')
+        ->middlewareFor('destroy', 'permission:delete_texts');
+        Route::patch('/texts/{text}/toggle-publish', [TextController::class, 'togglePublish'])->middleware('permission:publish_texts')->name('admin.texts.toggle-publish');
     });
     
     // Categorías (§4.8.8 RBAC)
     Route::middleware('permission:view_categories')->group(function () {
-        Route::put('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
-        Route::patch('/categories/{category}/toggle-publish', [CategoryController::class, 'togglePublish'])->name('categories.toggle-publish');
-        Route::resource('/categories', CategoryController::class)->names('categories');
+        Route::put('/categories/reorder', [CategoryController::class, 'reorder'])->middleware('permission:edit_categories')->name('categories.reorder');
+        Route::patch('/categories/{category}/toggle-publish', [CategoryController::class, 'togglePublish'])->middleware('permission:edit_categories')->name('categories.toggle-publish');
+        Route::resource('/categories', CategoryController::class)->names('categories')
+        ->middlewareFor(['create', 'store'], 'permission:create_categories')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_categories')
+        ->middlewareFor('destroy', 'permission:delete_categories');
     });
     // Subcategorías
     Route::middleware('permission:view_subcategories')->group(function () {
-        Route::put('/subcategories/reorder', [SubcategoryController::class, 'reorder'])->name('subcategories.reorder');
-        Route::patch('/subcategories/{subcategory}/toggle-publish', [SubcategoryController::class, 'togglePublish'])->name('subcategories.toggle-publish');
-        Route::resource('/subcategories', SubcategoryController::class)->names('subcategories');
+        Route::put('/subcategories/reorder', [SubcategoryController::class, 'reorder'])->middleware('permission:edit_subcategories')->name('subcategories.reorder');
+        Route::patch('/subcategories/{subcategory}/toggle-publish', [SubcategoryController::class, 'togglePublish'])->middleware('permission:edit_subcategories')->name('subcategories.toggle-publish');
+        Route::resource('/subcategories', SubcategoryController::class)->names('subcategories')
+        ->middlewareFor(['create', 'store'], 'permission:create_subcategories')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_subcategories')
+        ->middlewareFor('destroy', 'permission:delete_subcategories');
     });
     // Productos
     Route::middleware('permission:view_products')->group(function () {
-        Route::put('/products/reorder', [ProductController::class, 'reorder'])->name('products.reorder');
-        Route::patch('/products/{product}/toggle-publish', [ProductController::class, 'togglePublish'])->name('products.toggle-publish');
-        Route::resource('/products', ProductController::class)->names('products');
+        Route::put('/products/reorder', [ProductController::class, 'reorder'])->middleware('permission:edit_products')->name('products.reorder');
+        Route::patch('/products/{product}/toggle-publish', [ProductController::class, 'togglePublish'])->middleware('permission:edit_products')->name('products.toggle-publish');
+        Route::resource('/products', ProductController::class)->names('products')
+        ->middlewareFor(['create', 'store'], 'permission:create_products')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_products')
+        ->middlewareFor('destroy', 'permission:delete_products');
     });
     // Banners
     Route::middleware('permission:view_banners')->group(function () {
-        Route::put('/banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
-        Route::patch('/banners/{banner}/toggle-publish', [BannerController::class, 'togglePublish'])->name('banners.toggle-publish');
-        Route::resource('/banners', BannerController::class)->names('banners');
+        Route::put('/banners/reorder', [BannerController::class, 'reorder'])->middleware('permission:edit_banners')->name('banners.reorder');
+        Route::patch('/banners/{banner}/toggle-publish', [BannerController::class, 'togglePublish'])->middleware('permission:edit_banners')->name('banners.toggle-publish');
+        Route::resource('/banners', BannerController::class)->names('banners')
+        ->middlewareFor(['create', 'store'], 'permission:create_banners')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_banners')
+        ->middlewareFor('destroy', 'permission:delete_banners');
     });
     // Nosotros: textos, galería e historial de cambios
     Route::middleware('permission:view_about')->group(function () {
@@ -153,21 +174,29 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     });
     // Marcas
     Route::middleware('permission:view_brands')->group(function () {
-        Route::put('/brands/reorder', [BrandController::class, 'reorder'])->name('brands.reorder');
-        Route::patch('/brands/{brand}/toggle-publish', [BrandController::class, 'togglePublish'])->name('brands.toggle-publish');
-        Route::resource('/brands', BrandController::class)->names('brands');
+        Route::put('/brands/reorder', [BrandController::class, 'reorder'])->middleware('permission:edit_brands')->name('brands.reorder');
+        Route::patch('/brands/{brand}/toggle-publish', [BrandController::class, 'togglePublish'])->middleware('permission:edit_brands')->name('brands.toggle-publish');
+        Route::resource('/brands', BrandController::class)->names('brands')
+        ->middlewareFor(['create', 'store'], 'permission:create_brands')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_brands')
+        ->middlewareFor('destroy', 'permission:delete_brands');
     });
     // Imágenes de producto (§5.1.1 — requiere view_products)
     Route::middleware('permission:view_products')->group(function () {
-        Route::put('/images/reorder', [ImageController::class, 'reorder'])->name('images.reorder');
-        Route::post('/images/{product}', [ImageController::class, 'store'])->name('images.store');
-        Route::resource('/images', ImageController::class)->names('images')->except(['store']);
+        // Subir, ordenar o quitar fotos de la galería es editar el producto
+        Route::put('/images/reorder', [ImageController::class, 'reorder'])->middleware('permission:edit_products')->name('images.reorder');
+        Route::post('/images/{product}', [ImageController::class, 'store'])->middleware('permission:edit_products')->name('images.store');
+        Route::resource('/images', ImageController::class)->names('images')->except(['store'])
+            ->middlewareFor(['create', 'edit', 'update', 'destroy'], 'permission:edit_products');
     });
     // Inventarios
     Route::middleware('permission:view_inventories')->group(function () {
-        Route::resource('/inventories', InventoryController::class)->names('inventories');
-        Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->name('inventories.store_product');
-        Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->name('inventories.destroy_product');
+        Route::resource('/inventories', InventoryController::class)->names('inventories')
+        ->middlewareFor(['create', 'store'], 'permission:create_inventories')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_inventories')
+        ->middlewareFor('destroy', 'permission:delete_inventories');
+        Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->middleware('permission:create_inventories')->name('inventories.store_product');
+        Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->middleware('permission:delete_inventories')->name('inventories.destroy_product');
     });
 
     // Carritos (§4.7.17 + §4.8.8)
