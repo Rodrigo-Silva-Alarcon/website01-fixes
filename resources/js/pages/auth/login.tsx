@@ -20,7 +20,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         <AuthLayout title="Iniciar sesión" description="Ingrese su correo electrónico y contraseña a continuación para iniciar sesión">
             <Head title="Iniciar sesión" />
 
-            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
+            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} noValidate className="flex flex-col gap-6">
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">

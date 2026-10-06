@@ -3,7 +3,7 @@ import { MapPin, Globe, Clock, MessageCircle, Navigation } from "lucide-react";
 
 export default function ShowroomSection({ title, subtitle }: { title?: string | null; subtitle?: string | null }) {
   // Editables en Admin › Contacto (cada renglón de la dirección es una línea)
-  const { addressLines, website, scheduleSummary: hours, mapsHref, whatsappLocal, whatsappHref } = useCms();
+  const { addressLines, website, scheduleSummary: hours, mapsHref, whatsappIntl, whatsappHref } = useCms();
 
   return (
     <section
@@ -61,10 +61,10 @@ export default function ShowroomSection({ title, subtitle }: { title?: string | 
               href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#fa8232] text-white text-base sm:text-lg font-bold transition-all duration-200 hover:bg-[#f9751d] hover:-translate-y-0.5 shadow-md shadow-orange-500/25 active:translate-y-0"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#fa8232] text-white text-base sm:text-lg font-bold hover:bg-[#f9751d]"
             >
               <MessageCircle className="size-5" />
-              {whatsappLocal}
+              {whatsappIntl}
             </a>
 
             <a

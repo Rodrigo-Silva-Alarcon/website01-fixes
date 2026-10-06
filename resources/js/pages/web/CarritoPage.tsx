@@ -1,37 +1,16 @@
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import { ArrowLeft, ArrowRight, ChevronRight, Lock, MessageCircle, Minus, Plus, ShoppingCart, Store, Trash2, Truck } from "lucide-react";
+import { ArrowLeft, ChevronRight, Lock, Minus, Plus, ShoppingCart, Store, Trash2, Truck } from "lucide-react";
 import Layout from "@/pages/web/layouts/Layout";
 import Seo from "@/components/Seo";
 import ResponsiveImg from "@/components/ResponsiveImg";
 import ProductCard from "@/pages/web/components/ProductCard";
+import WhatsAppIcon from "@/pages/web/components/WhatsAppIcon";
+import ClearCartButton from "@/pages/web/components/ClearCartButton";
 import { CartItem } from "@/types/models";
 import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { formatMoney as fmt, listCents, productHref, useCart } from "@/hooks/use-cart";
 import { useCms } from "@/lib/cms";
-
-function Steps() {
-  const steps = ["Carrito", "Datos de entrega", "Confirmación"];
-  return (
-    <ol className="m-0 flex list-none flex-wrap items-center gap-2 p-0 text-sm" aria-label="Pasos del pedido">
-      {steps.map((label, i) => (
-        <li key={label} className="flex items-center gap-2" aria-current={i === 0 ? "step" : undefined}>
-          {i > 0 && <span className="h-[1.5px] w-7 bg-[#dfe2e6]" aria-hidden="true" />}
-          <span className={`flex items-center gap-2 ${i === 0 ? "font-semibold" : "text-[#6b7076]"}`}>
-            <span
-              className={`flex size-[26px] items-center justify-center rounded-full text-[13px] ${
-                i === 0 ? "bg-[#fa8232] text-white" : "border-[1.5px] border-[#dfe2e6]"
-              }`}
-            >
-              {i + 1}
-            </span>
-            {label}
-          </span>
-        </li>
-      ))}
-    </ol>
-  );
-}
 
 function CartLine({ item, qty, busy, removing, onQty, onRemove }: {
   item: CartItem;
@@ -116,7 +95,7 @@ function CartLine({ item, qty, busy, removing, onQty, onRemove }: {
 
 export default function CarritoPage() {
   const { whatsapp, addressLines } = useCms();
-  const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove } =
+  const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, clear } =
     useCart();
   const upsell = suggestions.slice(0, 4);
   const address = addressLines.slice(0, 2).join(", ");
@@ -128,7 +107,7 @@ export default function CarritoPage() {
 
   return (
     <Layout>
-      <Seo title="Mi carrito" description="Revisa los productos de tu carrito y realiza tu pedido en Smart House." />
+      <Seo title="Mi carrito" description="Revisa los productos de tu carrito y envía tu pedido por WhatsApp a Smart House." />
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-7 px-[clamp(16px,4.4vw,64px)] pb-[clamp(64px,8vw,96px)] pt-[clamp(20px,3vw,32px)] font-dm_sans text-[#191c1f]">
         <div className="flex flex-col gap-[18px]">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#6b7076]">
@@ -143,7 +122,7 @@ export default function CarritoPage() {
                 {count} {count === 1 ? "producto" : "productos"}
               </span>
             </div>
-            <Steps />
+            {hasItems && <ClearCartButton onClear={clear} />}
           </div>
         </div>
 
@@ -219,29 +198,21 @@ export default function CarritoPage() {
               </span>
             </div>
 
+            {/* El pedido se cierra por WhatsApp; /checkout queda sin enlaces hasta eliminarlo */}
             {hasItems ? (
-              <>
-                <Link
-                  href={route("checkout")}
-                  className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
-                >
-                  Realizar pedido
-                  <ArrowRight className="size-5" />
-                </Link>
-                <a
-                  href={whatsappCartUrl(live, whatsapp)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#fa8232] px-[22px] py-[13px] text-[15px] font-semibold text-[#c2410c] transition-colors hover:bg-[#fff4ec]"
-                >
-                  <MessageCircle className="size-5" />
-                  Solicitar pedido por WhatsApp
-                </a>
-              </>
+              <a
+                href={whatsappCartUrl(live, whatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
+              >
+                <WhatsAppIcon className="size-5" />
+                Solicitar pedido por WhatsApp
+              </a>
             ) : (
               <span className="flex cursor-not-allowed items-center justify-center gap-2 rounded-full bg-[#d5d9de] px-[22px] py-[15px] text-base font-bold text-white" aria-disabled="true">
-                Realizar pedido
-                <ArrowRight className="size-5" />
+                <WhatsAppIcon className="size-5" />
+                Solicitar pedido por WhatsApp
               </span>
             )}
 

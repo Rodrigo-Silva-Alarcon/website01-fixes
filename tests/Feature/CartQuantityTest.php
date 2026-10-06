@@ -64,3 +64,18 @@ it('reuses one cart when adding products without a prior session', function () {
     expect(CartItem::where('product_id', $product->id)->count())->toBe(1);
     expect(CartItem::where('product_id', $product->id)->first()->amount)->toBe(2);
 });
+
+it('empties only the current sessions cart', function () {
+    $other = Cart::create(['cart_session' => 'other-cart']);
+    $otherItem = CartItem::create([
+        'cart_id' => $other->id, 'product_id' => 123, 'name' => 'Camera',
+        'unit_price' => '12.35', 'amount' => 1, 'sub_total' => '12.35', 'money' => 'BOB',
+    ]);
+
+    $this->withSession(['shop' => 'my-cart'])->from('/carrito')
+        ->post('/clearshop')
+        ->assertRedirect('/carrito');
+
+    expect($this->item->fresh())->toBeNull();
+    expect($otherItem->fresh())->not->toBeNull();
+});

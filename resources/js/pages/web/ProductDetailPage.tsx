@@ -206,7 +206,7 @@ function Spec({ k, v }: { k: string; v: string }) {
 }
 
 export default function ProductDetailPage({ product }: { product: Product }) {
-  const { whatsapp, whatsappLocal } = useCms();
+  const { whatsapp, whatsappIntl } = useCms();
   const { products: related = [] } = usePage<{ products: Product[] }>().props;
 
   const images = [product.image_url, ...(product.images ?? []).map((i) => i.image_url)].filter(Boolean) as string[];
@@ -388,7 +388,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
               className="flex cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-[#191c1f] px-6 py-3.5 text-base font-semibold text-[#191c1f] transition-colors hover:bg-[#191c1f] hover:text-white"
             >
               <MessageCircle className="size-5" />
-              {isOutOfStock ? "Consultar disponibilidad" : "Consultar por WhatsApp"} · {whatsappLocal}
+              {isOutOfStock ? "Consultar disponibilidad" : "Consultar por WhatsApp"} · {whatsappIntl}
             </button>
 
             <div className="flex flex-col rounded-[22px] border border-[#eceef0]">

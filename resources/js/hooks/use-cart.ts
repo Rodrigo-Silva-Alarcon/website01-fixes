@@ -76,6 +76,24 @@ export function useCart() {
     }, 350);
   };
 
+  /** Vacía el carrito: colapsa todas las filas a la vez y luego lo borra en el servidor. */
+  const clear = () => {
+    const all = Object.fromEntries(serverItems.map((it) => [it.product_id, true]));
+    setRemoving((r) => ({ ...r, ...all }));
+    setTimeout(() => {
+      router.post(route("clearshop"), {}, {
+        preserveScroll: true,
+        preserveState: true,
+        // limpiar las marcas para que un producto vuelto a añadir no quede oculto
+        onSuccess: () => setRemoving({}),
+        onError: () => {
+          toast.error("No se pudo vaciar el carrito.");
+          setRemoving({});
+        },
+      });
+    }, 350);
+  };
+
   const add = (product: Product) =>
     router.post(route("addshop", { product: product.id }), {}, { preserveScroll: true, preserveState: true });
 
@@ -106,6 +124,7 @@ export function useCart() {
     isRemoving: (item: CartItem) => !!removing[item.product_id],
     changeQty,
     remove,
+    clear,
     add,
   };
 }

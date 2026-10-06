@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import { ArrowRight, ChevronLeft, ChevronRight, Maximize2, MessageCircle, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import ResponsiveImg from "@/components/ResponsiveImg";
+import WhatsAppIcon from "@/pages/web/components/WhatsAppIcon";
+import ClearCartButton from "@/pages/web/components/ClearCartButton";
 import { CartItem, Product } from "@/types/models";
 import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
 import { productPrice } from "@/lib/product-enquiry";
@@ -186,7 +188,7 @@ function SuggestionsRail({ products, onAdd }: { products: Product[]; onAdd: (p: 
 export default function CartDrawer() {
   const { whatsapp } = useCms();
   const { component } = usePage();
-  const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, add } =
+  const { items, live, count, totals, currencies, single, saved, subtotal, suggestions, hasItems, empty, isBusy, isRemoving, changeQty, remove, clear, add } =
     useCart();
   const [open, setOpen] = useState(false);
   // El panel cerrado no va en el HTML inicial: se monta al quedar libre el navegador (o al abrirlo)
@@ -308,6 +310,8 @@ export default function CartDrawer() {
               />
             ))}
 
+            {hasItems && <ClearCartButton onClear={clear} className="mt-2 self-end" />}
+
             {empty && (
               <div className="flex flex-1 flex-col items-center justify-center gap-3.5 px-3 py-12 text-center">
                 <span className="flex size-[72px] items-center justify-center rounded-full bg-[#fff4ec] text-[#fa8232]">
@@ -356,21 +360,14 @@ export default function CartDrawer() {
                   ))}
                 </span>
               </div>
-              <Link
-                href={route("checkout")}
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
-              >
-                Realizar pedido
-                <ArrowRight className="size-5" />
-              </Link>
+              {/* El pedido se cierra por WhatsApp; /checkout queda sin enlaces hasta eliminarlo */}
               <a
                 href={whatsappCartUrl(live, whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-full border-[1.5px] border-[#fa8232] px-[22px] py-[13px] text-[15px] font-semibold text-[#c2410c] transition-colors hover:bg-[#fff4ec]"
+                className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"
               >
-                <MessageCircle className="size-5" />
+                <WhatsAppIcon className="size-5" />
                 Solicitar pedido por WhatsApp
               </a>
             </div>

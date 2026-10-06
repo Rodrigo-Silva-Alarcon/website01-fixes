@@ -51,6 +51,7 @@ Route::get('/carrito', [WebController::class, 'cart'])->name('cart');
 Route::post('/addshop/{product}', [ShopController::class, 'add'])->name('addshop');
 Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('updateshop');
 Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');
+Route::post('/clearshop', [ShopController::class, 'clear'])->name('clearshop');
 
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');

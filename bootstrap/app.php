@@ -41,5 +41,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Token CSRF vencido (pestaña abierta mucho tiempo): volver al login con aviso
+        $exceptions->respond(function ($response, $exception, $request) {
+            if ($response->getStatusCode() === 419 && $request->routeIs('login.store')) {
+                return back()->withErrors([
+                    'email' => 'Tu sesión expiró por inactividad. Vuelve a ingresar tus credenciales.',
+                ]);
+            }
+
+            return $response;
+        });
     })->create();

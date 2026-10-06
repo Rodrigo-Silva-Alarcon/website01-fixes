@@ -127,5 +127,15 @@ class ShopController extends Controller{
         return redirect()->back()->with('status', 'El producto se elimino correctamente del carrito.');
     }
 
+    public function clear(){
+        if(session()->has('shop')){
+            $cart = Cart::where('cart_session', session('shop'))->first();
+            if($cart){
+                CartItem::where('cart_id', $cart->id)->delete();
+            }
+        }
+        return redirect()->back()->with('status', 'Se vació el carrito.');
+    }
+
         
 }

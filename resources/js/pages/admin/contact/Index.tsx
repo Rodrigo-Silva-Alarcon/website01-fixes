@@ -34,7 +34,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Field } from '@/components/admin/form-shell';
 import { ConfirmDialog } from '@/components/admin/confirm-dialog';
 import { useUnsavedChangesGuard } from '@/hooks/use-unsaved-changes';
-import { formatWhatsappIntl, formatWhatsappLocal } from '@/lib/cms';
+import { formatWhatsappIntl } from '@/lib/cms';
 import { autoSummary, DAY_NAMES, groupSchedule, type ScheduleDay, type ScheduleMode } from '@/lib/schedule';
 import { flash, formatDate, type Editor } from '../about/_shared';
 
@@ -317,6 +317,9 @@ function useSection<T extends FormDataType<T>>(initial: T, url: string, what: st
 
 /* ─────────────────────────────── Datos ─────────────────────────────── */
 
+/** Igual que la validación del backend: "+591 68210861". */
+const WHATSAPP_FORMAT = /^\+?\d{1,4} \d{6,12}$/;
+
 const DATA_KEYS = ['whatsapp', 'phone', 'email', 'form_recipient', 'address', 'city', 'maps_url', 'website', 'facebook', 'instagram', 'twitter', 'tiktok'] as const;
 
 function DataForm({
@@ -338,7 +341,6 @@ function DataForm({
         onDirtyChange,
     );
 
-    const digits = data.whatsapp.replace(/\D/g, '');
     const bind = (key: (typeof DATA_KEYS)[number]) => ({
         id: key,
         value: data[key],
@@ -352,14 +354,14 @@ function DataForm({
                 <div className="grid gap-6 xl:grid-cols-2">
                     <Section title="Teléfono" icon={<MessageCircle className="h-4 w-4" />}>
                         <Field label="WhatsApp (con código de país)" htmlFor="whatsapp" error={errors.whatsapp}>
-                            <Input {...bind('whatsapp')} inputMode="tel" placeholder="591 68210861" maxLength={20} />
+                            <Input {...bind('whatsapp')} inputMode="tel" placeholder="+591 68210861" maxLength={20} />
                             <Hint>
-                                {digits.length >= 8 ? (
+                                {WHATSAPP_FORMAT.test(data.whatsapp.trim()) ? (
                                     <>
-                                        Se verá como <strong>{formatWhatsappLocal(digits)}</strong> y <strong>{formatWhatsappIntl(digits)}</strong>.
+                                        Se verá como <strong>{formatWhatsappIntl(data.whatsapp)}</strong> en toda la web.
                                     </>
                                 ) : (
-                                    'Ej.: 591 68210861. Se usa en todos los botones de WhatsApp, pedidos y consultas de productos.'
+                                    'Formato: +código de país, un espacio y el número seguido (ej. +591 68210861). Se usa en todos los botones de WhatsApp, pedidos y consultas de productos.'
                                 )}
                             </Hint>
                         </Field>

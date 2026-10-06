@@ -141,18 +141,6 @@ export default function Show({ user }: Props) {
                                             </span>
                                         </p>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <h4 className="text-sm font-medium text-gray-500">Estado de Verificación</h4>
-                                        <p className="text-lg">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                user.email_verified_at 
-                                                    ? 'bg-green-100 text-green-800' 
-                                                    : 'bg-red-100 text-red-800'
-                                            }`}>
-                                                {user.email_verified_at ? 'Verificado' : 'No verificado'}
-                                            </span>
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
 

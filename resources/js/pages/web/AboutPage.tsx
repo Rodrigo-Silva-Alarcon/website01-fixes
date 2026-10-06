@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { CreditCard, Headphones, MessageCircle, Navigation, Package, Trophy, type LucideIcon } from "lucide-react";
 import Layout from "@/pages/web/layouts/Layout";
@@ -20,12 +20,12 @@ type AboutContent = {
   gallery: AboutGalleryImage[];
 };
 
-/** Formato y velocidad de parallax por posición: 1 y 4 anchas, 2 y 3 angostas. */
+/** Formato (desde tablet) y velocidad de parallax por posición: 1 y 4 anchas, 2 y 3 angostas. */
 const SLOTS = [
-  { ratio: "aspect-[4/5]", speed: 0.6 },
-  { ratio: "aspect-[3/5]", speed: 1 },
-  { ratio: "aspect-[3/5]", speed: 1.3 },
-  { ratio: "aspect-[4/5]", speed: 0.8 },
+  { ratio: "md:aspect-[4/5]", speed: 0.6 },
+  { ratio: "md:aspect-[3/5]", speed: 1 },
+  { ratio: "md:aspect-[3/5]", speed: 1.3 },
+  { ratio: "md:aspect-[4/5]", speed: 0.8 },
 ];
 
 const DEFAULT_ABOUT: AboutContent = {
@@ -149,12 +149,88 @@ function useScrollMotion(rootRef: React.RefObject<HTMLDivElement | null>, heroRe
   }, []);
 }
 
+/**
+ * Galería del hero. En teléfono y tablet pequeña (< 768 px) es un carrusel deslizable con puntos;
+ * desde 768 px vuelve a la cuadrícula de 4 columnas con parallax.
+ */
+function AboutGallery({ gallery }: { gallery: AboutGalleryImage[] }) {
+  const railRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const onScroll = () => {
+    const rail = railRef.current;
+    const first = rail?.children[0] as HTMLElement | undefined;
+    if (!rail || !first) return;
+    const step = first.offsetWidth + parseFloat(getComputedStyle(rail).columnGap || "0");
+    const i = Math.min(Math.round(rail.scrollLeft / (step || 1)), gallery.length - 1);
+    if (i !== active) setActive(i);
+  };
+
+  const goTo = (i: number) => {
+    const rail = railRef.current;
+    const el = rail?.children[i] as HTMLElement | undefined;
+    if (!rail || !el) return;
+    rail.scrollTo({ left: el.offsetLeft - parseFloat(getComputedStyle(rail).paddingLeft || "0"), behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative mx-auto flex max-w-[1440px] flex-col gap-3.5 pb-[clamp(40px,5vw,64px)]">
+      <div
+        ref={railRef}
+        onScroll={onScroll}
+        className="relative flex snap-x snap-mandatory scroll-px-[clamp(16px,4.4vw,64px)] gap-2.5 overflow-x-auto px-[clamp(16px,4.4vw,64px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:snap-none md:grid-cols-[1.25fr_1fr_1fr_1.25fr] md:items-end md:gap-[clamp(8px,1vw,14px)] md:overflow-visible"
+      >
+        {gallery.map((g, i) => (
+          <div
+            key={g.position}
+            className="about-rise about-parallax w-[74%] flex-none snap-start overflow-hidden rounded-[22px] md:w-auto md:rounded-[24px]"
+            style={{ animationDelay: `${200 + i * 80}ms`, ["--speed" as string]: SLOTS[i % SLOTS.length].speed }}
+          >
+            <picture>
+              <source srcSet={g.webp} type="image/webp" />
+              <img
+                src={g.src}
+                alt={g.alt}
+                width={900}
+                height={1200}
+                loading="lazy"
+                decoding="async"
+                className={`about-zoom block aspect-[3/4] w-full object-cover ${SLOTS[i % SLOTS.length].ratio}`}
+                style={{ objectPosition: g.focus }}
+              />
+            </picture>
+          </div>
+        ))}
+      </div>
+
+      {gallery.length > 1 && (
+        <div className="flex justify-center md:hidden">
+          {gallery.map((g, i) => (
+            <button
+              key={g.position}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={`Ver foto ${i + 1}`}
+              aria-current={i === active}
+              className="flex size-6 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
+            >
+              <span
+                className={`block h-2 rounded-full transition-[width,background-color] duration-300 ${i === active ? "w-[22px] bg-[#fa8232]" : "w-2 bg-[#d5d8dc]"}`}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AboutPage() {
   const { banners = [], about: aboutProp } = usePage<{ banners?: BannerSlide[]; about?: AboutContent | null }>().props;
   const about = aboutProp ?? DEFAULT_ABOUT;
   // Teléfono, dirección y mapa de Admin › Contacto
-  const { address, mapsHref, whatsappLocal, whatsappHref: waHref } = useCms();
-  const displayPhone = whatsappLocal;
+  const { address, mapsHref, whatsappIntl, whatsappHref: waHref } = useCms();
+  const displayPhone = whatsappIntl;
   const whatsappHref = waHref();
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -198,29 +274,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="relative mx-auto grid max-w-[1440px] grid-cols-2 items-end gap-[clamp(8px,1vw,14px)] px-[clamp(16px,4.4vw,64px)] pb-[clamp(40px,5vw,64px)] md:grid-cols-[1.25fr_1fr_1fr_1.25fr]">
-            {about.gallery.map((g, i) => (
-              <div
-                key={g.position}
-                className="about-rise about-parallax overflow-hidden rounded-[24px]"
-                style={{ animationDelay: `${200 + i * 80}ms`, ["--speed" as string]: SLOTS[i % SLOTS.length].speed }}
-              >
-                <picture>
-                  <source srcSet={g.webp} type="image/webp" />
-                  <img
-                    src={g.src}
-                    alt={g.alt}
-                    width={900}
-                    height={1200}
-                    loading="lazy"
-                    decoding="async"
-                    className={`about-zoom block w-full object-cover ${SLOTS[i % SLOTS.length].ratio}`}
-                    style={{ objectPosition: g.focus }}
-                  />
-                </picture>
-              </div>
-            ))}
-          </div>
+          <AboutGallery gallery={about.gallery} />
         </section>
 
         {/* Misión y visión */}

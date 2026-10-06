@@ -91,7 +91,10 @@ class UserController extends Controller
     public function store(SaveUserRequest $request)
     {
         $user = $this->createRecord($request, new User);
-        
+
+        // Los usuarios creados desde el panel quedan verificados automáticamente
+        $user->forceFill(['email_verified_at' => now()])->save();
+
         // Asignar roles si se proporcionan
         if ($request->has('roles')) {
             $user->roles()->sync($request->roles);

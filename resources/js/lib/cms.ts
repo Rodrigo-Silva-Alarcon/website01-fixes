@@ -48,19 +48,24 @@ export function plainText(html?: string | null): string {
         .join('\n');
 }
 
-/** "59168210861" → "682-10861" (formato local boliviano); otros números se muestran tal cual. */
-export function formatWhatsappLocal(digits: string): string {
-    const local = digits.startsWith('591') ? digits.slice(3) : digits;
-    return local.length === 8 ? `${local.slice(0, 3)}-${local.slice(3)}` : local;
+/** WhatsApp por defecto tal como se guarda en Admin › Contacto. */
+export const DEFAULT_WHATSAPP_INTL = '+591 68210861';
+
+/**
+ * Separa el número guardado ("+591 68210861") en código de país y número local.
+ * Los valores antiguos solo con dígitos se interpretan como bolivianos si empiezan con 591.
+ */
+export function splitWhatsapp(value: string): { code: string; local: string } {
+    const match = value.trim().match(/^\+?(\d{1,4})\s+(\d+)$/);
+    if (match) return { code: match[1], local: match[2] };
+    const digits = value.replace(/\D/g, '');
+    return digits.startsWith('591') ? { code: '591', local: digits.slice(3) } : { code: '', local: digits };
 }
 
-/** "59168210861" → "+591 6821 0861" */
-export function formatWhatsappIntl(digits: string): string {
-    if (digits.startsWith('591') && digits.length >= 11) {
-        const local = digits.slice(3, 11);
-        return `+591 ${local.slice(0, 4)} ${local.slice(4)}`;
-    }
-    return `+${digits}`;
+/** "+591 68210861" → "+591 68210861" (código de país, espacio y número seguido). */
+export function formatWhatsappIntl(value: string): string {
+    const { code, local } = splitWhatsapp(value);
+    return code ? `+${code} ${local}` : `+${local}`;
 }
 
 export function whatsappLink(digits: string, message?: string): string {
@@ -106,7 +111,9 @@ export function useCms() {
     };
 
     // Admin › Contacto es la fuente única; los textos antiguos solo sirven de respaldo
-    const whatsapp = (contact?.whatsapp || text('footer_whatsapp')).replace(/\D/g, '') || DEFAULT_WHATSAPP;
+    const whatsappRaw = contact?.whatsapp || text('footer_whatsapp') || DEFAULT_WHATSAPP_INTL;
+    // Solo dígitos para los enlaces wa.me
+    const whatsapp = whatsappRaw.replace(/\D/g, '') || DEFAULT_WHATSAPP;
     const addressLines = contact?.address ? contact.address.split('\n').filter(Boolean) : lines('showroom_address', DEFAULT_ADDRESS);
     const address = addressLines.join(', ');
     const schedule = contact?.schedule?.length ? contact.schedule : DEFAULT_SCHEDULE;
@@ -137,8 +144,7 @@ export function useCms() {
         contact: contact ?? null,
         ...info,
         whatsapp,
-        whatsappLocal: formatWhatsappLocal(whatsapp),
-        whatsappIntl: formatWhatsappIntl(whatsapp),
+        whatsappIntl: formatWhatsappIntl(whatsappRaw),
         whatsappHref: (message?: string) => whatsappLink(whatsapp, message),
     };
 }

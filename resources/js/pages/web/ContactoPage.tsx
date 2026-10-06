@@ -61,7 +61,7 @@ function ChannelRow({ href, icon, label, value, external, small }: {
 
 export default function ContactoPage() {
   const { banners = [] } = usePage<{ banners?: BannerSlide[] }>().props;
-  const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, schedule: days, whatsappLocal, whatsappIntl, whatsappHref } = useCms();
+  const { contact, email: contactEmail, phone, address: contactAddress, mapsHref, schedule: days, whatsappIntl, whatsappHref } = useCms();
 
   // Textos por sección editables en Admin › Contacto
   const t = {
@@ -160,7 +160,7 @@ export default function ContactoPage() {
             <div className="flex flex-wrap justify-center gap-3 pt-1.5">
               <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className={`${pillSolid} px-[22px] py-3.5`}>
                 <MessageCircle className="size-5" />
-                {whatsappLocal}
+                {whatsappIntl}
               </a>
               <a href={`mailto:${contactEmail}`} className={pillOutline}>
                 <Mail className="size-5" />

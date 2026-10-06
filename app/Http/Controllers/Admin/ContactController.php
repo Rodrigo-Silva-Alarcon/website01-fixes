@@ -41,10 +41,15 @@ class ContactController extends Controller
 
     public function updateData(Request $request): RedirectResponse
     {
-        $request->merge(['whatsapp' => preg_replace('/\D/', '', (string) $request->input('whatsapp'))]);
+        // Formato "+591 68210861": código de país, un espacio y el número seguido
+        $whatsapp = preg_replace('/\s+/', ' ', trim((string) $request->input('whatsapp')));
+        if ($whatsapp !== '' && ! str_starts_with($whatsapp, '+')) {
+            $whatsapp = '+'.$whatsapp;
+        }
+        $request->merge(['whatsapp' => $whatsapp]);
 
         $validated = $request->validate([
-            'whatsapp' => ['required', 'digits_between:8,15'],
+            'whatsapp' => ['required', 'max:20', 'regex:/^\+\d{1,4} \d{6,12}$/'],
             'phone' => ['nullable', 'string', 'max:40', 'regex:/^[0-9+\s\-()]+$/'],
             'email' => ['required', 'email', 'max:255'],
             'form_recipient' => ['nullable', 'email', 'max:255'],
@@ -57,7 +62,7 @@ class ContactController extends Controller
             'twitter' => ['nullable', 'url', 'max:255'],
             'tiktok' => ['nullable', 'url', 'max:255'],
         ], [
-            'whatsapp.digits_between' => 'El WhatsApp debe tener entre 8 y 15 dígitos, con el código de país (ej. 591 68210861).',
+            'whatsapp.regex' => 'Escribe el WhatsApp con el código de país, un espacio y el número seguido (ej. +591 68210861).',
             'phone.regex' => 'El teléfono solo puede tener números, espacios, +, - y paréntesis.',
             'url' => 'Ingresa un enlace completo que empiece con https://',
         ], ContactSetting::DATA_FIELDS);

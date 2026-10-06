@@ -2,7 +2,7 @@ import { Truck, ShieldCheck, CreditCard, Headphones } from "lucide-react";
 import { useCms } from "@/lib/cms";
 
 export default function FeaturesBar() {
-  const { whatsappLocal } = useCms();
+  const { whatsappIntl } = useCms();
 
   const features = [
     {
@@ -23,7 +23,7 @@ export default function FeaturesBar() {
     {
       icon: Headphones,
       title: "Atención personalizada",
-      desc: `WhatsApp ${whatsappLocal}`,
+      desc: `WhatsApp ${whatsappIntl}`,
     },
   ];
 

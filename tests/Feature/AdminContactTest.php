@@ -53,15 +53,15 @@ test('users without view_contact get 403', function () {
 
 test('updating the phone replaces it on every public page and logs only what changed', function () {
     $this->actingAs(contactAdmin())
-        ->put(route('admin.contact.data'), contactData(['whatsapp' => '+591 7000-1234', 'email' => 'ventas@smarthouse.test']))
+        ->put(route('admin.contact.data'), contactData(['whatsapp' => '591 70001234', 'email' => 'ventas@smarthouse.test']))
         ->assertRedirect()
         ->assertSessionHas('success');
 
     expect(ContactLog::pluck('field')->sort()->values()->all())->toBe(['email', 'whatsapp']);
-    expect(ContactSetting::first()->whatsapp)->toBe('59170001234');
+    expect(ContactSetting::first()->whatsapp)->toBe('+591 70001234');
 
     $this->get('/')->assertInertia(fn ($page) => $page
-        ->where('contact.whatsapp', '59170001234')
+        ->where('contact.whatsapp', '+591 70001234')
         ->where('contact.email', 'ventas@smarthouse.test')
         ->missing('contact.form_recipient'));
 });
@@ -119,4 +119,10 @@ test('contact page texts are editable and shared with the public site', function
     $this->get('/contactanos')->assertInertia(fn ($page) => $page
         ->where('contact.hero_title', 'Hablemos')
         ->where('contact.hours_note', 'Feriados: cerrado'));
+});
+
+test('whatsapp must include the country code, a space and the number', function () {
+    $this->actingAs(contactAdmin())
+        ->put(route('admin.contact.data'), contactData(['whatsapp' => '59170001234']))
+        ->assertSessionHasErrors('whatsapp');
 });
