@@ -88,10 +88,6 @@ export interface Product{
     description: string;
     technical_info: string;
     tecnical_image: string;
-    video_type: number;
-    video_file: string;
-    video_url: string; 
-    video_iframe: string; 
     active: boolean;
     featured: boolean;
     pop: boolean;
@@ -101,7 +97,6 @@ export interface Product{
     image_webp_url?: string | null;
     image_thumbs_webp_url?: string | null;
     tecnical_image_url: string; //. contiene la direccion la imagen de ficha tecnica
-    video_file_url:string; //. continene la direccion del video
     images:Image[]; // array de imagenes
     inventory:Inventory;
     category:Category;
@@ -255,7 +250,7 @@ export interface HomeSectionData {
     link?: string | null;
     /** features: los 4 beneficios (el subtítulo del 4.º lo pone la web con el WhatsApp) */
     items?: HomeFeatureItem[];
-    /** showroom: las 3 fotos */
+    /** showroom: las 4 fotos de la galería de Nosotros */
     photos?: HomeShowroomPhoto[];
 }
 
@@ -270,4 +265,6 @@ export interface HomeShowroomPhoto {
     thumb: string | null;
     alt: string;
     mirror: boolean;
+    /** punto de recorte (object-position), viene de Nosotros */
+    focus?: string;
 }

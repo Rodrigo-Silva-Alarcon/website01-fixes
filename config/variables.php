@@ -21,7 +21,6 @@ return [
     'folder_product' => 'data/products/',   
     'folder_category' => 'data/categories/',   
     'folder_image' => 'data/images/',
-    'folder_video' => 'data/videos/',
     // Fotos de la galería de "Nosotros" subidas desde el panel
     'folder_about' => 'data/about/',
     // Fotos del showroom de la página de inicio subidas desde el panel

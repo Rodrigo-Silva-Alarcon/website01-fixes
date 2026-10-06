@@ -11,7 +11,6 @@ import { useForm, router, Link } from '@inertiajs/react';
 import { FormEventHandler, useState, useEffect } from 'react';
 import { GalleryHorizontal, X, Upload, Trash2, Edit } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { TYPE_VIDEO } from "@/types/Data";
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 import axios from 'axios';
@@ -267,13 +266,8 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
         description: product.description || '',
         technical_info: product.technical_info || '',
         tecnical_image: null as File | null,
-        video_file: null as File | null,
-        video_url: product.video_url || '',
-        video_iframe: product.video_iframe || '',
         delete_image: false,
         delete_technical_image: false,
-        delete_video_file: false,
-        video_type: product.video_type,
         active: product.active,
         featured: product.featured,
         pop: product.pop,
@@ -285,8 +279,6 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
     const [imageMarkedForDeletion, setImageMarkedForDeletion] = useState(false);
     const [previewTechnicalImage, setPreviewTechnicalImage] = useState<string | null>(null);
     const [technicalImageMarkedForDeletion, setTechnicalImageMarkedForDeletion] = useState(false);
-    const [previewVideoFile, setPreviewVideoFile] = useState<string | null>(null);
-    const [videoFileMarkedForDeletion, setVideoFileMarkedForDeletion] = useState(false);
     const [availableSubcategories, setAvailableSubcategories] = useState<Subcategory[]>([]);
     const [galleryImages, setGalleryImages] = useState<File[]>([]);
     const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -318,13 +310,6 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
         }
     }, [isEdit, product.tecnical_image_url, previewTechnicalImage]);
     
-    // Inicializar preview de video_file cuando se está editando
-    useEffect(() => {
-        if (isEdit && product.video_file_url && !previewVideoFile) {            
-            setPreviewVideoFile(product.video_file_url);
-        }
-    }, [isEdit, product.video_file_url, previewVideoFile]);
-
     // Actualizar subcategorías disponibles cuando cambia la categoría
     useEffect(() => {
         if (data.category_id) {
@@ -349,16 +334,11 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
             description: data.description,
             technical_info: data.technical_info,
             tecnical_image: data.tecnical_image,
-            video_file: data.video_file,
-            video_url: data.video_url,
-            video_iframe: data.video_iframe,
-            video_type:data.video_type,
             active: data.active,
             featured: data.featured,
             pop: data.pop,
             delete_image: data.delete_image,
             delete_technical_image: data.delete_technical_image,
-            delete_video_file: data.delete_video_file,
         };
         
         if (isEdit) {
@@ -450,40 +430,6 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
             if (isEdit && technicalImageMarkedForDeletion) {
                 setData('delete_technical_image', false);
                 setTechnicalImageMarkedForDeletion(false);
-            }
-        }
-    };
-
-    const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            // Validar tipo de archivo
-            if (!file.type.startsWith('video/')) {
-                toast.error('Por favor selecciona un archivo de video válido');
-                return;
-            }
-
-            // Validar tamaño (50MB máximo)
-            if (file.size > 50 * 1024 * 1024) {
-                toast.error('El video no debe superar los 50MB');
-                return;
-            }
-
-            setData('video_file', file);
-
-            // Crear preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setPreviewVideoFile(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-
-            // Si estamos editando y había un video marcado para eliminación,
-            // al subir uno nuevo, cancelamos la eliminación automáticamente
-            if (isEdit && videoFileMarkedForDeletion) {
-                setData('delete_video_file', false);
-                setVideoFileMarkedForDeletion(false);
             }
         }
     };
@@ -964,118 +910,6 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
                                         </div>
                                     </CardContent>
                                 </Card>
-                            </div>
-                            {/* Campo Fecha */}
-                            <div className="grid gap-2">
-                                <Card>
-                                    <CardHeader>  
-                                        <h3>Video</h3>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className='mb-3'>
-                                            <Label htmlFor="date">Tipo de Video</Label>
-                                            <Select
-                                                value={String(data.video_type)}
-                                                onValueChange={(value) => setData('video_type', Number(value))}                                    
-                                            >
-                                                <SelectTrigger className={errors.video_type ? 'border-red-500' : ''}>
-                                                    <SelectValue placeholder="Selecciona una categoría" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {TYPE_VIDEO.map((types) => (
-                                                        <SelectItem key={types.id} value={String(types.id)}>
-                                                            {types.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-
-                                            {errors.video_type && (
-                                                <p className="text-sm text-red-500">{errors.video_type}</p>
-                                            )}
-                                        </div>
-                                        {data.video_type === 1 && (
-
-                                            <div className='mb-3'>
-                                                <Label htmlFor="video_url">Url</Label>
-                                                <Input
-                                                    id="video_url"
-                                                    type="text"
-                                                    value={data.video_url}
-                                                    onChange={(e) => setData('video_url', e.target.value)}
-                                                    placeholder="Ingresa el nombre del producto"
-                                                    className={errors.video_url ? 'border-red-500' : ''}
-                                                />
-                                                {errors.video_url && (
-                                                    <p className="text-sm text-red-500">{errors.video_url}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {data.video_type === 2 && (
-                                            <div className='mb-3'>
-                                                <Label htmlFor="video_file">Archivo</Label>
-                                                <div className="grid w-full max-w-sm items-center gap-3">
-                                                    <Input
-                                                        id="video_file"
-                                                        type="file"
-                                                        accept="video/*"
-                                                        onChange={handleVideoFileChange}
-                                                        className={errors.video_file ? 'border-red-500' : ''}
-                                                    />
-                                                </div>                                            
-                                                {/* Preview de video subido */}
-                                                {(previewVideoFile && !data.delete_video_file) && (
-                                                    <div className="space-y-2">
-                                                        <div className="relative w-48 h-32 border rounded-lg overflow-hidden">
-                                                            <video
-                                                                src={previewVideoFile}
-                                                                controls
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                setData('delete_video_file', true);
-                                                                setVideoFileMarkedForDeletion(true);
-                                                            }}
-                                                            className="text-red-600 hover:text-red-700"
-                                                        >
-                                                            <X className="h-4 w-4 mr-2" />
-                                                            Eliminar video
-                                                        </Button>
-                                                    </div>
-                                                )}
-
-                                                {errors.video_file && (
-                                                    <p className="text-sm text-red-500">{errors.video_file}</p>
-                                                )}
-
-                                            </div>
-                                        )}
-                                        {data.video_type === 3 && (
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="video_iframe">Insertar Video</Label>
-                                                <Textarea
-                                                    id="video_iframe"
-                                                    value={data.video_iframe}
-                                                    onChange={(e) => setData('video_iframe', e.target.value)}
-                                                    placeholder="Ingresa un resumen del texto (máximo 800 caracteres)"
-                                                    className={errors.video_iframe ? 'border-red-500' : ''}
-                                                    maxLength={800}
-                                                />
-                                                <div className="flex justify-between text-sm text-muted-foreground">                                
-                                                    <span>{data.video_iframe.length}/800</span>
-                                                </div>
-                                                {errors.video_iframe && (
-                                                    <p className="text-sm text-red-500">{errors.video_iframe}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>                                
                             </div>
                         
                         <div>

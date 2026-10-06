@@ -94,19 +94,20 @@ export default function ShowroomSection({ title, subtitle, photos }: Props) {
           </div>
         </div>
 
-        {/* Columna Derecha: Galería de Fotos del Showroom (editable en Admin › Página de inicio) */}
-        <div className="lg:col-span-5 grid grid-cols-3 gap-4">
+        {/* Columna Derecha: las fotos de la galería de Nosotros (editables en Admin › Nosotros) */}
+        <div className="lg:col-span-5 grid grid-cols-4 gap-3">
           {(photos?.length ? photos : DEFAULT_PHOTOS).map((photo, idx) => (
             <div
               key={idx}
-              className={`rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 ${idx === 1 ? "shadow-md" : "shadow-sm"}`}
+              className={`rounded-2xl overflow-hidden aspect-[3/5] bg-slate-100 ${idx === 1 || idx === 2 ? "shadow-md" : "shadow-sm"}`}
             >
               <ResponsiveImg
                 src={photo.src}
                 webpSrc={photo.webp}
                 thumbWebpSrc={photo.thumb}
-                sizes="(min-width: 1024px) 180px, 30vw"
+                sizes="(min-width: 1024px) 140px, 23vw"
                 alt={photo.alt}
+                style={photo.focus ? { objectPosition: photo.focus } : undefined}
                 className={`w-full h-full object-cover ${photo.mirror ? "scale-x-[-1]" : ""}`}
               />
             </div>

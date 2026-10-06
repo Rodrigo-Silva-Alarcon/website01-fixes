@@ -31,10 +31,8 @@ class ProductController extends Controller
         $this->configureRelations(['images']);
         // Configurar imágenes
         $this->configureImages(['image', 'tecnical_image'], config('variables.folder_product'), 1200, NULL, true, 90, NULL);
-        // configuracion de los archivos
-        $this->configureFiles(['video_file'], 'videos');
         // Configurar accessors        
-        $this->configureAppends(['image_url', 'tecnical_image_url', 'video_file_url']);
+        $this->configureAppends(['image_url', 'tecnical_image_url']);
     }
 
     public function index(Request $request){
@@ -65,14 +63,14 @@ class ProductController extends Controller
     public function show(Product $product){
 
         return Inertia::render('admin/products/Show', [
-            'product' => $product->append(['image_url', 'tecnical_image_url', 'video_file_url']),
+            'product' => $product->append(['image_url', 'tecnical_image_url']),
         ]);
 
     }
  
     public function edit(Product $product){
 
-        $product->load(['images', 'inventories'])->append(['image_url', 'tecnical_image_url', 'video_file_url']);
+        $product->load(['images', 'inventories'])->append(['image_url', 'tecnical_image_url']);
         $product->images->each->append('image_url');
         $brands = Brand::where('active', true)->orderBy('order', 'ASC')->orderBy('id', 'DESC')->get();
 

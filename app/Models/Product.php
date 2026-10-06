@@ -25,10 +25,6 @@ class Product extends Model
         'description',
         'technical_info',
         'tecnical_image',
-        'video_type',
-        'video_file',
-        'video_url',
-        'video_iframe',
         'active',
         'featured',
         'pop',
@@ -49,7 +45,6 @@ class Product extends Model
         'image_thumbs_webp_url',
         'tecnical_image_url', 
         'tecnical_image_thumbs_url', 
-        'video_file_url',
         'category_label',
         'category_slug',
         'subcategory_label',
@@ -194,15 +189,6 @@ class Product extends Model
         return $folder . $imagePath;
     }
 
-    public function getVideoFileUrlAttribute()
-    {
-        if ($this->video_file) {
-            $videoPath = str_replace('storage/', '', $this->video_file);
-            return asset(config('variables.folder_video') . $videoPath);
-            //return asset($imagePath);
-        }
-        return null;
-    }
 
     public function getCategoryLabelAttribute(){
         if ($this->relationLoaded('category') && $this->category) {

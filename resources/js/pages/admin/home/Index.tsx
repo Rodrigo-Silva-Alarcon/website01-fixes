@@ -125,7 +125,7 @@ const TYPE_META: Record<SectionType, { icon: LucideIcon; tone: string; hint: str
     products: { icon: ShoppingBag, tone: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300', hint: 'Fila de productos: elegidos a mano, populares, en oferta o de una categoría.' },
     promo: { icon: Sparkles, tone: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300', hint: 'Dos tarjetas grandes (naranja y azul) con el producto que elijas en cada una.' },
     brands: { icon: Award, tone: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300', hint: 'Cinta con los logos de las marcas publicadas.' },
-    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Tres fotos de la tienda, con dirección, horario, WhatsApp y mapa (datos en Admin › Contacto).' },
+    showroom: { icon: MapPin, tone: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300', hint: 'Las 4 fotos de Nosotros, con dirección, horario, WhatsApp y mapa (datos en Admin › Contacto).' },
 };
 
 /** Tipos cuyo título y subtítulo se ven en la web. */
@@ -844,60 +844,13 @@ function SectionForm({ section, type, types, sources, categories, maxProducts, d
                 )}
 
                 {type === 'showroom' && (
-                    <div className="grid gap-3">
-                        <div className="grid gap-0.5">
-                            <h3 className="text-sm font-medium">Fotos</h3>
-                            <p className="text-xs text-muted-foreground">
-                                Tres fotos verticales, de izquierda a derecha. JPG, PNG o WebP, máx. 8 MB; se optimizan al guardar.
-                            </p>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
-                            {photos.map((photo, i) => (
-                                <div key={i} className="grid content-start gap-2">
-                                    <div className="relative aspect-[3/5] overflow-hidden rounded-lg border bg-muted">
-                                        <img
-                                            src={photo.preview ?? photo.thumb ?? photo.webp ?? photo.src}
-                                            alt=""
-                                            className={`size-full object-cover ${photo.mirror && !photo.file ? 'scale-x-[-1]' : ''}`}
-                                        />
-                                        <span className="absolute top-1.5 left-1.5 flex size-5 items-center justify-center rounded-full bg-background text-[10px] font-semibold">
-                                            {i + 1}
-                                        </span>
-                                    </div>
-                                    {!readOnly && (
-                                        <Button type="button" variant="outline" size="sm" className="h-8" asChild>
-                                            <label className={processing ? 'pointer-events-none opacity-50' : 'cursor-pointer'}>
-                                                <ImagePlus className="h-4 w-4 sm:mr-1.5" />
-                                                <span className="hidden sm:inline">Cambiar</span>
-                                                <input
-                                                    type="file"
-                                                    accept="image/png,image/jpeg,image/webp"
-                                                    className="sr-only"
-                                                    aria-label={`Cambiar foto ${i + 1}`}
-                                                    onChange={(e) => {
-                                                        pickPhoto(i, e.target.files?.[0]);
-                                                        e.target.value = '';
-                                                    }}
-                                                />
-                                            </label>
-                                        </Button>
-                                    )}
-                                    {err[`settings.photos.${i}.file`] && <p className="text-xs text-red-500">{err[`settings.photos.${i}.file`]}</p>}
-                                </div>
-                            ))}
-                        </div>
-                        {photos.map((photo, i) => (
-                            <Field key={i} label={`Texto alternativo de la foto ${i + 1} *`} htmlFor={`photo-${i}-alt`} error={err[`settings.photos.${i}.alt`]}>
-                                <Input
-                                    id={`photo-${i}-alt`}
-                                    value={photo.alt}
-                                    maxLength={150}
-                                    placeholder="Describe la foto para lectores de pantalla"
-                                    onChange={(e) => setPhotos((list) => list.map((x, j) => (j === i ? { ...x, alt: e.target.value } : x)))}
-                                />
-                            </Field>
-                        ))}
-                    </div>
+                    <p className="rounded-lg border bg-muted/50 p-3 text-sm text-muted-foreground">
+                        Las fotos son las 4 de la galería de{' '}
+                        <a href={route('admin.about.index')} className="font-medium text-foreground underline underline-offset-2">
+                            Admin › Nosotros
+                        </a>
+                        : si las cambias allí, también cambian en el inicio.
+                    </p>
                 )}
 
                 {!HAS_TITLE.includes(type) && type !== 'promo' && type !== 'features' && (

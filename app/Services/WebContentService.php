@@ -36,7 +36,7 @@ class WebContentService
      */
     private const CARD_HIDDEN = [
         'description', 'technical_info', 'tecnical_image', 'tecnical_image_url', 'tecnical_image_thumbs_url',
-        'video_type', 'video_file', 'video_url', 'video_iframe', 'video_file_url', 'created_at', 'updated_at',
+        'created_at', 'updated_at',
     ];
 
     /**
@@ -189,7 +189,7 @@ class WebContentService
                 if ($section->type === 'features') {
                     $item['items'] = $section->featureItems();
                 } elseif ($section->type === 'showroom') {
-                    $item['photos'] = $section->showroomPhotosForWeb();
+                    $item['photos'] = $this->showroomPhotos($section);
                 } elseif ($section->type === 'products') {
                     $item['products'] = $this->sectionProducts($section)->values()->all();
                     $item['link'] = $this->sectionLink($section);
@@ -449,6 +449,24 @@ class WebContentService
                 ->mapWithKeys(fn (Text $t) => [$t->name => (string) $t->content])
                 ->all();
         });
+    }
+
+    /**
+     * Fotos del showroom de inicio: las 4 de la galería de Nosotros (se editan en Admin › Nosotros).
+     * Sin galería todavía, se usan las fotos guardadas en la sección.
+     */
+    private function showroomPhotos(HomeSection $section): array
+    {
+        $gallery = AboutImage::orderBy('position')->get();
+        if ($gallery->isEmpty()) {
+            return $section->showroomPhotosForWeb();
+        }
+
+        return $gallery->map(fn (AboutImage $image) => [
+            ...$image->toPublicArray(),
+            'thumb' => null,
+            'mirror' => false,
+        ])->all();
     }
 
     /**

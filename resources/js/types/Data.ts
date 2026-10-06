@@ -44,20 +44,6 @@ export const TYPE_BANNERS = [
     },
 ] as const;
 
-export const TYPE_VIDEO = [
-    {
-        id: "1",
-        label: "Url",
-    },
-    {
-        id: "3",
-        label: "Insertar video (código)",
-    },
-    {
-        id: "2",
-        label: "Archivo",
-    },
-] as const;
 
 export const TYPE_PAGES = [
     {
