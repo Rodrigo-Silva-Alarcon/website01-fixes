@@ -110,9 +110,9 @@ export default function Header({ cart }: { cart: Cart }) {
                   Nosotros
                 </p>
               </Link>
-              <Link 
-                href={ route('products') }
-                className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0" 
+              <Link
+                href={ route('products', { offers: 1 }) }
+                className="bg-white box-border content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[8px] relative rounded-[40px] shrink-0"
                 data-name="Botón"
               >
                 <div className="relative shrink-0 size-[20px]" data-name="star_shine">

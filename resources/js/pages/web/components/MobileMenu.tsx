@@ -6,7 +6,7 @@ import { ArrowRight, ChevronDown, ChevronRight, Home, Info, Mail, ShoppingCart, 
 import { useEffect, useState } from 'react';
 import { route } from 'ziggy-js';
 
-type Tile = { label: string; sub: string; route: string; icon: LucideIcon; tone: 'offer' | 'cart' | 'plain' };
+type Tile = { label: string; sub: string; route: string; params?: Record<string, unknown>; icon: LucideIcon; tone: 'offer' | 'cart' | 'plain' };
 
 // Colores con contraste AA: texto oscuro sobre #fa8232, blanco sobre #c2410c
 const TONES: Record<Tile['tone'], { box: string; iconBox: string; icon: string }> = {
@@ -45,7 +45,7 @@ export default function MobileMenu({
     const [catId, setCatId] = useState<string | null>(null);
 
     const tiles: Tile[] = [
-        { label: 'Ofertas', sub: 'Descuentos de la semana', route: 'products', icon: Sparkles, tone: 'offer' },
+        { label: 'Ofertas', sub: 'Descuentos de la semana', route: 'products', params: { offers: 1 }, icon: Sparkles, tone: 'offer' },
         {
             label: 'Carrito',
             sub: cartCount > 0 ? `${cartCount} ${cartCount === 1 ? 'producto' : 'productos'}` : 'Tu carrito',
@@ -113,12 +113,12 @@ export default function MobileMenu({
                 <div className="flex min-h-0 flex-1 flex-col gap-[22px] overflow-y-auto overscroll-contain px-4 pt-1 pb-5 [scrollbar-width:none]">
                     <>
                         <ul className="m-0 grid list-none grid-cols-2 gap-2.5 p-0" data-name="Accesos">
-                            {tiles.map(({ label, sub, route: name, icon: Icon, tone }) => {
+                            {tiles.map(({ label, sub, route: name, params, icon: Icon, tone }) => {
                                 const t = TONES[tone];
                                 return (
                                     <li key={label}>
                                         <Link
-                                            href={route(name)}
+                                            href={route(name, params)}
                                             tabIndex={tab}
                                             className={`flex h-full min-h-[104px] flex-col justify-between gap-4 rounded-[20px] p-3.5 ${t.box}`}
                                         >

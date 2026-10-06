@@ -181,10 +181,10 @@ export default function RoleForm({ role, permissions, sectors, isEdit = false, t
                                                             htmlFor={`permission-${permission.id}`}
                                                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                                         >
-                                                            {permission.name}
+                                                            {permission.description}
                                                         </Label>
                                                         <p className="text-xs text-muted-foreground">
-                                                            {permission.description}
+                                                            {permission.name}
                                                         </p>
                                                     </div>
                                                 </div>
