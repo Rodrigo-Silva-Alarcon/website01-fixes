@@ -20,6 +20,12 @@ return [
         'url' => 'http://127.0.0.1:13714',
         'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 
+        // `ssr:ensure` cada 5 min desde el programador (solo hostings sin supervisor, como Plesk)
+        'autostart' => (bool) env('INERTIA_SSR_AUTOSTART', false),
+
+        // Node usado por `ssr:ensure` (en Plesk: /opt/plesk/node/22/bin/node)
+        'node_binary' => env('INERTIA_SSR_NODE', 'node'),
+
     ],
 
     /*

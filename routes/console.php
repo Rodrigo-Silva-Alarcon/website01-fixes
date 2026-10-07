@@ -10,6 +10,12 @@ Artisan::command('inspire', function () {
 
 Schedule::command('carts:prune')->daily();
 
+// Hostings sin supervisor (Plesk): enciende el servidor SSR si se cayó o si hay un build nuevo.
+// En Docker no se activa: ahí lo mantiene supervisord (deploy/supervisord.conf).
+if (config('inertia.ssr.enabled') && config('inertia.ssr.autostart')) {
+    Schedule::command('ssr:ensure')->everyFiveMinutes()->withoutOverlapping();
+}
+
 // Copias de seguridad (config/backups.php). La retención se aplica después de cada copia.
 $backupJobs = [
     Schedule::command('backup:database')->everySixHours()->withoutOverlapping(),
