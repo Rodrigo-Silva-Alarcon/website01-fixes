@@ -24,7 +24,7 @@ class InventoryRequest extends FormRequest
         $inventoryId = $this->route('inventory') ? $this->route('inventory')->id : null;
 
         return [
-            'product_id' => 'required|integer|exists:products,id',
+            'product_id' => ['required', 'integer', 'exists:products,id', \Illuminate\Validation\Rule::unique('inventories', 'product_id')->ignore($inventoryId)],
             'amount' => 'required|numeric|min:0',
             'stock' => 'nullable|integer|min:0', // null → 0 en controller/model
             'offer_amount'  => 'nullable|numeric|min:0|lte:amount',
@@ -42,6 +42,7 @@ class InventoryRequest extends FormRequest
         return [
             'product_id.required' => 'El producto es obligatorio.',
             'product_id.exists' => 'El producto seleccionado no existe.',
+            'product_id.unique' => 'Este producto ya tiene inventario. Edita su stock o su precio.',
             'amount.required' => 'El monto es obligatorio.',
             'amount.numeric' => 'El monto debe ser un número.',
             'amount.min' => 'El monto debe ser mayor o igual a 0.',

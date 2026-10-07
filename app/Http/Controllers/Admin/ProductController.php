@@ -28,7 +28,7 @@ class ProductController extends Controller
         // Configurar paginación
         $this->configurePagination(20);
         // Configurar relaciones
-        $this->configureRelations(['images']);
+        $this->configureRelations(['images', 'inventory']);
         // Configurar imágenes
         $this->configureImages(['image', 'tecnical_image'], config('variables.folder_product'), 1200, NULL, true, 90, NULL);
         // Configurar accessors        
@@ -95,6 +95,26 @@ class ProductController extends Controller
         $this->destroyRecord($product);
         return redirect()->route('products.index')->with('success', 'Producto eliminado exitosamente.');
 
+    }
+
+    /**
+     * Edita solo el precio (normal y oferta) del inventario del producto, sin tocar el stock.
+     */
+    public function updatePrice(Request $request, Product $product){
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'offer_amount' => 'nullable|numeric|min:0|lte:amount',
+            'ini' => 'nullable|date',
+            'fin' => ['nullable', 'date', \Illuminate\Validation\Rule::when($request->filled('ini'), 'after_or_equal:ini')],
+        ], [
+            'amount.required' => 'El precio es obligatorio.',
+            'offer_amount.lte' => 'El precio de oferta no puede ser mayor que el precio normal.',
+            'fin.after_or_equal' => 'La fecha de fin de la oferta debe ser igual o posterior a la de inicio.',
+        ]);
+
+        $product->inventory()->updateOrCreate(['product_id' => $product->id], $data);
+
+        return redirect()->back()->with('success', 'Precio actualizado exitosamente.');
     }
 
     public function togglePublish(Product $product){

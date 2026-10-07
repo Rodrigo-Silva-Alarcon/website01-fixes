@@ -120,6 +120,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     // Productos
     Route::middleware('permission:view_products')->group(function () {
         Route::put('/products/reorder', [ProductController::class, 'reorder'])->middleware('permission:edit_products')->name('products.reorder');
+        Route::patch('/products/{product}/price', [ProductController::class, 'updatePrice'])->middleware('permission:edit_inventories')->name('products.update-price');
         Route::patch('/products/{product}/toggle-publish', [ProductController::class, 'togglePublish'])->middleware('permission:edit_products')->name('products.toggle-publish');
         Route::resource('/products', ProductController::class)->names('products')
         ->middlewareFor(['create', 'store'], 'permission:create_products')

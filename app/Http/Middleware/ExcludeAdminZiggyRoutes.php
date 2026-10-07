@@ -66,6 +66,7 @@ class ExcludeAdminZiggyRoutes
                     'products.show',
                     'products.reorder',
                     'products.toggle-publish',
+                    'products.update-price',
                 ],
             ]);
         }

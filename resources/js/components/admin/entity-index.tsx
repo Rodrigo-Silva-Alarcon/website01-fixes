@@ -82,6 +82,8 @@ export interface EntityIndexProps<T extends { id: number }> {
     toolbar?: ReactNode;
     deleteName?: (item: T) => string;
     messages?: EntityIndexMessages;
+    /** Botones extra en la columna de acciones, antes de editar/eliminar. */
+    rowActions?: (item: T) => ReactNode;
 }
 
 function SortableRow<T extends { id: number }>({
@@ -90,12 +92,14 @@ function SortableRow<T extends { id: number }>({
     columns,
     helpers,
     onDelete,
+    rowActions,
 }: {
     entity: string;
     item: T;
     columns: EntityColumn<T>[];
     helpers: RowHelpers<T>;
     onDelete: () => void;
+    rowActions?: (item: T) => ReactNode;
 }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
@@ -119,6 +123,7 @@ function SortableRow<T extends { id: number }>({
             ))}
             <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
+                    {rowActions?.(item)}
                     <Button variant="outline" size="sm" asChild>
                         <Link href={route(`${entity}.edit`, item.id)}>
                             <Edit className="h-4 w-4" />
@@ -154,6 +159,7 @@ export default function EntityIndex<T extends { id: number }>({
     toolbar,
     deleteName,
     messages = {},
+    rowActions,
 }: EntityIndexProps<T>) {
     const [itemToDelete, setItemToDelete] = useState<T | null>(null);
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -340,6 +346,7 @@ export default function EntityIndex<T extends { id: number }>({
                             columns={columns}
                             helpers={rowHelpers(item)}
                             onDelete={() => setItemToDelete(item)}
+                            rowActions={rowActions}
                         />
                     ))}
                 </TableBody>
@@ -355,6 +362,7 @@ export default function EntityIndex<T extends { id: number }>({
                         ))}
                         <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                                {rowActions?.(item)}
                                 <Button variant="outline" size="sm" asChild>
                                     <Link href={route(`${entity}.edit`, item.id)}>
                                         <Edit className="h-4 w-4" />

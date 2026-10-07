@@ -17,6 +17,7 @@ use App\Models\Subcategory;
 use App\Models\Text;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Collection;
 
 class WebContentService
@@ -515,8 +516,53 @@ class WebContentService
                 ...$contact->only(array_keys(ContactSetting::TEXT_FIELDS)),
                 'schedule' => $contact->schedule,
                 'schedule_summary' => $contact->schedule_summary,
+                'map_query' => self::mapQuery($contact->maps_url),
             ];
         });
+    }
+
+    /**
+     * Punto exacto del enlace de Google Maps ("lat,lng" o nombre del lugar) para el mapa
+     * embebido. Los enlaces cortos (maps.app.goo.gl) se siguen hasta la URL completa; el
+     * resultado se guarda por enlace para no consultar a Google en cada vaciado de caché.
+     */
+    public static function mapQuery(?string $url): ?string
+    {
+        if (blank($url)) {
+            return null;
+        }
+
+        $key = 'maps_query_'.md5($url);
+        if (Cache::has($key)) {
+            return Cache::get($key) ?: null;
+        }
+
+        $full = $url;
+        if (preg_match('#^https?://(maps\.app\.goo\.gl|goo\.gl)/#i', $url)) {
+            try {
+                $response = Http::timeout(5)->withoutRedirecting()->get($url);
+                $full = $response->header('Location') ?: $url;
+            } catch (\Throwable) {
+                // Sin conexión: se reintenta en unos minutos, mientras tanto se usa la dirección
+                Cache::put($key, '', 600);
+
+                return null;
+            }
+        }
+
+        $full = urldecode($full);
+        $query = match (true) {
+            // Pin del lugar (!3d lat !4d lng) es más exacto que el centro de la vista (@lat,lng)
+            (bool) preg_match('/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/', $full, $m) => "{$m[1]},{$m[2]}",
+            (bool) preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $full, $m) => "{$m[1]},{$m[2]}",
+            (bool) preg_match('/[?&](?:q|query|ll)=([^&]+)/', $full, $m) => str_replace('+', ' ', $m[1]),
+            (bool) preg_match('#/place/([^/@?]+)#', $full, $m) => str_replace('+', ' ', $m[1]),
+            default => null,
+        };
+
+        Cache::put($key, $query ?? '', now()->addDays(30));
+
+        return $query;
     }
 
     /**

@@ -8,7 +8,7 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { type BreadcrumbItem, Product, Category, Subcategory, Brand, Inventory } from '@/types';
 import { useForm, router, Link } from '@inertiajs/react';
-import { FormEventHandler, useState, useEffect } from 'react';
+import { FormEventHandler, useState, useEffect, useRef } from 'react';
 import { GalleryHorizontal, X, Upload, Trash2, Edit } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
@@ -39,9 +39,10 @@ interface FormProps1 {
     breadcrumbs: BreadcrumbItem[];
     success?: string;
     error?: string;
+    onSaved?: () => void;
 }
 
-function ModalForm({ inventory, product, isEdit = false, title, description, breadcrumbs}: FormProps1){
+function ModalForm({ inventory, product, isEdit = false, title, description, breadcrumbs, onSaved}: FormProps1){
     const { data, setData, post, processing, errors } = useForm({
             product_id: inventory.product_id || product.id,
             amount: inventory.amount || '',
@@ -95,6 +96,7 @@ function ModalForm({ inventory, product, isEdit = false, title, description, bre
                     forceFormData: true, // Forzar FormData para archivos
                     onSuccess: () => {
                         toast.success('Inventario actualizado exitosamente');
+                        onSaved?.();
                     },
                     onError: (errors: any) => {
                         toast.error('Error al actualizar el inventario');
@@ -106,6 +108,7 @@ function ModalForm({ inventory, product, isEdit = false, title, description, bre
                     forceFormData: true, // Forzar FormData para archivos
                     onSuccess: () => {
                         toast.success('Inventario creado exitosamente');
+                        onSaved?.();
                     },
                     onError: (errors: any) => {
                         toast.error('Error al crear el inventario');
@@ -287,6 +290,13 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
     const [existingImages, setExistingImages] = useState<any[]>(data?.images ?? []);
 
     const [open, setOpen] = useState(false);
+    const addInventoryRef = useRef<HTMLButtonElement>(null);
+    // Al cerrar el modal se devuelve el foco al botón que lo abrió; si no, el
+    // navegador lo deja en el primer enlace del sidebar (Dashboard) y lo resalta.
+    const closeInventoryModal = () => {
+        setOpen(false);
+        requestAnimationFrame(() => addInventoryRef.current?.focus({ preventScroll: true }));
+    };
 
     useEffect(() => {
     setExistingImages(data?.images ?? []);
@@ -529,7 +539,7 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
             after={
                 <Modal
                     open={open}
-                    onClose={() => setOpen(false)}
+                    onClose={closeInventoryModal}
                     title="Precio"
                 >
                     {isEdit && (
@@ -540,6 +550,7 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
                             title="Invetario"
                             description=""
                             breadcrumbs={[]}
+                            onSaved={closeInventoryModal}
                         />
                     )}
                 </Modal>
@@ -918,13 +929,16 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
                                     <h3>Precio y Stock</h3>
                                 </CardHeader>
                                 <CardContent>
-                                    {isEdit && (
+                                    {/* Un solo inventario por producto: el stock y el precio se editan en el existente */}
+                                    {isEdit && !product?.inventories?.length && (
                                     <div className="text-end w-full">
-                                        <a 
+                                        <button
+                                            type="button"
+                                            ref={addInventoryRef}
                                             onClick={() => setOpen(true)}
                                             className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-green-600 text-primary-foreground shadow-xs hover:bg-green-700 h-9 px-4 py-2 has-[>svg]:px-3">
                                             Agregar +
-                                        </a>                                        
+                                        </button>                                        
                                     </div>  
                                     )}
                                     <Table>

@@ -120,7 +120,9 @@ export function AppSidebar() {
         },
         {
             title: 'Copias de seguridad',
-            href: route('admin.backups.index'),
+            // Ruta fija: si el servidor tiene un route:cache viejo sin esta ruta,
+            // route() lanzaría un error y dejaría todo el panel en blanco
+            href: '/admin/backups',
             icon: DatabaseBackup,
             role: 'admin',
         },

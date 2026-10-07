@@ -80,6 +80,8 @@ export interface ContactInfo {
     address: string;
     city: string | null;
     maps_url: string | null;
+    /** Punto exacto ("lat,lng") sacado de maps_url por el backend para el mapa embebido. */
+    map_query: string | null;
     website: string | null;
     facebook: string | null;
     instagram: string | null;
@@ -151,8 +153,10 @@ export function useCms() {
             contact?.maps_url ||
             text('footer_maps') ||
             `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address} La Paz Bolivia`)}`,
-        // Mapa embebido (sin API key) con la dirección exacta del showroom
-        mapEmbedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(`${address}, ${(contact?.city ?? text('footer_address')) || 'La Paz, Bolivia'}`)}&z=17&output=embed`,
+        // Mapa embebido (sin API key): el punto del enlace de Google Maps o, si no hay, la dirección
+        mapEmbedSrc: `https://maps.google.com/maps?q=${encodeURIComponent(
+            contact?.map_query || `${address}, ${(contact?.city ?? text('footer_address')) || 'La Paz, Bolivia'}`,
+        )}&z=17&output=embed`,
         website: contact?.website ?? text('site_url', 'www.smarthousebo.com'),
         facebook: contact ? contact.facebook || '' : text('footer_facebook'),
         instagram: contact ? contact.instagram || '' : text('footer_instagram'),
