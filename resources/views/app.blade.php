@@ -51,6 +51,17 @@
         @unless (str_starts_with($page['component'] ?? '', 'web/'))
             @vite('resources/css/admin.css')
         @endunless
+        {{-- Sin SSR (servidor Node apagado) no existe el preload que pone HeroCarousel en <Head>:
+             se emite aquí para que el banner se descargue en paralelo con el JS y no después.
+             imagesizes = HERO_SIZES de HeroCarousel.tsx --}}
+        @if (empty($__inertiaSsrResponse) && ($hero = data_get($page, 'props.banners.0')))
+            @if ($heroSrcset = data_get($hero, 'image_srcset') ?: data_get($hero, 'image_webp_url'))
+                <link rel="preload" as="image" type="image/webp" fetchpriority="high" imagesrcset="{{ $heroSrcset }}"
+                    @if (data_get($hero, 'image_srcset')) imagesizes="(min-width: 1440px) 1312px, (min-width: 1024px) calc(100vw - 128px), (min-width: 640px) calc(100vw - 64px), calc(100vw - 32px)" @endif>
+            @else
+                <link rel="preload" as="image" fetchpriority="high" href="{{ data_get($hero, 'image_url') }}">
+            @endif
+        @endif
         {{-- Antes de @routes (~23 KB de rutas en línea): así el preload de la imagen LCP del hero
              se descubre en los primeros KB del HTML --}}
         @inertiaHead
