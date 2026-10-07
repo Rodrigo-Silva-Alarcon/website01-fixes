@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\WebController;
@@ -209,6 +210,16 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::middleware('permission:view_carts')->group(function () {
         Route::get('/carts', [CartController::class, 'index'])->name('admin.carts.index');
         Route::delete('/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+    });
+
+    // Copias de seguridad (solo administradores). Restaurar solo por consola.
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/backups', [BackupController::class, 'index'])->name('admin.backups.index');
+        Route::post('/backups', [BackupController::class, 'store'])->middleware('throttle:6,1')->name('admin.backups.store');
+        Route::post('/backups/images', [BackupController::class, 'storeImages'])->middleware('throttle:3,1')->name('admin.backups.images');
+        Route::get('/backups/{name}/download', [BackupController::class, 'download'])
+            ->where('name', '[A-Za-z0-9._-]+')
+            ->name('admin.backups.download');
     });
 
 });

@@ -23,3 +23,18 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Caché de archivos estáticos (Apache los sirve sin pasar por Laravel, así que CacheHeaders no aplica)
+<IfModule mod_headers.c>
+    # Vite: nombres con hash, nunca cambian de contenido
+    <If "%{REQUEST_URI} =~ m#^/build/assets/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+    # Imágenes subidas desde el panel (nombres UUID: un cambio genera un archivo nuevo)
+    <ElseIf "%{REQUEST_URI} =~ m#^/data/#">
+        Header set Cache-Control "public, max-age=2592000"
+    </ElseIf>
+    <ElseIf "%{REQUEST_URI} =~ m#\.(webp|avif|png|jpe?g|gif|svg|ico|woff2?)$#">
+        Header set Cache-Control "public, max-age=604800"
+    </ElseIf>
+</IfModule>

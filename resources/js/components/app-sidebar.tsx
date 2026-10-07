@@ -6,16 +6,16 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom, MessageSquareText } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom, MessageSquareText, DatabaseBackup } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLogoIcon from '@/components/app-logo-icon';
 
 export function AppSidebar() {
-    const { hasPermission } = usePermissions();
+    const { hasPermission, hasRole } = usePermissions();
     const { state } = useSidebar();
     
-    const allNavItems: Array<NavItem & { permission?: string }> = [
+    const allNavItems: Array<NavItem & { permission?: string; role?: string }> = [
         {
             title: 'Panel de Control',
             href: route('admin.dashboard'),
@@ -118,11 +118,17 @@ export function AppSidebar() {
             icon: FileText,
             permission: 'view_texts',
         },
+        {
+            title: 'Copias de seguridad',
+            href: route('admin.backups.index'),
+            icon: DatabaseBackup,
+            role: 'admin',
+        },
     ];
 
     const mainNavItems: NavItem[] = allNavItems
-        .filter(item => !item.permission || hasPermission(item.permission))
-        .map(({ permission, ...item }) => item);
+        .filter(item => (!item.permission || hasPermission(item.permission)) && (!item.role || hasRole(item.role)))
+        .map(({ permission, role, ...item }) => item);
 
     const footerNavItems: NavItem[] = [
         /*{
