@@ -107,13 +107,21 @@ function formatMoney(value: number | string, money?: string) {
     return `${currency} ${Number(value).toFixed(2)}`;
 }
 
+function OfferPriceHeader() {
+    return (
+        <span>
+            Precio/<span className="text-orange-700 dark:text-orange-400">Oferta</span>
+        </span>
+    );
+}
+
 function PriceCell({ product }: { product: Product }) {
     const inventory = product.inventory;
     if (!inventory) return <span className="text-muted-foreground">Sin precio</span>;
     if (isOnOffer(inventory)) {
         return (
             <div className="flex flex-col leading-tight">
-                <span className="font-medium text-green-700">{formatMoney(inventory.offer_amount!, inventory.money)}</span>
+                <span className="font-semibold text-orange-700 dark:text-orange-400">{formatMoney(inventory.offer_amount!, inventory.money)}</span>
                 <span className="text-xs text-muted-foreground line-through">{formatMoney(inventory.amount, inventory.money)}</span>
             </div>
         );
@@ -205,7 +213,7 @@ export default function Index({ records, categories, filters, success, error }: 
         },
         {
             key: 'price',
-            label: 'Precio',
+            label: <OfferPriceHeader />,
             headerClassName: 'w-[130px]',
             render: (product) => <PriceCell product={product} />,
         },

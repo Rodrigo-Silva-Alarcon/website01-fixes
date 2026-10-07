@@ -17,17 +17,9 @@ class ShopController extends Controller{
 
     public function add(Request $request){
         
-        $product = Product::with(['inventory' => function($query){
-            $query->select('*', DB::raw("
-                CASE
-                    WHEN ini IS NULL AND fin IS NULL THEN amount
-                    WHEN ini IS NOT NULL AND fin IS NULL AND ini <= CURRENT_TIMESTAMP THEN COALESCE(offer_amount, amount)
-                    WHEN ini IS NULL AND fin IS NOT NULL AND fin >= CURRENT_TIMESTAMP THEN COALESCE(offer_amount, amount)
-                    WHEN ini IS NOT NULL AND fin IS NOT NULL AND CURRENT_TIMESTAMP BETWEEN ini AND fin THEN COALESCE(offer_amount, amount)
-                    ELSE amount
-                END AS price
-            "));
-        }])->where('active', true)->whereHas('inventory')->where('id', $request->product)->firstOrFail();
+        $product = Product::with('inventory')->where('active', true)->whereHas('inventory')->where('id', $request->product)->firstOrFail();
+        // Precio vigente (oferta incluida) con la misma regla que muestra la tienda.
+        $price = $product->inventory->currentPrice();
         
         $array = array();
         $car_id = NULL;
@@ -36,7 +28,7 @@ class ShopController extends Controller{
             // Cantidad opcional (selector del detalle de producto); por defecto 1.
             $qty = max(1, min(99, (int) $request->input('amount', 1)));
 
-            $added = DB::transaction(function () use ($product, $qty) {
+            $added = DB::transaction(function () use ($product, $qty, $price) {
                 $car_id = NULL;
 
                 if(session()->has('shop')){
@@ -70,7 +62,8 @@ class ShopController extends Controller{
                     $amount = $nextAmount;
                     CartItem::where('id', $cart->id)->update([
                         'amount' => $amount,
-                        'sub_total' => $amount * $cart->unit_price,
+                        'unit_price' => $price,
+                        'sub_total' => $amount * $price,
                     ]);
                 }
                 else{
@@ -79,10 +72,10 @@ class ShopController extends Controller{
                         'product_id' => $product->id,
                         'name' => $product->name,
                         'image' => $product->image,
-                        'unit_price' => $product->inventory->price,
+                        'unit_price' => $price,
                         'amount' => $qty,
                         'money' => $product->inventory->money,
-                        'sub_total' => $qty * $product->inventory->price,
+                        'sub_total' => $qty * $price,
                     ]);
                 }
 

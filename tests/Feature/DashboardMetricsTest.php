@@ -15,7 +15,9 @@ it('shows dashboard metrics for admins', function () {
 
     $user = User::factory()->create();
     $cart = Cart::create(['user_id' => $user->id, 'cart_session' => 42]);
-    Order::create(['card_id' => $cart->id, 'user_id' => $user->id, 'total' => 100]);
+    // Solo los pedidos confirmados cuentan como venta del mes
+    Order::create(['card_id' => $cart->id, 'user_id' => $user->id, 'total' => 100, 'status' => Order::CONFIRMED, 'confirmed_at' => now()]);
+    Order::create(['card_id' => $cart->id, 'user_id' => $user->id, 'total' => 50, 'status' => Order::PENDING]);
 
     $this->actingAs($admin)
         ->get(route('admin.dashboard'))

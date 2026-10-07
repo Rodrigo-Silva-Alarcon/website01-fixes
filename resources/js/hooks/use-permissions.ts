@@ -24,15 +24,11 @@ export function usePermissions() {
             return false;
         }
 
-        // Verificar permisos reales en lugar de dar acceso automático a admin
-        const hasRealPermission = user.roles.some(role =>
-            role.permissions && role.permissions.some(permission => permission.name === permissionName)
+        // El admin tiene siempre todos los permisos (igual que User::hasPermission)
+        return user.roles.some(role =>
+            role.name === 'admin' ||
+            (role.permissions && role.permissions.some(permission => permission.name === permissionName))
         );
-
-        // Log para debugging
-        console.log(`🔍 Verificando permiso "${permissionName}":`, hasRealPermission);
-        
-        return hasRealPermission;
     };
 
     const hasRole = (roleName: string): boolean => {

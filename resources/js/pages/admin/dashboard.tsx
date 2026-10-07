@@ -13,9 +13,10 @@ import AppLogoIcon from '@/components/app-logo-icon';
 import { usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StatusBadge } from './orders/_shared';
 
 interface LowStockItem { id: number; name: string; stock: number }
-interface RecentOrder { id: number; user: string; total: number; items: number; created_at: string | null }
+interface RecentOrder { id: number; code: string; status: 'pending' | 'confirmed' | 'cancelled'; user: string; total: number; items: number; created_at: string | null }
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -81,7 +82,7 @@ export default function Dashboard() {
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <div className='flex flex-col items-center justify-center h-full'>
                             <h1 className='text-5xl font-bold text-orange-600'>{ordersMonth}</h1>
-                            <h1 className='flex'><ShoppingCart className='me-2' /> Pedidos (mes)</h1>
+                            <h1 className='flex'><ShoppingCart className='me-2' /> Ventas confirmadas (mes)</h1>
                         </div>
                     </div>
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -126,16 +127,16 @@ export default function Dashboard() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-orange-500" /> Pedidos recientes</CardTitle>
-                            <CardDescription>Últimos pedidos del sistema</CardDescription>
+                            <CardDescription>Últimos pedidos recibidos por WhatsApp</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>#</TableHead>
+                                        <TableHead>Pedido</TableHead>
                                         <TableHead>Cliente</TableHead>
                                         <TableHead className="text-right">Total</TableHead>
-                                        <TableHead className="text-right">Ítems</TableHead>
+                                        <TableHead>Estado</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -144,10 +145,16 @@ export default function Dashboard() {
                                     )}
                                     {recentOrders.map((order) => (
                                         <TableRow key={order.id}>
-                                            <TableCell>#{order.id}</TableCell>
+                                            <TableCell>
+                                                {hasPermission('view_orders') ? (
+                                                    <Link href={route('admin.orders.show', order.id)} className="font-medium hover:text-orange-700">{order.code}</Link>
+                                                ) : (
+                                                    order.code
+                                                )}
+                                            </TableCell>
                                             <TableCell>{order.user}</TableCell>
-                                            <TableCell className="text-right">{order.total.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right">{order.items}</TableCell>
+                                            <TableCell className="text-right tabular-nums">{order.total.toFixed(2)}</TableCell>
+                                            <TableCell><StatusBadge status={order.status} /></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

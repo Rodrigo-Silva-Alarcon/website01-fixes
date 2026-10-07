@@ -96,6 +96,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        $this->protectAdminRole($role);
+
         $role->load('permissions');
         $permissions = Permission::orderBy('sector')->orderBy('name')->get();
         $sectors = Permission::getSectors();
@@ -112,9 +114,13 @@ class RoleController extends Controller
      */
     public function update(SaveRoleRequest $request, Role $role)
     {
+        $this->protectAdminRole($role);
         $this->updateRecord($request, $role);
 
-        if ($request->has('permissions')) {
+        // Al rol admin no se le pueden quitar permisos
+        if ($role->name === 'admin') {
+            $role->permissions()->sync(Permission::pluck('id'));
+        } elseif ($request->has('permissions')) {
             $role->permissions()->sync($request->permissions);
         }
 
@@ -127,6 +133,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        $this->protectAdminRole($role);
+
         // Verificar si el rol tiene usuarios asignados
         if ($role->users()->count() > 0) {
             return redirect()->route('admin.roles.index')
@@ -138,5 +146,19 @@ class RoleController extends Controller
 
         return redirect()->route('admin.roles.index')
             ->with('success', 'Rol eliminado exitosamente.');
+    }
+
+    /**
+     * Solo un admin puede tocar el rol admin; nunca se elimina ni se renombra.
+     */
+    private function protectAdminRole(Role $role): void
+    {
+        if ($role->name !== 'admin') {
+            return;
+        }
+
+        abort_unless(request()->user()?->isAdmin(), 403);
+        abort_if(request()->isMethod('delete'), 403, 'El rol admin no se puede eliminar.');
+        abort_if(request()->isMethod('put') && request('name', 'admin') !== 'admin', 403, 'El rol admin no se puede renombrar.');
     }
 }

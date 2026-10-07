@@ -17,6 +17,7 @@ import axios from 'axios';
 import Modal  from "@/components/modal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormShell, useFormAlerts } from '@/components/admin/form-shell';
+import { isOnOffer } from '@/lib/product-enquiry';
 
 interface FormProps {
     product: Product;
@@ -948,7 +949,7 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
                                                     Producto
                                                 </TableHead> */}
                                                 <TableHead>
-                                                    Monto
+                                                    Precio/<span className="text-orange-700 dark:text-orange-400">Oferta</span>
                                                 </TableHead>
                                                 <TableHead>
                                                     Stock
@@ -975,7 +976,16 @@ export default function ProductForm({ product, categories, brands, isEdit = fals
                                             {product?.inventories?.map((inventory) => (
                                                 <TableRow key={inventory.id}>
                                                     {/* <TableCell>{product.name}</TableCell> */}
-                                                    <TableCell>{inventory.amount}</TableCell>
+                                                    <TableCell>
+                                                        {isOnOffer(inventory) ? (
+                                                            <div className="flex flex-col leading-tight">
+                                                                <span className="font-semibold text-orange-700 dark:text-orange-400">{inventory.offer_amount}</span>
+                                                                <span className="text-xs text-muted-foreground line-through">{inventory.amount}</span>
+                                                            </div>
+                                                        ) : (
+                                                            inventory.amount
+                                                        )}
+                                                    </TableCell>
                                                     <TableCell>{inventory.stock}</TableCell>
                                                     <TableCell>{inventory.money}</TableCell>
                                                     <TableCell>{inventory.offer_amount}</TableCell>

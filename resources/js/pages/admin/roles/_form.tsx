@@ -56,8 +56,11 @@ export default function RoleForm({ role, permissions, sectors, isEdit = false, t
             }
             grouped[sector].push(permission);
         });
-        
-        return grouped;
+
+        // Mismo orden que el menú del panel; los sectores sin etiqueta van al final
+        const order = Object.keys(sectors);
+        const position = (key: string) => (order.includes(key) ? order.indexOf(key) : order.length);
+        return Object.fromEntries(Object.entries(grouped).sort(([a], [b]) => position(a) - position(b)));
     };
 
     /**

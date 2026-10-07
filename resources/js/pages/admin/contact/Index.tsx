@@ -418,7 +418,7 @@ function DataForm({ contact, canEdit, onDirtyChange }: { contact: ContactData; c
                     <p className="text-muted-foreground">Al guardar, estos datos reemplazan a los que se muestran en toda la web:</p>
                     <ul className="grid gap-2">
                         {[
-                            ['WhatsApp', 'Footer, barra de beneficios, showroom, Nosotros, Contáctanos, carrito, checkout y fichas de producto.'],
+                            ['WhatsApp', 'Footer, barra de beneficios, showroom, Nosotros, Contáctanos, carrito y fichas de producto.'],
                             ['Correo', 'Footer y Contáctanos.'],
                             ['Dirección y mapa', 'Showroom de inicio, Nosotros, carrito y Contáctanos (mapa incluido).'],
                             ['Ciudad', 'Pie de página.'],

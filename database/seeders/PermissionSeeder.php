@@ -69,20 +69,32 @@ class PermissionSeeder extends Seeder
         $this->createSectorPermissions('subcategories', 'subcategorías');
         $this->createSectorPermissions('brands', 'marcas');
         $this->createSectorPermissions('banners', 'banners');
-        $this->createSectorPermissions('about', 'Nosotros');
-        $this->createSectorPermissions('contact', 'Contacto');
-        $this->createSectorPermissions('footer', 'Footer');
-        $this->createSectorPermissions('store_texts', 'Textos de la tienda');
-        $this->createSectorPermissions('home', 'secciones de inicio');
         $this->createSectorPermissions('inventories', 'inventarios');
-        $this->createSectorPermissions('carts', 'carritos');
+
+        // Ventanas de una sola página: solo ver y editar
+        $this->createSectorPermissions('about', 'Nosotros', [], ['view', 'edit']);
+        $this->createSectorPermissions('contact', 'Contacto', [], ['view', 'edit']);
+        $this->createSectorPermissions('footer', 'Logo', [], ['view', 'edit']);
+        $this->createSectorPermissions('store_texts', 'Textos de la tienda', [], ['view', 'edit']);
+        $this->createSectorPermissions('home', 'secciones de inicio', [], ['view', 'create', 'edit', 'delete']);
+
+        // Pedidos: ver lista y detalle; editar incluye confirmar y cancelar
+        $this->createSectorPermissions('orders', 'pedidos', [], ['view', 'edit']);
+
+        // Copias de seguridad: contienen toda la BD (también usuarios), asignar con cuidado
+        foreach ([
+            'view_backups' => 'Ver y descargar copias de seguridad',
+            'create_backups' => 'Crear copias de seguridad manuales',
+        ] as $name => $description) {
+            Permission::firstOrCreate(['name' => $name], ['description' => $description, 'sector' => 'backups']);
+        }
     }
 
     /**
      * Crear permisos para un sector usando el helper
      */
-    private function createSectorPermissions(string $sector, string $sectorName, array $additionalActions = []): void
+    private function createSectorPermissions(string $sector, string $sectorName, array $additionalActions = [], ?array $actions = null): void
     {
-        PermissionHelper::createSectorPermissions($sector, $sectorName, $additionalActions);
+        PermissionHelper::createSectorPermissions($sector, $sectorName, $additionalActions, $actions);
     }
 }

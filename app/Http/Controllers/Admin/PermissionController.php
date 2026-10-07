@@ -70,7 +70,10 @@ class PermissionController extends Controller
      */
     public function store(SavePermissionRequest $request)
     {
-        $this->createRecord($request, new Permission);
+        $permission = $this->createRecord($request, new Permission);
+
+        // El admin recibe también los permisos nuevos
+        \App\Models\Role::where('name', 'admin')->first()?->permissions()->syncWithoutDetaching([$permission->id]);
 
         return redirect()->route('admin.permissions.index')
             ->with('success', 'Permiso creado exitosamente.');

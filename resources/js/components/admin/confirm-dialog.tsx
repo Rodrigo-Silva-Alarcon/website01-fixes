@@ -1,18 +1,22 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
-import { AlertTriangle, Trash2, type LucideIcon } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Trash2, type LucideIcon } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export interface ConfirmDialogProps {
     open: boolean;
-    /** warning: acción reversible pero con pérdida (salir); danger: borra algo. */
-    tone?: 'warning' | 'danger';
+    /** warning: acción reversible pero con pérdida (salir); danger: borra algo; success: confirma algo. */
+    tone?: 'warning' | 'danger' | 'success';
     icon?: LucideIcon;
     title: string;
     description: ReactNode;
     /** Resumen opcional de lo que se pierde, en chips bajo la descripción. */
     details?: string[];
+    /** Contenido extra bajo la descripción (resúmenes, campos opcionales). */
+    children?: ReactNode;
+    /** Desactiva el botón de confirmar (p. ej. falta stock). */
+    confirmDisabled?: boolean;
     confirmLabel: string;
     cancelLabel?: string;
     onConfirm: () => void;
@@ -22,13 +26,14 @@ export interface ConfirmDialogProps {
 const TONES = {
     warning: { icon: AlertTriangle, badge: 'bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-400', action: 'bg-orange-600 hover:bg-orange-700' },
     danger: { icon: Trash2, badge: 'bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-400', action: 'bg-red-600 hover:bg-red-700' },
+    success: { icon: CheckCircle2, badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400', action: 'bg-emerald-600 hover:bg-emerald-700' },
 };
 
 /**
  * Confirmación con el estilo del panel, en lugar de window.confirm.
  * El foco inicial queda en «Cancelar»: la opción segura.
  */
-export function ConfirmDialog({ open, tone = 'warning', icon, title, description, details, confirmLabel, cancelLabel = 'Cancelar', onConfirm, onCancel }: ConfirmDialogProps) {
+export function ConfirmDialog({ open, tone = 'warning', icon, title, description, details, children, confirmDisabled, confirmLabel, cancelLabel = 'Cancelar', onConfirm, onCancel }: ConfirmDialogProps) {
     const style = TONES[tone];
     const Icon = icon ?? style.icon;
 
@@ -55,10 +60,12 @@ export function ConfirmDialog({ open, tone = 'warning', icon, title, description
                             )}
                         </div>
                     </div>
+                    {children}
                     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                         <AlertDialogPrimitive.Cancel className={cn(buttonVariants({ variant: 'outline' }), 'h-11 sm:h-10')}>{cancelLabel}</AlertDialogPrimitive.Cancel>
                         <AlertDialogPrimitive.Action
                             onClick={onConfirm}
+                            disabled={confirmDisabled}
                             className={cn(buttonVariants(), 'h-11 font-semibold text-white sm:h-10', style.action)}
                         >
                             {confirmLabel}

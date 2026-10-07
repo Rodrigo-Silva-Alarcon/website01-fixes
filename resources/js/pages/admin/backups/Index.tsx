@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -45,6 +46,7 @@ const LABELS: Record<string, string> = {
 };
 
 export default function Index({ database, images, retention }: Props) {
+    const canCreate = usePermissions().hasPermission('create_backups');
     const [busy, setBusy] = useState<'database' | 'images' | null>(null);
     const total = database.reduce((sum, b) => sum + b.size, 0);
 
@@ -78,10 +80,12 @@ export default function Index({ database, images, retention }: Props) {
                                 {database.length} copias · {formatSize(total)} en total
                             </CardDescription>
                         </div>
-                        <Button onClick={() => create('database')} disabled={busy !== null}>
-                            {busy === 'database' ? <Loader2 className="h-4 w-4 animate-spin" /> : <DatabaseBackup className="h-4 w-4" />}
-                            Crear copia ahora
-                        </Button>
+                        {canCreate && (
+                            <Button onClick={() => create('database')} disabled={busy !== null}>
+                                {busy === 'database' ? <Loader2 className="h-4 w-4 animate-spin" /> : <DatabaseBackup className="h-4 w-4" />}
+                                Crear copia ahora
+                            </Button>
+                        )}
                     </CardHeader>
                     <CardContent>
                         <Table>
@@ -135,10 +139,12 @@ export default function Index({ database, images, retention }: Props) {
                             <CardTitle className="mb-3">Imágenes</CardTitle>
                             <CardDescription>Una sola copia que se reemplaza cada vez.</CardDescription>
                         </div>
-                        <Button variant="outline" onClick={() => create('images')} disabled={busy !== null}>
-                            {busy === 'images' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
-                            Copiar imágenes ahora
-                        </Button>
+                        {canCreate && (
+                            <Button variant="outline" onClick={() => create('images')} disabled={busy !== null}>
+                                {busy === 'images' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+                                Copiar imágenes ahora
+                            </Button>
+                        )}
                     </CardHeader>
                     <CardContent>
                         {images ? (

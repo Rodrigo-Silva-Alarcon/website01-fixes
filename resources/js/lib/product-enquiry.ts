@@ -8,24 +8,25 @@ type InventoryPrice = {
     money: string;
 };
 
-export function productPrice(inventory?: InventoryPrice | null, now = new Date()): number | null {
-    if (!inventory) return null;
-    const start = inventory.ini ? new Date(inventory.ini) : null;
-    const end = inventory.fin ? new Date(inventory.fin) : null;
-    const onOffer = Boolean((start || end) && (!start || start <= now) && (!end || now <= end));
-    const offer = inventory.offer_amount != null && inventory.offer_amount !== '' ? Number(inventory.offer_amount) : NaN;
-    const base = Number(inventory.amount);
-    const price = onOffer && Number.isFinite(offer) && offer > 0 ? offer : base;
-    return Number.isFinite(price) && price > 0 ? price : null;
-}
+// Día calendario de la tienda (igual que now()->toDateString() en Laravel). Las fechas de
+// oferta son días sin hora: `new Date('2026-10-07')` es medianoche UTC y dejaba fuera el
+// último día de la oferta, por eso se comparan como texto YYYY-MM-DD.
+const storeDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz', year: 'numeric', month: '2-digit', day: '2-digit' });
 
 export function isOnOffer(inventory?: InventoryPrice | null, now = new Date()): boolean {
     if (!inventory) return false;
-    const start = inventory.ini ? new Date(inventory.ini) : null;
-    const end = inventory.fin ? new Date(inventory.fin) : null;
-    const window = Boolean((start || end) && (!start || start <= now) && (!end || now <= end));
+    const today = storeDay.format(now);
+    const start = inventory.ini ? String(inventory.ini).slice(0, 10) : null;
+    const end = inventory.fin ? String(inventory.fin).slice(0, 10) : null;
+    const window = Boolean((start || end) && (!start || start <= today) && (!end || today <= end));
     const offer = inventory.offer_amount != null && inventory.offer_amount !== '' ? Number(inventory.offer_amount) : NaN;
     return window && Number.isFinite(offer) && offer > 0;
+}
+
+export function productPrice(inventory?: InventoryPrice | null, now = new Date()): number | null {
+    if (!inventory) return null;
+    const price = isOnOffer(inventory, now) ? Number(inventory.offer_amount) : Number(inventory.amount);
+    return Number.isFinite(price) && price > 0 ? price : null;
 }
 
 export function productEnquiryUrl(product: {

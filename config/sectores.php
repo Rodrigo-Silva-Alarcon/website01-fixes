@@ -46,17 +46,6 @@ return [
             'permiso_vista' => 'view_texts',
         ],
         
-        'productos' => [
-            'nombre' => 'productos',
-            'permisos_adicionales' => [
-                'manage_stock_productos' => 'Gestionar stock de productos',
-                'categorize_productos' => 'Categorizar productos',
-            ],
-            'icono' => 'Package',
-            'ruta' => '/admin/productos',
-            'permiso_vista' => 'view_productos',
-        ],
-
         'products' => [
             'nombre' => 'products',
             'permisos_adicionales' => [],
@@ -105,58 +94,12 @@ return [
             'permiso_vista' => 'view_inventories',
         ],
 
-        'carts' => [
-            'nombre' => 'carts',
+        'orders' => [
+            'nombre' => 'orders',
             'permisos_adicionales' => [],
-            'icono' => 'ShoppingBasket',
-            'ruta' => '/admin/carts',
-            'permiso_vista' => 'view_carts',
-        ],
-        
-        'ventas' => [
-            'nombre' => 'ventas',
-            'permisos_adicionales' => [
-                'approve_ventas' => 'Aprobar ventas',
-                'cancel_ventas' => 'Cancelar ventas',
-                'export_ventas' => 'Exportar ventas',
-            ],
-            'icono' => 'ShoppingCart',
-            'ruta' => '/admin/ventas',
-            'permiso_vista' => 'view_ventas',
-        ],
-        
-        'inventario' => [
-            'nombre' => 'inventario',
-            'permisos_adicionales' => [
-                'adjust_inventario' => 'Ajustar inventario',
-                'transfer_inventario' => 'Transferir inventario',
-                'audit_inventario' => 'Auditar inventario',
-            ],
-            'icono' => 'Warehouse',
-            'ruta' => '/admin/inventario',
-            'permiso_vista' => 'view_inventario',
-        ],
-        
-        'clientes' => [
-            'nombre' => 'clientes',
-            'permisos_adicionales' => [
-                'export_clientes' => 'Exportar clientes',
-                'import_clientes' => 'Importar clientes',
-            ],
-            'icono' => 'Users',
-            'ruta' => '/admin/clientes',
-            'permiso_vista' => 'view_clientes',
-        ],
-        
-        'proveedores' => [
-            'nombre' => 'proveedores',
-            'permisos_adicionales' => [
-                'evaluate_proveedores' => 'Evaluar proveedores',
-                'manage_contracts_proveedores' => 'Gestionar contratos de proveedores',
-            ],
-            'icono' => 'Truck',
-            'ruta' => '/admin/proveedores',
-            'permiso_vista' => 'view_proveedores',
+            'icono' => 'ClipboardList',
+            'ruta' => '/admin/orders',
+            'permiso_vista' => 'view_orders',
         ],
     ],
 

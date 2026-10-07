@@ -39,47 +39,6 @@ class SectorPermissionsSeeder extends Seeder
                 'sector_name' => 'inventarios',
                 'additional_permissions' => [],
             ],
-            'carts' => [
-                'sector_name' => 'carritos',
-                'additional_permissions' => [],
-            ],
-            'productos' => [
-                'sector_name' => 'productos',
-                'additional_permissions' => [
-                    'manage_stock_productos' => 'Gestionar stock de productos',
-                    'categorize_productos' => 'Categorizar productos',
-                ]
-            ],
-            'ventas' => [
-                'sector_name' => 'ventas',
-                'additional_permissions' => [
-                    'approve_ventas' => 'Aprobar ventas',
-                    'cancel_ventas' => 'Cancelar ventas',
-                    'export_ventas' => 'Exportar ventas',
-                ]
-            ],
-            'inventario' => [
-                'sector_name' => 'inventario',
-                'additional_permissions' => [
-                    'adjust_inventario' => 'Ajustar inventario',
-                    'transfer_inventario' => 'Transferir inventario',
-                    'audit_inventario' => 'Auditar inventario',
-                ]
-            ],
-            'clientes' => [
-                'sector_name' => 'clientes',
-                'additional_permissions' => [
-                    'export_clientes' => 'Exportar clientes',
-                    'import_clientes' => 'Importar clientes',
-                ]
-            ],
-            'proveedores' => [
-                'sector_name' => 'proveedores',
-                'additional_permissions' => [
-                    'evaluate_proveedores' => 'Evaluar proveedores',
-                    'manage_contracts_proveedores' => 'Gestionar contratos de proveedores',
-                ]
-            ],
         ];
 
         // Crear permisos para cada sector

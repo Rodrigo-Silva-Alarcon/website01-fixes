@@ -68,7 +68,12 @@ class InventoryController extends Controller
     public function update(InventoryRequest $request, Inventory $inventory){
 
         $this->updateRecord($request, $inventory);
-        return redirect()->route('products.edit', $inventory->product_id )->with('success', 'Inventario actualizado exitosamente.');
+        return redirect()->route('inventories.index')->with('success', 'Inventario actualizado exitosamente.');
+    }
+
+    public function update_product(InventoryRequest $request, Inventory $inventory){
+        $this->updateRecord($request, $inventory);
+        return redirect()->back()->with('success', 'Inventario actualizado exitosamente.');
     }
 
     public function destroy(Inventory $inventory){

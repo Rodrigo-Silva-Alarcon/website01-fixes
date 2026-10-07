@@ -17,9 +17,18 @@ test('missing, zero and invalid prices do not allow adding to cart', () => {
 
 test('uses the active offer when deciding if a product has a price', () => {
     const inventory = { amount: '100', offer_amount: '80', ini: '2026-09-01', fin: '2026-09-30', money: 'BOB' };
-    assert.equal(productPrice(inventory, new Date('2026-09-09')), 80);
-    assert.equal(productPrice(inventory, new Date('2026-10-01')), 100);
-    assert.equal(productPrice({ ...inventory, offer_amount: null }, new Date('2026-09-09')), 100);
+    assert.equal(productPrice(inventory, new Date('2026-09-09T12:00:00-04:00')), 80);
+    assert.equal(productPrice(inventory, new Date('2026-10-01T12:00:00-04:00')), 100);
+    assert.equal(productPrice({ ...inventory, offer_amount: null }, new Date('2026-09-09T12:00:00-04:00')), 100);
+});
+
+test('the offer lasts the whole start and end days in store time (America/La_Paz)', () => {
+    const inventory = { amount: '3299.00', offer_amount: '3000.00', ini: '2026-10-05', fin: '2026-10-07', money: 'Bs.' };
+    assert.equal(productPrice(inventory, new Date('2026-10-05T00:30:00-04:00')), 3000);
+    assert.equal(productPrice(inventory, new Date('2026-10-07T14:51:00-04:00')), 3000);
+    assert.equal(productPrice(inventory, new Date('2026-10-07T23:59:00-04:00')), 3000);
+    assert.equal(productPrice(inventory, new Date('2026-10-08T00:01:00-04:00')), 3299);
+    assert.equal(productPrice(inventory, new Date('2026-10-04T23:59:00-04:00')), 3299);
 });
 
 test('encodes product information and its link for the requested WhatsApp number', () => {

@@ -73,8 +73,8 @@ test('usuario puede verificar si tiene un rol', function () {
 test('usuario puede verificar si tiene un permiso', function () {
     $user = User::factory()->create();
     $role = Role::create([
-        'name' => 'admin',
-        'description' => 'Administrador',
+        'name' => 'editor',
+        'description' => 'Editor',
     ]);
     $permission = Permission::create([
         'name' => 'view_users',
@@ -105,8 +105,8 @@ test('middleware de rol funciona correctamente', function () {
 test('middleware de permiso funciona correctamente', function () {
     $user = User::factory()->create();
     $role = Role::create([
-        'name' => 'admin',
-        'description' => 'Administrador',
+        'name' => 'editor',
+        'description' => 'Editor',
     ]);
     $permission = Permission::create([
         'name' => 'view_users',
@@ -152,11 +152,34 @@ test('usuario sin permiso no puede acceder a rutas protegidas', function () {
 test('granular catalog permissions exist for admin sections (§4.8.8)', function () {
     seedRbac();
 
-    foreach (['products', 'categories', 'subcategories', 'brands', 'banners', 'inventories', 'carts'] as $sector) {
+    foreach (['products', 'categories', 'subcategories', 'brands', 'banners', 'inventories'] as $sector) {
         foreach (['view', 'create', 'edit', 'delete', 'show'] as $action) {
             expect(Permission::where('name', "{$action}_{$sector}")->exists())
                 ->toBeTrue("Missing permission {$action}_{$sector}");
         }
+    }
+
+    // Ventanas de una sola página: solo las acciones que usan
+    foreach (['about', 'contact', 'footer', 'store_texts', 'orders'] as $sector) {
+        expect(Permission::where('sector', $sector)->pluck('name')->sort()->values()->all())
+            ->toBe(["edit_{$sector}", "view_{$sector}"]);
+    }
+    expect(Permission::where('sector', 'backups')->pluck('name')->sort()->values()->all())
+        ->toBe(['create_backups', 'view_backups']);
+});
+
+test('every admin panel route permission exists and is assigned to admin', function () {
+    seedRbac();
+
+    $admin = Role::where('name', 'admin')->first();
+    $used = collect(app('router')->getRoutes())
+        ->flatMap(fn ($route) => $route->gatherMiddleware())
+        ->filter(fn ($m) => is_string($m) && str_starts_with($m, 'permission:'))
+        ->map(fn ($m) => substr($m, strlen('permission:')))
+        ->unique();
+
+    foreach ($used as $name) {
+        expect($admin->hasPermission($name))->toBeTrue("Admin missing {$name}");
     }
 });
 
@@ -166,6 +189,6 @@ test('admin role has all catalog permissions after seed', function () {
     $admin = Role::where('name', 'admin')->first();
     expect($admin)->not->toBeNull();
     expect($admin->hasPermission('view_products'))->toBeTrue();
-    expect($admin->hasPermission('view_carts'))->toBeTrue();
+    expect($admin->hasPermission('view_orders'))->toBeTrue();
     expect($admin->hasPermission('view_banners'))->toBeTrue();
 });

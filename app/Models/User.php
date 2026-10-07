@@ -89,6 +89,11 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
+        // El admin tiene siempre todos los permisos, también los que se agreguen después
+        if ($this->isAdmin()) {
+            return true;
+        }
+
         return $this->roles()->whereHas('permissions', function ($query) use ($permission) {
             $query->where('name', $permission);
         })->exists();

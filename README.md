@@ -11,8 +11,8 @@ pinned: false
 # Website01 — SmartHouse
 
 Tienda/e-commerce con CMS administrativo: catálogo (categorías, subcategorías,
-marcas, productos, inventarios), banners, textos configurables, pedidos con
-checkout y RBAC (roles y permisos).
+marcas, productos, inventarios), banners, textos configurables, carrito con
+pedido por WhatsApp y RBAC (roles y permisos).
 
 Fork de la prueba freelance **website01-fixes** — el historial de mejoras (F4-01…)
 está en [`CHANGELOG.md`](CHANGELOG.md) y los informes en [`docs/`](docs/).
@@ -108,7 +108,7 @@ php artisan config:cache   # producción (no hay env() fuera de config/)
 ```
 app/Http/Controllers/
 ├── WebController.php          # storefront (home, productos, contacto)
-├── CheckoutController.php     # pedidos, pagos, descuento de stock
+├── ShopController.php         # carrito (añadir, cantidades, quitar)
 └── Admin/                     # CMS (CRUDs, dashboard, settings)
 resources/js/pages/
 ├── web/                       # storefront (Inertia)

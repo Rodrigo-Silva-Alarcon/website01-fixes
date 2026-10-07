@@ -1,4 +1,5 @@
 import EntityIndex, { type EntityColumn, type IndexFilters, type Paginator } from '@/components/admin/entity-index';
+import { isOnOffer } from '@/lib/product-enquiry';
 import { type Inventory } from '@/types';
 
 interface Props {
@@ -20,9 +21,22 @@ export default function Index({ records, filters, success, error }: Props) {
         },
         {
             key: 'amount',
-            label: 'Monto',
+            label: (
+                <span>
+                    Precio/<span className="text-orange-700 dark:text-orange-400">Oferta</span>
+                </span>
+            ),
             sortable: true,
-            render: (inventory) => inventory.amount,
+            // Con oferta vigente se muestra el precio al que se vende, resaltado en naranja.
+            render: (inventory) =>
+                isOnOffer(inventory) ? (
+                    <div className="flex flex-col leading-tight">
+                        <span className="font-semibold text-orange-700 dark:text-orange-400">{inventory.offer_amount}</span>
+                        <span className="text-xs text-muted-foreground line-through">{inventory.amount}</span>
+                    </div>
+                ) : (
+                    inventory.amount
+                ),
         },
         {
             key: 'stock',

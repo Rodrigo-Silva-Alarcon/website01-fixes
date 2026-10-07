@@ -17,11 +17,11 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\BackupController;
-use App\Http\Controllers\Admin\CartController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\ShopController;
-use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\WhatsappOrderController;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -54,10 +54,9 @@ Route::post('/addshop/{product}', [ShopController::class, 'add'])->name('addshop
 Route::patch('/shop/{product}', [ShopController::class, 'update'])->name('updateshop');
 Route::post('/removeshop/{product}', [ShopController::class, 'remove'])->name('removeshop');
 Route::post('/clearshop', [ShopController::class, 'clear'])->name('clearshop');
+// Pedido pendiente que se registra al pulsar "Pedir por WhatsApp"
+Route::post('/pedido-whatsapp', [WhatsappOrderController::class, 'store'])->middleware('throttle:20,1')->name('whatsapp-order.store');
 
-Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');
-Route::get('/checkout/exito/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Rutas del panel de administración con prefijo admin/
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
@@ -80,14 +79,20 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    // Rutas de roles (solo para administradores)
-    Route::middleware('role:admin')->group(function () {
-        Route::resource('/roles', RoleController::class)->names('admin.roles');
+    // Rutas de roles. El rol admin solo lo modifica otro admin (ver RoleController).
+    Route::middleware('permission:view_roles')->group(function () {
+        Route::resource('/roles', RoleController::class)->names('admin.roles')
+        ->middlewareFor(['create', 'store'], 'permission:create_roles')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_roles')
+        ->middlewareFor('destroy', 'permission:delete_roles');
     });
 
-    // Rutas de permisos (solo para administradores)
-    Route::middleware('role:admin')->group(function () {
-        Route::resource('/permissions', PermissionController::class)->names('admin.permissions');
+    // Rutas de permisos
+    Route::middleware('permission:view_permissions')->group(function () {
+        Route::resource('/permissions', PermissionController::class)->names('admin.permissions')
+        ->middlewareFor(['create', 'store'], 'permission:create_permissions')
+        ->middlewareFor(['edit', 'update'], 'permission:edit_permissions')
+        ->middlewareFor('destroy', 'permission:delete_permissions');
     });
 
     // Rutas de textos (§5.1.1)
@@ -204,20 +209,27 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         ->middlewareFor(['edit', 'update'], 'permission:edit_inventories')
         ->middlewareFor('destroy', 'permission:delete_inventories');
         Route::post('/inventories/store_product', [InventoryController::class, 'store_product'])->middleware('permission:create_inventories')->name('inventories.store_product');
-        Route::post('/inventories/destroy_product', [InventoryController::class, 'destroy_product'])->middleware('permission:delete_inventories')->name('inventories.destroy_product');
+        Route::put('/inventories/{inventory}/update_product', [InventoryController::class, 'update_product'])->middleware('permission:edit_inventories')->name('inventories.update_product');
+        Route::delete('/inventories/{inventory}/destroy_product', [InventoryController::class, 'destroy_product'])->middleware('permission:delete_inventories')->name('inventories.destroy_product');
     });
 
-    // Carritos (§4.7.17 + §4.8.8)
-    Route::middleware('permission:view_carts')->group(function () {
-        Route::get('/carts', [CartController::class, 'index'])->name('admin.carts.index');
-        Route::delete('/carts/{cart}', [CartController::class, 'destroy'])->name('admin.carts.destroy');
+    // Pedidos por WhatsApp
+    Route::middleware('permission:view_orders')->group(function () {
+        Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/orders/products', [OrderController::class, 'products'])->name('admin.orders.products');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+        Route::middleware('permission:edit_orders')->group(function () {
+            Route::put('/orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update');
+            Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])->name('admin.orders.confirm');
+            Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('admin.orders.cancel');
+        });
     });
 
-    // Copias de seguridad (solo administradores). Restaurar solo por consola.
-    Route::middleware('role:admin')->group(function () {
+    // Copias de seguridad. Restaurar solo por consola.
+    Route::middleware('permission:view_backups')->group(function () {
         Route::get('/backups', [BackupController::class, 'index'])->name('admin.backups.index');
-        Route::post('/backups', [BackupController::class, 'store'])->middleware('throttle:6,1')->name('admin.backups.store');
-        Route::post('/backups/images', [BackupController::class, 'storeImages'])->middleware('throttle:3,1')->name('admin.backups.images');
+        Route::post('/backups', [BackupController::class, 'store'])->middleware(['permission:create_backups', 'throttle:6,1'])->name('admin.backups.store');
+        Route::post('/backups/images', [BackupController::class, 'storeImages'])->middleware(['permission:create_backups', 'throttle:3,1'])->name('admin.backups.images');
         Route::get('/backups/{name}/download', [BackupController::class, 'download'])
             ->where('name', '[A-Za-z0-9._-]+')
             ->name('admin.backups.download');

@@ -21,6 +21,8 @@ export interface NavItem {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    /** Contador junto al título (p. ej. pedidos pendientes). */
+    badge?: number;
 }
 
 export interface Auth {

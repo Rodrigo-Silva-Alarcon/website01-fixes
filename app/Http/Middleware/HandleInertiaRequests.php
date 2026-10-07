@@ -136,6 +136,10 @@ class HandleInertiaRequests extends Middleware
             $base['contact'] = null;
             $base['footer'] = null;
             $base['storeTexts'] = [];
+            // Contador de pedidos pendientes en el menú del panel (Pedidos)
+            $base['pendingOrders'] = fn () => $request->user()?->hasPermission('view_orders')
+                ? \App\Models\Order::where('status', \App\Models\Order::PENDING)->count()
+                : 0;
         }
 
         return $base;

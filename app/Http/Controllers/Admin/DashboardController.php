@@ -34,22 +34,25 @@ class DashboardController extends Controller
                 'stock' => (int) ($i->stock ?? 0),
             ]);
 
-        $recentOrders = Order::with('user')
-            ->withCount('orderItems')
+        $recentOrders = Order::withCount('orderItems')
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get()
             ->map(fn ($o) => [
                 'id' => $o->id,
-                'user' => $o->user?->name ?? 'Invitado',
+                'code' => $o->code,
+                'status' => $o->status,
+                'user' => $o->customer_name ?: ($o->customer_phone ?: 'Sin datos'),
                 'total' => (float) $o->total,
                 'items' => (int) $o->order_items_count,
                 'created_at' => optional($o->created_at)->toDateTimeString(),
             ]);
 
+        // Ventas = pedidos confirmados en el mes (los pendientes aún no son venta)
         $startOfMonth = now()->startOfMonth();
-        $revenueMonth = (float) Order::where('created_at', '>=', $startOfMonth)->sum('total');
-        $ordersMonth = Order::where('created_at', '>=', $startOfMonth)->count();
+        $confirmed = Order::where('status', Order::CONFIRMED)->where('confirmed_at', '>=', $startOfMonth);
+        $revenueMonth = (float) (clone $confirmed)->sum('total');
+        $ordersMonth = $confirmed->count();
 
         return Inertia::render('admin/dashboard', [
             'products' => Product::count(),

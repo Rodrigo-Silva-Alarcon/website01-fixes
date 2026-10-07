@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // Con la sesión ya iniciada, /login (y /register) llevan al panel en lugar de a la web
+        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+
         $middleware->web(append: [
             ExcludeAdminZiggyRoutes::class,
             HandleAppearance::class,

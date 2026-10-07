@@ -116,3 +116,9 @@ test('login ignores surrounding spaces and uppercase in the email', function () 
 
     $this->assertAuthenticatedAs($user);
 });
+
+test('signed-in users opening the login screen go to the admin panel, not the store', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('login'))->assertRedirect(route('admin.dashboard'));
+});

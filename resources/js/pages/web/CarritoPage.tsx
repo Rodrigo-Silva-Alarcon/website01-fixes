@@ -8,7 +8,7 @@ import ProductCard from "@/pages/web/components/ProductCard";
 import WhatsAppIcon from "@/pages/web/components/WhatsAppIcon";
 import ClearCartButton from "@/pages/web/components/ClearCartButton";
 import { CartItem } from "@/types/models";
-import { currencyLabel, itemSubtotal, whatsappCartUrl } from "@/lib/cart";
+import { currencyLabel, itemSubtotal, placeWhatsappOrder, whatsappCartUrl } from "@/lib/cart";
 import { formatMoney as fmt, listCents, productHref, useCart } from "@/hooks/use-cart";
 import { useCms } from "@/lib/cms";
 
@@ -194,10 +194,11 @@ export default function CarritoPage() {
               </span>
             </div>
 
-            {/* El pedido se cierra por WhatsApp; /checkout queda sin enlaces hasta eliminarlo */}
+            {/* El pedido se cierra por WhatsApp */}
             {hasItems ? (
               <a
                 href={whatsappCartUrl(live, whatsapp, store("wa_order_intro"))}
+                onClick={(e) => placeWhatsappOrder(e.currentTarget, (ref) => whatsappCartUrl(live, whatsapp, store("wa_order_intro"), ref))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 rounded-full bg-[#fa8232] px-[22px] py-[15px] text-base font-bold text-white transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:text-white hover:shadow-[0_10px_24px_rgba(250,130,50,.35)]"

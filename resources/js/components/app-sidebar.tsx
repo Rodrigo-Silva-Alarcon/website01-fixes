@@ -5,8 +5,8 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 /* import { dashboard } from '@/routes/admin'; */
 import { type NavItem } from '@/types';
 import { route } from 'ziggy-js';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ShoppingBasket, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom, MessageSquareText, DatabaseBackup } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, FileText, Package, FolderClosed, Folders, Wrench, Images, ClipboardList, Banknote, Star, Info, LayoutTemplate, Contact, PanelBottom, MessageSquareText, DatabaseBackup } from 'lucide-react';
 import AppLogo from './app-logo';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLogoIcon from '@/components/app-logo-icon';
@@ -14,6 +14,7 @@ import AppLogoIcon from '@/components/app-logo-icon';
 export function AppSidebar() {
     const { hasPermission, hasRole } = usePermissions();
     const { state } = useSidebar();
+    const pendingOrders = Number(usePage<{ pendingOrders?: number }>().props.pendingOrders ?? 0);
     
     const allNavItems: Array<NavItem & { permission?: string; role?: string }> = [
         {
@@ -89,10 +90,11 @@ export function AppSidebar() {
             permission: 'view_inventories',
         },
         {
-            title: 'Carrito de Compras',
-            href: route('admin.carts.index'),
-            icon: ShoppingBasket,
-            permission: 'view_carts',
+            title: 'Pedidos',
+            href: route('admin.orders.index'),
+            icon: ClipboardList,
+            permission: 'view_orders',
+            badge: pendingOrders,
         },
         {
             title: 'Usuarios',
@@ -124,7 +126,7 @@ export function AppSidebar() {
             // route() lanzaría un error y dejaría todo el panel en blanco
             href: '/admin/backups',
             icon: DatabaseBackup,
-            role: 'admin',
+            permission: 'view_backups',
         },
     ];
 

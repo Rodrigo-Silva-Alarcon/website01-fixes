@@ -9,9 +9,9 @@ class PermissionHelper
     /**
      * Generar permisos para un sector específico
      */
-    public static function generateSectorPermissions(string $sector, string $sectorName): array
+    public static function generateSectorPermissions(string $sector, string $sectorName, ?array $actions = null): array
     {
-        return [
+        $permissions = [
             [
                 'name' => "view_{$sector}",
                 'description' => "Ver lista de {$sectorName}",
@@ -38,6 +38,16 @@ class PermissionHelper
                 'sector' => $sector,
             ],
         ];
+
+        // Ventanas de una sola página (p. ej. Nosotros) solo usan algunas acciones
+        if ($actions !== null) {
+            $permissions = array_values(array_filter(
+                $permissions,
+                fn ($permission) => in_array(strtok($permission['name'], '_'), $actions, true)
+            ));
+        }
+
+        return $permissions;
     }
 
     /**
@@ -64,9 +74,9 @@ class PermissionHelper
     /**
      * Crear todos los permisos para un sector
      */
-    public static function createSectorPermissions(string $sector, string $sectorName, array $additionalActions = []): void
+    public static function createSectorPermissions(string $sector, string $sectorName, array $additionalActions = [], ?array $actions = null): void
     {
-        $basicPermissions = self::generateSectorPermissions($sector, $sectorName);
+        $basicPermissions = self::generateSectorPermissions($sector, $sectorName, $actions);
         $additionalPermissions = self::generateAdditionalPermissions($sector, $sectorName, $additionalActions);
         
         $allPermissions = array_merge($basicPermissions, $additionalPermissions);

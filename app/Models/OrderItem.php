@@ -18,6 +18,7 @@ class OrderItem extends Model
         'amount',
         'quantity',
         'unit_price',
+        'money',
     ];
 
     protected $casts = [

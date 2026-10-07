@@ -45,7 +45,7 @@ export interface RowHelpers<T> {
 
 export interface EntityColumn<T> {
     key: string;
-    label: string;
+    label: ReactNode;
     sortable?: boolean;
     sortKey?: string;
     className?: string;

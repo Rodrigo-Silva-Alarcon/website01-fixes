@@ -50,7 +50,7 @@ class ExcludeAdminZiggyRoutes
                     'brands.*',
                     'images.*',
                     'inventories.*',
-                    'admin.carts.*',
+                    'admin.orders.*',
                     'profile.*',
                     'password.edit',
                     'password.update',

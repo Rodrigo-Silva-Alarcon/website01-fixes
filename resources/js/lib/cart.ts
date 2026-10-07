@@ -24,7 +24,12 @@ export function cartTotals(items: CartLine[]): Record<string, number> {
     }, {});
 }
 
-export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATSAPP, intro: string = STORE_TEXT_DEFAULTS.wa_order_intro): string {
+export function whatsappCartUrl(
+    items: CartLine[],
+    phone: string = DEFAULT_WHATSAPP,
+    intro: string = STORE_TEXT_DEFAULTS.wa_order_intro,
+    reference?: string,
+): string {
     const lines = items.map((item, i) => {
         const money = currencyLabel(item.money);
         const brand = item.product?.brand_label;
@@ -40,6 +45,7 @@ export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATS
     const totals = Object.entries(cartTotals(items)).map(([money, cents]) => `*TOTAL: ${money} ${(cents / 100).toFixed(2)}*`);
     const message = [
         intro,
+        ...(reference ? [`Pedido: *${reference}*`] : []),
         '',
         lines.join('\n\n'),
         '',
@@ -47,4 +53,30 @@ export function whatsappCartUrl(items: CartLine[], phone: string = DEFAULT_WHATS
         ...totals,
     ].join('\n');
     return whatsappLink(phone, message);
+}
+
+/** Referencia corta del pedido (SH-7K3P9Q): va en el mensaje y la busca el panel. */
+export function newOrderReference(): string {
+    const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const bytes = new Uint8Array(6);
+    crypto.getRandomValues(bytes);
+    return `SH-${Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('')}`;
+}
+
+/**
+ * Click en "Pedir por WhatsApp": añade la referencia al mensaje (el navegador abre el
+ * enlace ya actualizado) y registra el carrito como pedido pendiente en segundo plano.
+ * Si el registro falla, WhatsApp se abre igual.
+ */
+export function placeWhatsappOrder(link: HTMLAnchorElement, buildUrl: (reference: string) => string): void {
+    const reference = newOrderReference();
+    link.href = buildUrl(reference);
+    const token = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
+    fetch('/pedido-whatsapp', {
+        method: 'POST',
+        keepalive: true,
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ reference }),
+    }).catch(() => {});
 }
