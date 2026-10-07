@@ -29,7 +29,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ExcludeAdminZiggyRoutes::class,
             HandleAppearance::class,
             HandleInertiaRequests::class,
-            AddLinkHeadersForPreloadedAssets::class,
+            // Limitado: un header Link enorme provoca 502 en nginx (proxy_buffer_size 4k)
+            AddLinkHeadersForPreloadedAssets::using(10),
             CacheHeaders::class,
             SecurityHeaders::class,
         ]);
